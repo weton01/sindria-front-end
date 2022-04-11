@@ -1,0 +1,31 @@
+.popup-content {
+  padding: 15px!important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: flex-end !important;
+  margin: auto !important;
+  height: auto;
+}
+
+.popup-content div {
+    
+  display: flex !important;
+  flex-flow: column;
+  justify-content: flex-end !important;
+  align-items: flex-end !important;
+  gap: 4px;
+}
+
+.popup-arrow {
+  color: rgb(255, 255, 255);
+}
+
+.popup-overlay {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-end !important;
+}
+
+[data-popup="tooltip"].popup-overlay {
+  background: transparent;
+}

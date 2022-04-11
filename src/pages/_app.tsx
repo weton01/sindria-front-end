@@ -6,11 +6,14 @@ import { ThemeProvider } from "styled-components";
 import { AppProvider } from "../contexts/app/AppContext";
 import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
-import { useStore } from "../store";  
-import { persistStore } from 'redux-persist'
+import { useStore } from "../store";
+import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import {NextPage} from 'next'
+import { NextPage } from "next";
 import { Provider } from "react-redux";
+import { ToastContainer } from "react-nextjs-toast"; 
+import 'reactjs-popup/dist/index.css';
+import './_app.css'
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -19,13 +22,13 @@ Router.events.on("routeChangeError", () => NProgress.done());
 
 NProgress.configure({ showSpinner: false });
 
-const App : NextPage = ({ Component, pageProps }: any) => {
-  const store = useStore(pageProps.initialReduxState)
+const App: NextPage = ({ Component, pageProps }: any) => {
+  const store = useStore(pageProps.initialReduxState);
   const persistor = persistStore(store, {}, function () {
-    persistor.persist()
-  })
-  let Layout = Component.layout || Fragment; 
-   
+    persistor.persist();
+  });
+  let Layout = Component.layout || Fragment;
+
   return (
     <ThemeProvider theme={theme}>
       <Head>
@@ -48,18 +51,19 @@ const App : NextPage = ({ Component, pageProps }: any) => {
       </Head>
       <GlobalStyles />
       <AppProvider>
-      <Provider store={store}>
-        <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-          <Layout>
-            <Component {...pageProps}  />
-          </Layout>
-        </PersistGate>
+        <Provider store={store}>
+          <PersistGate persistor={persistor} loading={<div>Loading</div>}>
+            <Layout> 
+              <div style={{position: "absolute", zIndex: 99999}}>
+              <ToastContainer align={"right"} position={"bottom"}  /> 
+              </div>
+              <Component {...pageProps} />
+            </Layout>
+          </PersistGate>
         </Provider>
       </AppProvider>
     </ThemeProvider>
   );
 };
 
- 
-
-export default  App;
+export default App;

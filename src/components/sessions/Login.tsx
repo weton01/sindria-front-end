@@ -43,7 +43,7 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const { data } = await api.post("auth/signin", values); 
-      setCookie(undefined, 'sindria-auth-token', data?.token.toString(), {
+      setCookie(undefined, 'shop_token', data?.token.toString(), {
         maxAge: 60 * 60  * 24
       })
       dispatch(userSignIn(data));

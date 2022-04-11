@@ -1,7 +1,7 @@
 import Spinner from "@component/Spinner";
 import systemCss from "@styled-system/css";
 import { colorOptions } from "interfaces";
-import { getServerSideProps } from "pages";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import {
   BackgroundProps,
@@ -156,9 +156,23 @@ Button.defaultProps = {
   borderRadius: 5,
 };
 
-const CustomButtom = ({ loading, ...props }) => {
+const CustomButtom = ({
+  loading = false,
+  route = undefined,
+  onClick = () => null,
+  ...props
+}) => {
+  const router = useRouter();
+
   return (
-    <Button disabled={loading} {...props}>
+    <Button
+      disabled={loading}
+      {...props}
+      onClick={() => {
+        if (route === undefined) onClick();
+        else router.push(route);
+      }}
+    >
       {loading ? <Spinner style={{ margin: 16 }} /> : null} {props.children}
     </Button>
   );

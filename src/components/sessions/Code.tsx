@@ -4,8 +4,7 @@ import CountDown from "@component/CountDown";
 import Icon from "@component/icon/Icon";
 import { H3, H5 } from "@component/Typography";
 import { useAppDispatch } from "@hook/hooks";
-import { useRouter } from "next/router";
-import { setCookie } from "nookies";
+import { useRouter } from "next/router"; 
 import React, { useState } from "react";
 import ReactCodeInput from "react-verification-code-input";
 import { api } from "services/api";
@@ -25,10 +24,7 @@ const Signup: React.FC = () => {
     try {
       const { data } = await api.patch(`auth/active-user/${router.query.id}`, {
         activationCode,
-      });
-      setCookie(undefined, "sindria-auth-token", data?.token.toString(), {
-        maxAge: 60 * 60 * 24,
-      });
+      }); 
       dispatch(userSignIn(data));
       router.push("/");
     } catch (error) {
