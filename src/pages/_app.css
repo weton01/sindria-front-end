@@ -5,10 +5,10 @@
   align-items: flex-end !important;
   margin: auto !important;
   height: auto;
+  width: auto !important;
 }
 
-.popup-content div {
-    
+.popup-content div { 
   display: flex !important;
   flex-flow: column;
   justify-content: flex-end !important;

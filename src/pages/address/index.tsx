@@ -91,18 +91,27 @@ const AddressList = (props) => {
               {(close) => (
                 <div>
                   Deseja realmete deletar?
-                  <Button
-                    color="primary"
-                    bg="primary.light"
-                    px="2rem"
-                    onClick={() => {
-                      close();
-                      deleteAddress(item.id);
-                    }}
-                    size="small"
-                  >
-                    Sim
-                  </Button>
+                  <span style={{ display: "flex", gap: 8 }}>
+                    <Button 
+                      onClick={() => {
+                        close();
+                      }}
+                      size="small"
+                    >
+                      Não
+                    </Button>
+                    <Button
+                      color="primary"
+                      bg="primary.light" 
+                      onClick={() => {
+                        close();
+                        deleteAddress(item.id);
+                      }}
+                      size="small"
+                    >
+                      Sim
+                    </Button>
+                  </span>
                 </div>
               )}
             </Popup>

@@ -185,7 +185,6 @@ const AddressEditor = (props) => {
                   </Grid>
                 </Grid>
               </Box>
-
               <Button
                 type="submit"
                 variant="contained"
@@ -207,7 +206,10 @@ const initialValues = {
   city: "",
   address: "",
   state: "",
+  street: "",
+  neighborhood: "",
   complement: "",
+  number: ""
 };
 
 const checkoutSchema = yup.object().shape({
@@ -215,6 +217,7 @@ const checkoutSchema = yup.object().shape({
   city: yup.string().required("cidade requerido"),
   state: yup.string().required("estado requerido").length(2, "máximo 2 siglas"),
   street: yup.string().required("rua requerida"),
+  neighborhood: yup.string().required("bairro requerida"),
   number: yup.number().typeError("somente número").required("número requerido"),
 });
 
