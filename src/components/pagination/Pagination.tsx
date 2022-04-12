@@ -9,6 +9,7 @@ export interface PaginationProps extends SpaceProps {
   pageCount: number;
   marginPagesDisplayed?: number;
   pageRangeDisplayed?: number;
+  initialPage?: number,
   onChange?: (data: { selected: number }) => void;
 }
 
@@ -16,6 +17,7 @@ const Pagination: React.FC<PaginationProps> = ({
   pageCount,
   marginPagesDisplayed,
   pageRangeDisplayed,
+  initialPage=0,
   onChange,
   ...props
 }) => {
@@ -61,7 +63,8 @@ const Pagination: React.FC<PaginationProps> = ({
         }
         pageCount={pageCount}
         marginPagesDisplayed={marginPagesDisplayed}
-        pageRangeDisplayed={pageRangeDisplayed}
+        pageRangeDisplayed={pageRangeDisplayed} 
+        forcePage={initialPage}
         onPageChange={handlePageChange}
         containerClassName="pagination"
         subContainerClassName="pages pagination"

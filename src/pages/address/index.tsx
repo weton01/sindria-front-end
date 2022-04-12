@@ -1,8 +1,10 @@
 import Button from "@component/buttons/Button";
 import IconButton from "@component/buttons/IconButton";
+import FlexBox from "@component/FlexBox";
 import Icon from "@component/icon/Icon";
 import DashboardLayout from "@component/layout/CustomerDashboardLayout";
 import DashboardPageHeader from "@component/layout/DashboardPageHeader";
+import Pagination from "@component/pagination/Pagination";
 import TableRow from "@component/TableRow";
 import Typography from "@component/Typography";
 import { GetServerSideProps } from "next";
@@ -14,10 +16,13 @@ import { toast } from "react-nextjs-toast";
 import Popup from "reactjs-popup";
 import { api } from "services/api";
 
+const ItemsPerPage:number = 5;
+
 const AddressList = (props) => {
   const { data } = props;
   const router = useRouter();
-
+  const skip: number = parseInt(router?.query?.skip.toString()) || 0;
+ 
   const deleteAddress = async (id) => {
     toast.notify("Removendo endereço", {
       title: "Deletando...",
@@ -39,7 +44,7 @@ const AddressList = (props) => {
         type: "error",
       });
     }
-  };
+  };   
 
   return (
     <div>
@@ -57,7 +62,7 @@ const AddressList = (props) => {
           </Button>
         }
       />
-      {data?.map((item) => (
+      {data?.items?.map((item) => (
         <TableRow my="1rem" padding="6px 18px">
           <Typography className="pre" m="6px" textAlign="left">
             {item.cep}
@@ -92,7 +97,7 @@ const AddressList = (props) => {
                 <div>
                   Deseja realmete deletar?
                   <span style={{ display: "flex", gap: 8 }}>
-                    <Button 
+                    <Button
                       onClick={() => {
                         close();
                       }}
@@ -102,7 +107,7 @@ const AddressList = (props) => {
                     </Button>
                     <Button
                       color="primary"
-                      bg="primary.light" 
+                      bg="primary.light"
                       onClick={() => {
                         close();
                         deleteAddress(item.id);
@@ -118,6 +123,15 @@ const AddressList = (props) => {
           </Typography>
         </TableRow>
       ))}
+      <FlexBox justifyContent="center" mt="2.5rem">
+        <Pagination
+          initialPage={Math.trunc(skip/ItemsPerPage)}
+          pageCount={data?.count / ItemsPerPage}
+          onChange={(data: any) => { 
+            router.push(`/address?skip=${data*ItemsPerPage}`)
+          }}
+        />
+      </FlexBox>
     </div>
   );
 };
@@ -125,15 +139,20 @@ const AddressList = (props) => {
 AddressList.layout = DashboardLayout;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["shop_token"]: token } = parseCookies(ctx);
-
+  const { ["shop_token"]: token } = parseCookies(ctx); 
   try {
     api.interceptors.request.use((config) => {
       config.headers["Authorization"] = `Bearer ${token}`;
       return config;
     });
 
-    const { data } = await api.get(`address/v1`);
+    const take = ItemsPerPage;
+    const skip = ctx?.query?.skip || 0;
+
+    const { data } = await api.get(`address/v1`, {
+      params: { take: take, skip: skip },
+    });
+ 
     return {
       props: { data: data },
     };
