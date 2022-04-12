@@ -75,8 +75,7 @@ const SendEmail: React.FC = () => {
         <CountDown
           onFinish={() => {
             setFinish(false);
-          }}
-          seconds={10}
+          }} 
         >
           Renviar código em
         </CountDown>
