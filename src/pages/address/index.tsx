@@ -20,7 +20,7 @@ import { api } from "services/api";
 const AddressList = (props) => {
   const { data } = props;
   const router = useRouter();
-  const skip: number = parseInt(router?.query?.skip.toString()) || 0;
+  const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
  
   const deleteAddress = async (id) => {
     toast.notify("Removendo endereço", {
