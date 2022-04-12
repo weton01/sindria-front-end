@@ -42,7 +42,7 @@ const Login: React.FC = () => {
   const handleFormSubmit = async (values) => {
     setLoading(true);
     try {
-      const { data } = await api.post("auth/signin", values); 
+      const { data } = await api.post("auth/v1/signin", values); 
       setCookie(undefined, 'shop_token', data?.token.toString(), {
         maxAge: 60 * 60  * 24
       })

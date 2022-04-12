@@ -19,7 +19,7 @@ const RecoverPassword: React.FC = () => {
   const handleFormSubmit = async (values) => {
     setLoading(true);
     try {
-      await api.post("auth/recover-password", values);  
+      await api.post("auth/v1/recover-password", values);  
       router.push(`mail/confirm-recover/${values.email}`);
     } catch (error) {
       if(error?.response?.data?.active === false){  

@@ -21,7 +21,7 @@ const SendEmail: React.FC = () => {
   const resend = async () => {
     setLoading(true);
     try {
-      await api.post("auth/recover-password", {email: router.query.email}); 
+      await api.post("auth/v1/recover-password", {email: router.query.email}); 
       setFinish(true);
     } catch (error) { 
     }

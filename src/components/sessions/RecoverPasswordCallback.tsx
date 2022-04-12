@@ -28,7 +28,7 @@ const RecoverPasswordCallback: React.FC = () => {
     try {
       delete values.confPassword;
       await api.post(
-        `auth/recover-password/callback/${router.query.token}`,
+        `auth/v1/recover-password/callback/${router.query.token}`,
         values
       );
       router.push("/");
