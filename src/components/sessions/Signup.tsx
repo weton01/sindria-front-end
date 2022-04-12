@@ -28,7 +28,7 @@ const Signup: React.FC = () => {
     try {
       delete values.re_password;
       delete values.agreement;
-      const { data, status } = await api.post("auth/signup", values);
+      const { data, status } = await api.post("auth/v1/signup/", values);
       if (status === 201) {
         localStorage.setItem("user", JSON.stringify(data));
         router.push(`/code-user/${data.id}`);

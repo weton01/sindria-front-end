@@ -4,7 +4,7 @@ import CountDown from "@component/CountDown";
 import Icon from "@component/icon/Icon";
 import { H3, H5 } from "@component/Typography";
 import { useAppDispatch } from "@hook/hooks";
-import { useRouter } from "next/router"; 
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import ReactCodeInput from "react-verification-code-input";
 import { api } from "services/api";
@@ -15,31 +15,34 @@ import { StyledSessionCard } from "./SessionStyle";
 const Signup: React.FC = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingCode, setLoadingCode] = useState(false);
   const router = useRouter();
   const [finish, setFinish] = useState(true);
   const dispatch = useAppDispatch();
 
   const onComplete = async (activationCode) => {
-    setLoading(true);
+    setLoadingCode(true);
     try {
-      const { data } = await api.patch(`auth/active-user/${router.query.id}`, {
-        activationCode,
-      }); 
+      const { data } = await api.patch(
+        `auth/v1/active-user/${router.query.id}`,
+        {
+          activationCode,
+        }
+      );
       dispatch(userSignIn(data));
       router.push("/");
     } catch (error) {
       setMessage(error?.response?.data?.message || "Erro inesperado!");
     }
-    setLoading(false);
+    setLoadingCode(false);
   };
 
   const resend = async () => {
     setLoading(true);
     try {
-      await api.post("auth/recover-password", {email: router.query.email}); 
+      await api.post(`auth/v1/resend-code/${router.query.id}`);
       setFinish(true);
-    } catch (error) { 
-    }
+    } catch (error) {}
     setLoading(false);
   };
 
@@ -90,14 +93,17 @@ const Signup: React.FC = () => {
         >
           Por favor entre com os 4 digitos enviado em seu <br /> <b>e-mail</b>
         </H5>
-        <ReactCodeInput onComplete={onComplete} loading={loading} fields={4} />
+        <ReactCodeInput
+          onComplete={onComplete}
+          loading={loadingCode}
+          fields={4}
+        />
 
         {finish ? (
           <CountDown
             onFinish={() => {
               setFinish(false);
             }}
-            seconds={10}
           >
             Renviar código em
           </CountDown>
@@ -110,6 +116,7 @@ const Signup: React.FC = () => {
           disabled={finish}
           loading={loading}
           style={{ marginTop: 16 }}
+          onClick={resend}
         >
           Enviar novamente
         </Button>

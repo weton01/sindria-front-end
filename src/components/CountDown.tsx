@@ -1,12 +1,13 @@
 import systemCss from "@styled-system/css";
+import { COUNT_DOWN } from "@utils/enums";
 import { getHourMinute } from "@utils/utils";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 interface CountDownProps {
-  seconds: number;
-  onFinish: any;
-  children: any;
+  seconds?: number;
+  onFinish?: any;
+  children?: any;
 }
 
 const StyledCountDown = styled.div(systemCss({}));
@@ -57,7 +58,7 @@ const CountDown: React.FC<CountDownProps> = ({
 };
 
 CountDown.defaultProps = {
-  seconds: 5000,
+  seconds: COUNT_DOWN.SECONDS,
 };
 
 export default CountDown;
