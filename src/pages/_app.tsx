@@ -14,6 +14,7 @@ import { Provider } from "react-redux";
 import { ToastContainer } from "react-nextjs-toast"; 
 import 'reactjs-popup/dist/index.css';
 import './_app.css'
+import 'react-credit-cards/es/styles-compiled.css';
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());

@@ -28,6 +28,7 @@
     "pure-react-carousel": "^1.27.6",
     "react": "^16.14.0",
     "react-chartjs-2": "^2.11.1",
+    "react-credit-cards": "^0.8.3",
     "react-dom": "^16.14.0",
     "react-dropzone": "^11.2.4",
     "react-maskedinput": "^4.0.1",

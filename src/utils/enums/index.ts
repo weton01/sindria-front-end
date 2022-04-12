@@ -1,5 +1,5 @@
 export enum ITEMS_PER_PAGE {
-  MAX = 5,
+  MAX = 6,
 }
 
 export enum COUNT_DOWN {

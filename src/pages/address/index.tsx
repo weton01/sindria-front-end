@@ -71,7 +71,7 @@ const AddressList = (props) => {
           </Typography>
           <Typography className="pre" m="6px" textAlign="left"></Typography>
 
-          <Typography className="pre" textAlign="center" color="text.muted">
+          <Typography className="pre" textAlign="right" color="text.muted">
             <Link href={`/address/${item.id}`}>
               <Typography as="a" href="/address/xkssThds6h37sd" color="inherit">
                 <IconButton size="small">
@@ -82,7 +82,7 @@ const AddressList = (props) => {
               </Typography>
             </Link>
             <Popup
-              closeOnDocumentClick
+              closeOnDocumentClick 
               trigger={
                 <IconButton size="small">
                   <Icon variant="small" defaultcolor="currentColor">

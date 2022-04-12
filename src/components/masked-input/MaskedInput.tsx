@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 import { colorOptions } from "../../interfaces";
 import { InputMask, TextFieldWrapper, Label } from "./MaskedInputStyle";
 
@@ -15,6 +14,7 @@ export interface Props {
   endAdornment?: any;
   onBlur?: any;
   onChange?: any;
+  onFocus?: any;
 }
 
 const MaskedInputCustom: React.FC<Props> = (props) => {
