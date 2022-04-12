@@ -7,6 +7,7 @@ import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import Pagination from "@component/pagination/Pagination";
 import TableRow from "@component/TableRow";
 import Typography from "@component/Typography";
+import { ITEMS_PER_PAGE } from "@utils/enums";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -15,9 +16,7 @@ import React from "react";
 import { toast } from "react-nextjs-toast";
 import Popup from "reactjs-popup";
 import { api } from "services/api";
-
-const ItemsPerPage:number = 5;
-
+ 
 const AddressList = (props) => {
   const { data } = props;
   const router = useRouter();
@@ -125,10 +124,10 @@ const AddressList = (props) => {
       ))}
       <FlexBox justifyContent="center" mt="2.5rem">
         <Pagination
-          initialPage={Math.trunc(skip/ItemsPerPage)}
-          pageCount={data?.count / ItemsPerPage}
+          initialPage={Math.trunc(skip/ITEMS_PER_PAGE.MAX)}
+          pageCount={data?.count / ITEMS_PER_PAGE.MAX}
           onChange={(data: any) => { 
-            router.push(`/address?skip=${data*ItemsPerPage}`)
+            router.push(`/address?skip=${data*ITEMS_PER_PAGE.MAX}`)
           }}
         />
       </FlexBox>
@@ -146,7 +145,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return config;
     });
 
-    const take = ItemsPerPage;
+    const take = ITEMS_PER_PAGE.MAX;
     const skip = ctx?.query?.skip || 0;
 
     const { data } = await api.get(`address/v1`, {
