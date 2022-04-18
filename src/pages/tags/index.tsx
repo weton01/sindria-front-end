@@ -16,6 +16,7 @@ import React from "react";
 import Popup from "reactjs-popup";
 import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
+import Result from "@component/result";
 
 const TagList = (props) => {
   const { data } = props;
@@ -46,6 +47,8 @@ const TagList = (props) => {
     }
   };
 
+  console.log(data?.items);
+
   return (
     <div>
       <DashboardPageHeader
@@ -63,72 +66,79 @@ const TagList = (props) => {
         }
       />
 
-      {data?.items?.map((item) => (
-        <TableRow my="1rem" padding="6px 18px">
-          <FlexBox alignItems="center" m="6px">
-            <H5 className="pre" m="6px">
-              {item.name}
-            </H5>
+      {data?.count === 0 ? (
+        <Result height="300px" type="empty" />
+      ) : (
+        <>
+          {data?.items?.map((item) => (
+            <TableRow my="1rem" padding="6px 18px">
+              <FlexBox alignItems="center" m="6px">
+                <H5 className="pre" m="6px">
+                  {item.name}
+                </H5>
+              </FlexBox>
+              <Typography className="pre" m="6px">
+                {item.number}
+              </Typography>
+              <Typography className="pre" m="6px">
+                {item.expirationDate}
+              </Typography>
+
+              <Typography className="pre" textAlign="right" color="text.muted">
+                <Popup
+                  closeOnDocumentClick
+                  trigger={
+                    <IconButton size="small">
+                      <Icon variant="small" defaultcolor="currentColor">
+                        delete
+                      </Icon>
+                    </IconButton>
+                  }
+                  position="right center"
+                >
+                  {(close) => (
+                    <div>
+                      Deseja realmete deletar?
+                      <span style={{ display: "flex", gap: 8 }}>
+                        <Button
+                          onClick={() => {
+                            close();
+                          }}
+                          size="small"
+                        >
+                          Não
+                        </Button>
+                        <Button
+                          color="primary"
+                          bg="primary.light"
+                          onClick={() => {
+                            close();
+                            deleteTag(item.id);
+                          }}
+                          size="small"
+                        >
+                          Sim
+                        </Button>
+                      </span>
+                    </div>
+                  )}
+                </Popup>
+              </Typography>
+            </TableRow>
+          ))}
+          <FlexBox justifyContent="center" mt="2.5rem">
+            <Pagination
+              initialPage={Math.trunc(skip / ITEMS_PER_PAGE.MAX)}
+              pageCount={data?.count / ITEMS_PER_PAGE.MAX}
+              onChange={(data: any) => {
+                router.push(
+                  `/payment-methods?skip=${data * ITEMS_PER_PAGE.MAX}`
+                );
+              }}
+            />
           </FlexBox>
-          <Typography className="pre" m="6px">
-            {item.number}
-          </Typography>
-          <Typography className="pre" m="6px">
-            {item.expirationDate}
-          </Typography>
-
-          <Typography className="pre" textAlign="right" color="text.muted">
-            <Popup
-              closeOnDocumentClick
-              trigger={
-                <IconButton size="small">
-                  <Icon variant="small" defaultcolor="currentColor">
-                    delete
-                  </Icon>
-                </IconButton>
-              }
-              position="right center"
-            >
-              {(close) => (
-                <div>
-                  Deseja realmete deletar?
-                  <span style={{ display: "flex", gap: 8 }}>
-                    <Button
-                      onClick={() => {
-                        close();
-                      }}
-                      size="small"
-                    >
-                      Não
-                    </Button>
-                    <Button
-                      color="primary"
-                      bg="primary.light"
-                      onClick={() => {
-                        close();
-                        deleteTag(item.id);
-                      }}
-                      size="small"
-                    >
-                      Sim
-                    </Button>
-                  </span>
-                </div>
-              )}
-            </Popup>
-          </Typography>
-        </TableRow>
-      ))}
-
-      <FlexBox justifyContent="center" mt="2.5rem">
-        <Pagination
-          initialPage={Math.trunc(skip / ITEMS_PER_PAGE.MAX)}
-          pageCount={data?.count / ITEMS_PER_PAGE.MAX}
-          onChange={(data: any) => {
-            router.push(`/payment-methods?skip=${data * ITEMS_PER_PAGE.MAX}`);
-          }}
-        />
-      </FlexBox>
+        </>
+      )}
     </div>
   );
 };

@@ -16,6 +16,7 @@ import React from "react";
 import Popup from "reactjs-popup";
 import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
+import Result from "@component/result";
 
 const AddressList = (props) => {
   const { data } = props;
@@ -67,89 +68,96 @@ const AddressList = (props) => {
         }
       />
 
-      {data?.items?.map((item) => (
-        <TableRow my="1rem" padding="6px 18px">
-          <FlexBox alignItems="center" m="6px">
-            <Card width="42px" height="28px" mr="10px" elevation={4}>
-              <img
-                width="100%"
-                src={`/assets/images/brands/${item.image}.png`}
-                alt={item.image}
-              />
-            </Card>
-            <H5 className="pre" m="6px">
-              {item.name}
-            </H5>
-          </FlexBox>
-          <Typography className="pre" m="6px">
-            {item.number}
-          </Typography>
-          <Typography className="pre" m="6px">
-            {item.expirationDate}
-          </Typography>
+      {data?.count === 0 ? (
+        <Result height="300px" type="empty" />
+      ) : (
+        <>
+          {data?.items?.map((item) => (
+            <TableRow my="1rem" padding="6px 18px">
+              <FlexBox alignItems="center" m="6px">
+                <Card width="42px" height="28px" mr="10px" elevation={4}>
+                  <img
+                    width="100%"
+                    src={`/assets/images/brands/${item.image}.png`}
+                    alt={item.image}
+                  />
+                </Card>
+                <H5 className="pre" m="6px">
+                  {item.name}
+                </H5>
+              </FlexBox>
+              <Typography className="pre" m="6px">
+                {item.number}
+              </Typography>
+              <Typography className="pre" m="6px">
+                {item.expirationDate}
+              </Typography>
 
-          <Typography className="pre" textAlign="right" color="text.muted">
-            <IconButton
-              size="small"
-              onClick={() => {
-                editBrand(item.id);
-              }}
-            >
-              <Icon variant="small" defaultcolor="currentColor">
-                edit
-              </Icon>
-            </IconButton>
-            <Popup
-              closeOnDocumentClick
-              trigger={
-                <IconButton size="small">
+              <Typography className="pre" textAlign="right" color="text.muted">
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    editBrand(item.id);
+                  }}
+                >
                   <Icon variant="small" defaultcolor="currentColor">
-                    delete
+                    edit
                   </Icon>
                 </IconButton>
-              }
-              position="right center"
-            >
-              {(close) => (
-                <div>
-                  Deseja realmete deletar?
-                  <span style={{ display: "flex", gap: 8 }}>
-                    <Button
-                      onClick={() => {
-                        close();
-                      }}
-                      size="small"
-                    >
-                      Não
-                    </Button>
-                    <Button
-                      color="primary"
-                      bg="primary.light"
-                      onClick={() => {
-                        close();
-                        deleteBrand(item.id);
-                      }}
-                      size="small"
-                    >
-                      Sim
-                    </Button>
-                  </span>
-                </div>
-              )}
-            </Popup>
-          </Typography>
-        </TableRow>
-      ))}
-
-      <FlexBox justifyContent="center" mt="2.5rem">
-        <Pagination
-          initialPage={Math.trunc(skip / ITEMS_PER_PAGE.MAX)}
-          pageCount={data?.count / ITEMS_PER_PAGE.MAX}
-          onChange={(data: any) => {
-            router.push(`/payment-methods?skip=${data * ITEMS_PER_PAGE.MAX}`);
-          }}
-        />
-      </FlexBox>
+                <Popup
+                  closeOnDocumentClick
+                  trigger={
+                    <IconButton size="small">
+                      <Icon variant="small" defaultcolor="currentColor">
+                        delete
+                      </Icon>
+                    </IconButton>
+                  }
+                  position="right center"
+                >
+                  {(close) => (
+                    <div>
+                      Deseja realmete deletar?
+                      <span style={{ display: "flex", gap: 8 }}>
+                        <Button
+                          onClick={() => {
+                            close();
+                          }}
+                          size="small"
+                        >
+                          Não
+                        </Button>
+                        <Button
+                          color="primary"
+                          bg="primary.light"
+                          onClick={() => {
+                            close();
+                            deleteBrand(item.id);
+                          }}
+                          size="small"
+                        >
+                          Sim
+                        </Button>
+                      </span>
+                    </div>
+                  )}
+                </Popup>
+              </Typography>
+            </TableRow>
+          ))}
+          <FlexBox justifyContent="center" mt="2.5rem">
+            <Pagination
+              initialPage={Math.trunc(skip / ITEMS_PER_PAGE.MAX)}
+              pageCount={data?.count / ITEMS_PER_PAGE.MAX}
+              onChange={(data: any) => {
+                router.push(
+                  `/payment-methods?skip=${data * ITEMS_PER_PAGE.MAX}`
+                );
+              }}
+            />
+          </FlexBox>{" "}
+        </>
+      )}
     </div>
   );
 };
