@@ -105,7 +105,13 @@ const linkList = [
         title: "Marcas",
         iconName: "brand",
         count: 16,
-      },  
+      },
+      {
+        href: "/tags",
+        title: "Etiqueta",
+        iconName: "comment",
+        count: 16,
+      },
     ],
   },
 ];
