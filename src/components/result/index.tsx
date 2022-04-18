@@ -6,6 +6,7 @@ import { colors } from "utils/themeColors";
 
 interface ResultProps {
   height?: string;
+  width?: string;
   padding?: string;
   message?: string;
   buttons?: any;
@@ -14,6 +15,7 @@ interface ResultProps {
 
 const Result: React.FC<ResultProps> = ({
   height = 300,
+  width = "100%",
   padding = "6px 32px",
   message = "teste",
   type = "success",
@@ -78,6 +80,7 @@ const Result: React.FC<ResultProps> = ({
     <Card
       height={height}
       padding={padding}
+      width={width}
       display={"flex"}
       justifyContent={"center"}
       alignItems={"center"}
