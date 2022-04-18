@@ -7,7 +7,7 @@ import { createLogger } from "redux-logger";
 import storage from 'redux-persist/lib/storage';
  
 
-let store; 
+export let store; 
 const logger = createLogger({});
 const middlewares = [];
 const initialState = {};

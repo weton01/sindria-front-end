@@ -23,7 +23,7 @@ Router.events.on("routeChangeError", () => NProgress.done());
 
 NProgress.configure({ showSpinner: false });
 
-const App: NextPage = ({ Component, pageProps }: any) => {
+const App: NextPage = ({ Component, pageProps }: any) => { 
   const store = useStore(pageProps.initialReduxState);
   const persistor = persistStore(store, {}, function () {
     persistor.persist();

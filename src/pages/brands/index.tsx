@@ -10,7 +10,6 @@ import TableRow from "@component/TableRow";
 import Typography, { H5 } from "@component/Typography";
 import { ITEMS_PER_PAGE } from "@utils/enums";
 import { GetServerSideProps } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
 import React from "react";
@@ -22,17 +21,18 @@ const AddressList = (props) => {
   const { data } = props;
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
-  
-  const deletePaymentMethod = async (id) =>{
+  console.log(data);
+
+  const deleteBrand = async (id) => {
     toast.notify("Removendo cartão", {
       title: "Deletando...",
       duration: 2,
       type: "info",
     });
     try {
-      await api.delete(`credit-card/v1/${id}`);
+      await api.delete(`brand/v1/${id}`);
       router.replace(router.asPath);
-      toast.notify("Cartão removido", {
+      toast.notify("Marca removida", {
         title: "Sucesso!",
         duration: 5,
         type: "success",
@@ -44,21 +44,26 @@ const AddressList = (props) => {
         type: "error",
       });
     }
-  }
+  };
+
+  const editBrand = (id) => {
+    router.push(`brands/${id}`);
+  };
 
   return (
     <div>
       <DashboardPageHeader
-        title="Cartões de crédito"
-        iconName="credit-card_filled"
+        title="Marcas"
+        iconName="brand"
         button={
-          <Link href="/payment-methods/add">
-            <a>
-              <Button color="primary" bg="primary.light" px="2rem">
-                Adicionar novo cartão de crédito
-              </Button>
-            </a>
-          </Link>
+          <Button
+            color="primary"
+            bg="primary.light"
+            px="2rem"
+            route="/brands/new"
+          >
+            Adicionar nova marca
+          </Button>
         }
       />
 
@@ -68,11 +73,10 @@ const AddressList = (props) => {
             <Card width="42px" height="28px" mr="10px" elevation={4}>
               <img
                 width="100%"
-                src={`/assets/images/payment-methods/${item.type}.svg`}
-                alt={item.type}
+                src={`/assets/images/brands/${item.image}.png`}
+                alt={item.image}
               />
             </Card>
-            {console.log(item)            }
             <H5 className="pre" m="6px">
               {item.name}
             </H5>
@@ -84,8 +88,18 @@ const AddressList = (props) => {
             {item.expirationDate}
           </Typography>
 
-          <Typography className="pre" textAlign="right" color="text.muted"> 
-          <Popup
+          <Typography className="pre" textAlign="right" color="text.muted">
+            <IconButton
+              size="small"
+              onClick={() => {
+                editBrand(item.id);
+              }}
+            >
+              <Icon variant="small" defaultcolor="currentColor">
+                edit
+              </Icon>
+            </IconButton>
+            <Popup
               closeOnDocumentClick
               trigger={
                 <IconButton size="small">
@@ -113,7 +127,7 @@ const AddressList = (props) => {
                       bg="primary.light"
                       onClick={() => {
                         close();
-                        deletePaymentMethod(item.id);
+                        deleteBrand(item.id);
                       }}
                       size="small"
                     >
@@ -128,35 +142,33 @@ const AddressList = (props) => {
       ))}
 
       <FlexBox justifyContent="center" mt="2.5rem">
-      <Pagination
-          initialPage={Math.trunc(skip/ITEMS_PER_PAGE.MAX)}
+        <Pagination
+          initialPage={Math.trunc(skip / ITEMS_PER_PAGE.MAX)}
           pageCount={data?.count / ITEMS_PER_PAGE.MAX}
-          onChange={(data: any) => { 
-            router.push(`/payment-methods?skip=${data*ITEMS_PER_PAGE.MAX}`)
+          onChange={(data: any) => {
+            router.push(`/payment-methods?skip=${data * ITEMS_PER_PAGE.MAX}`);
           }}
         />
       </FlexBox>
     </div>
   );
-}; 
+};
 
 AddressList.layout = DashboardLayout;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["shop_token"]: token } = parseCookies(ctx); 
+  const { ["shop_token"]: token } = parseCookies(ctx);
   try {
     api.interceptors.request.use((config) => {
       config.headers["Authorization"] = `Bearer ${token}`;
       return config;
     });
-
     const take = ITEMS_PER_PAGE.MAX;
     const skip = ctx?.query?.skip || 0;
 
-    const { data } = await api.get(`credit-card/v1`, {
+    const { data } = await api.get(`brand/v1/`, {
       params: { take: take, skip: skip },
     });
-     
     return {
       props: { data: data },
     };
@@ -168,5 +180,5 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     props: {},
   };
 };
- 
+
 export default AddressList;

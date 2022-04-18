@@ -46,49 +46,66 @@ const CustomerDashboardNavigation = () => {
 
 const linkList = [
   {
-    title: "DASHBOARD",
+    title: "PAINEL DE CONTROLE",
     list: [
       {
         href: "/orders",
-        title: "Orders",
+        title: "Pedidos",
         iconName: "bag",
         count: 5,
       },
       {
         href: "/wish-list",
-        title: "Wishlist",
+        title: "Lista de Desejos",
         iconName: "heart",
         count: 19,
       },
       {
         href: "/support-tickets",
-        title: "Support Tickets",
+        title: "Tickets de suporte",
         iconName: "customer-service",
         count: 1,
       },
     ],
   },
   {
-    title: "ACCOUNT SETTINGS",
+    title: "CONFIGURAÇÕES DE CONTA",
     list: [
       {
         href: "/profile",
-        title: "Profile Info",
+        title: "Perfil",
         iconName: "user",
         count: 3,
       },
       {
         href: "/address",
-        title: "Addresses",
+        title: "Endereços",
         iconName: "pin",
         count: 16,
       },
       {
         href: "/payment-methods",
-        title: "Payment Methods",
+        title: "Cartões de crédito",
         iconName: "credit-card",
-        count: 4,
+        count: 4, 
+      }, 
+    ],
+  },
+  {
+    title: "ADMIN",
+    list: [
+      {
+        href: "/categories",
+        title: "Categorias",
+        iconName: "category",
+        count: 3,
       },
+      {
+        href: "/brands",
+        title: "Marcas",
+        iconName: "brand",
+        count: 16,
+      },  
     ],
   },
 ];

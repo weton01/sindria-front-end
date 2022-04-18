@@ -5,7 +5,7 @@ import {
   USER_RECOVER_PASSWORD,
   USER_RECOVER_PASSWORD_CALLBACK,
 } from "../index";
-import { HYDRATE } from "next-redux-wrapper";
+import { HYDRATE } from "next-redux-wrapper"; 
 
 const initialState = {
   isLogged: false,
@@ -17,8 +17,11 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case HYDRATE:
       return action.payload;
-    case USER_SIGN_IN:
+    case USER_SIGN_IN:  
+      const endDate = new Date();
+      endDate.setDate(7); 
       localStorage.setItem("shop_token", action.payload.token);
+      localStorage.setItem("shop_end_date", endDate.toLocaleString()); 
       return { ...action.payload, isLogged: true };
     case USER_SIGN_UP:
       return action.payload;
