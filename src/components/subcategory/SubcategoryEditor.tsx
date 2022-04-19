@@ -11,35 +11,39 @@ import DashboardLayout from "../layout/CustomerDashboardLayout";
 import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
 import { useRouter } from "next/router";
+import Select from "@component/Select";
 
-const CategoryEditor = (props) => {
+const SubcategoryEditor = (props) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [id, setId] = useState(router?.query?.id);
   const edit = router?.query?.id ? true : false;
-  const id = router?.query?.id;
-  let valuesCategory = undefined;
+  let valuesSubcategory = undefined;
 
-  if (props?.data) {
-    valuesCategory = props?.data;
-    delete valuesCategory.id;
-    delete valuesCategory.created_at;
-    delete valuesCategory.updated_at;
-  }
+  /*   if (props?.data) {
+    valuesSubcategory = props?.data;
+    delete valuesSubcategory.id;
+    delete valuesSubcategory.created_at;
+    delete valuesSubcategory.updated_at;
+  } */
 
   const handleFormSubmit = async (values) => {
-    delete values.groupName;
     setLoading(true);
+    console.log(values);
     try {
+      const payload = {
+        groupName: values.groupName,
+        name: values.name,
+      };
       if (edit) {
-        delete values.name;
-        await api.patch(`category/v1/${id}`, values);
-      } else await api.post("category/v1", values);
-      toast.notify(`Categoria ${edit ? "alterada" : "adicionada"}`, {
+        await api.patch(`category/v1/${id}`, payload);
+      } else await api.post(`category/v1/${id}`, payload);
+      toast.notify(`Subcategoria ${edit ? "alterada" : "adicionada"}`, {
         title: "Sucesso!",
         duration: 5,
         type: "success",
       });
-      router.push("../categories");
+      router.push("../subcategory");
     } catch (err) {
       toast.notify(err.response.data.message, {
         title: "Erro!",
@@ -54,21 +58,21 @@ const CategoryEditor = (props) => {
     <div>
       <DashboardPageHeader
         iconName="pin_filled"
-        title={`${edit ? "Alterar" : "Adicionar nova"} categoria`}
+        title={`${edit ? "Alterar" : "Adicionar nova "} subcategoria`}
         button={
           <Button
             color="primary"
             bg="primary.light"
             px="2rem"
-            route="/categories"
+            route="/subcategory"
           >
-            Voltar ao categorias
+            Voltar a subcategorias
           </Button>
         }
       />
       <Card1>
         <Formik
-          initialValues={valuesCategory || initialValues}
+          initialValues={valuesSubcategory || initialValues}
           validationSchema={checkoutSchema}
           onSubmit={handleFormSubmit}
         >
@@ -83,28 +87,38 @@ const CategoryEditor = (props) => {
             <form onSubmit={handleSubmit}>
               <Box mb="30px">
                 <Grid container horizontal_spacing={6} vertical_spacing={4}>
-                  {edit === false ? (
-                    <Grid item md={8} xs={12}>
-                      <TextField
-                        name="name"
-                        label="Nome"
-                        fullwidth
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.name   || ""}
-                        errorText={touched.name && errors.name}
-                      />
-                    </Grid>
-                  ) : <></>} 
-                  <Grid item md={edit ? 12 : 4} xs={12}>
+                  <Grid item md={4} xs={12}>
+                    <Select
+                      placeholder="selecione a categoria"
+                      name="id"
+                      label="Categoria"
+                      options={props.data}
+                      errorText={touched.groupName && errors.groupName}
+                      onChange={(event: any) => {
+                        setId(event.value);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item md={8} xs={12}>
                     <TextField
-                      name="image"
-                      label="Icone"
+                      name="name"
+                      label="Nome"
                       fullwidth
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      value={values.image || ""}
-                      errorText={touched.image && errors.image}
+                      value={values.name || ""}
+                      errorText={touched.name && errors.name}
+                    />
+                  </Grid>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      name="groupName"
+                      label="Grupo"
+                      fullwidth
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.groupName || ""}
+                      errorText={touched.groupName && errors.groupName}
                     />
                   </Grid>
                 </Grid>
@@ -126,15 +140,15 @@ const CategoryEditor = (props) => {
 };
 
 const initialValues = {
-  image: "",
+  groupName: "",
   name: "",
 };
 
 const checkoutSchema = yup.object().shape({
-  image: yup.string().required("icone requerido"),
+  groupName: yup.string().required("grupo requerido"),
   name: yup.string().required("nome requerido"),
 });
 
-CategoryEditor.layout = DashboardLayout;
+SubcategoryEditor.layout = DashboardLayout;
 
-export default CategoryEditor;
+export default SubcategoryEditor;

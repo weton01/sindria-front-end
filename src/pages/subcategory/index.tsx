@@ -18,22 +18,21 @@ import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
 import Result from "@component/result";
 
-const AddressList = (props) => {
+const Subcategory = (props) => {
   const { data } = props;
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
-  console.log(data);
 
-  const deleteBrand = async (id) => {
-    toast.notify("Removendo marca", {
+  const deleteCategory = async (id) => {
+    toast.notify("Removendo subcategoria", {
       title: "Deletando...",
       duration: 2,
       type: "info",
     });
     try {
-      await api.delete(`brand/v1/${id}`);
+      await api.delete(`subcategory/v1/${id}`);
       router.replace(router.asPath);
-      toast.notify("Marca removida", {
+      toast.notify("Categoria removida", {
         title: "Sucesso!",
         duration: 5,
         type: "success",
@@ -47,43 +46,37 @@ const AddressList = (props) => {
     }
   };
 
-  const editBrand = (id) => {
-    router.push(`brands/${id}`);
+  console.log("ee");
+
+  console.log(data);
+
+  const editCategory = (id) => {
+    router.push(`subcategory/${id}`);
   };
 
   return (
     <div>
       <DashboardPageHeader
-        title="Marcas"
-        iconName="brand"
+        title="Subcategorias"
+        iconName="category"
         button={
           <Button
             color="primary"
             bg="primary.light"
             px="2rem"
-            route="/brands/new"
+            route="/subcategory/new"
           >
-            Adicionar nova marca
+            Adicionar nova subcategoria
           </Button>
         }
       />
-
-      {data?.count === 0 || data === undefined  ? (
+      {data?.count === 0 || data === undefined ? (
         <Result height="300px" type="empty" />
       ) : (
         <>
           {data?.items?.map((item) => (
             <TableRow my="1rem" padding="6px 18px">
               <FlexBox alignItems="center" m="6px">
-                <Card width="42px" height="28px" mr="10px" elevation={4}>
-                  <img
-                    width="100%"
-                    src={`/assets/images/brands/${item.image}.png` }
-                     alt={item.image}
-                    className="list-image"
-                    onError={(e)=>{  e.currentTarget.src="/assets/images/icons/not-found.svg"}}
-                  />
-                </Card>
                 <H5 className="pre" m="6px">
                   {item.name}
                 </H5>
@@ -92,7 +85,7 @@ const AddressList = (props) => {
                 <IconButton
                   size="small"
                   onClick={() => {
-                    editBrand(item.id);
+                    editCategory(item.id);
                   }}
                 >
                   <Icon variant="small" defaultcolor="currentColor">
@@ -127,7 +120,7 @@ const AddressList = (props) => {
                           bg="primary.light"
                           onClick={() => {
                             close();
-                            deleteBrand(item.id);
+                            deleteCategory(item.id);
                           }}
                           size="small"
                         >
@@ -150,14 +143,14 @@ const AddressList = (props) => {
                 );
               }}
             />
-          </FlexBox>{" "}
+          </FlexBox>
         </>
       )}
     </div>
   );
 };
 
-AddressList.layout = DashboardLayout;
+Subcategory.layout = DashboardLayout;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
@@ -169,9 +162,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const take = ITEMS_PER_PAGE.MAX;
     const skip = ctx?.query?.skip || 0;
 
-    const { data } = await api.get(`brand/v1/`, {
+    const { data } = await api.get(`category/v1/sub-categories`, {
       params: { take: take, skip: skip },
     });
+
     return {
       props: { data: data },
     };
@@ -184,4 +178,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default AddressList;
+export default Subcategory;

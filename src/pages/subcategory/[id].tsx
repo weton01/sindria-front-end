@@ -1,15 +1,15 @@
-import CategoryEditor from "@component/categories/CategoryEditor";
+import SubcategoryEditor from "@component/subcategory/SubcategoryEditor";
 import DashboardLayout from "@component/layout/CustomerDashboardLayout";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import React from "react";
 import { api } from "services/api";
 
-const UpdateCategory = (props) => {
-  return <CategoryEditor {...props} />;
+const SubcategoryUpdater = (props) => {
+  return <SubcategoryEditor {...props} />;
 };
 
-UpdateCategory.layout = DashboardLayout;
+SubcategoryUpdater.layout = DashboardLayout;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return config;
     });
 
-    const { data } = await api.get(`category/v1/${id}`);
+    const { data } = await api.get(`subcategory/v1/${id}`);
 
     return {
       props: { data: data },
@@ -35,4 +35,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default UpdateCategory;
+export default SubcategoryUpdater;

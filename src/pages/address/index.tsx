@@ -62,7 +62,7 @@ const AddressList = (props) => {
           </Button>
         }
       />
-      {data?.count === 0 || data === undefined  ? (
+      {data?.count === 0 || data === undefined ? (
         <Result height="300px" type="empty" />
       ) : (
         <>
@@ -74,8 +74,7 @@ const AddressList = (props) => {
               <Typography flex="1 1 260px !important" m="6px" textAlign="left">
                 {`${item.city}, ${item.state}, ${item.street}, ${item.number}`}
               </Typography>
-              <Typography className="pre" m="6px" textAlign="left"></Typography>
-
+              <Typography className="pre" m="6px" textAlign="left"></Typography> 
               <Typography className="pre" textAlign="right" color="text.muted">
                 <Link href={`/address/${item.id}`}>
                   <Typography

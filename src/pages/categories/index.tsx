@@ -18,7 +18,7 @@ import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
 import Result from "@component/result";
 
-const AddressList = (props) => {
+const Categories = (props) => {
   const { data } = props;
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
@@ -90,14 +90,7 @@ const AddressList = (props) => {
                 <H5 className="pre" m="6px">
                   {item.name}
                 </H5>
-              </FlexBox>
-              <Typography className="pre" m="6px">
-                {item.number}
-              </Typography>
-              <Typography className="pre" m="6px">
-                {item.expirationDate}
-              </Typography>
-
+              </FlexBox>  
               <Typography className="pre" textAlign="right" color="text.muted">
                 <IconButton
                   size="small"
@@ -167,7 +160,7 @@ const AddressList = (props) => {
   );
 };
 
-AddressList.layout = DashboardLayout;
+Categories.layout = DashboardLayout;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
@@ -195,4 +188,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default AddressList;
+export default Categories;

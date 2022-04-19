@@ -101,6 +101,12 @@ const linkList = [
         count: 3,
       },
       {
+        href: "/subcategory",
+        title: "Subcategoria",
+        iconName: "categories",
+        count: 3,
+      },
+      {
         href: "/brands",
         title: "Marcas",
         iconName: "brand",

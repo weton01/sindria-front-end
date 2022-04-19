@@ -76,14 +76,7 @@ const TagList = (props) => {
                 <H5 className="pre" m="6px">
                   {item.name}
                 </H5>
-              </FlexBox>
-              <Typography className="pre" m="6px">
-                {item.number}
-              </Typography>
-              <Typography className="pre" m="6px">
-                {item.expirationDate}
-              </Typography>
-
+              </FlexBox> 
               <Typography className="pre" textAlign="right" color="text.muted">
                 <Popup
                   closeOnDocumentClick

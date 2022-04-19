@@ -1,15 +1,15 @@
 import React from "react";
 import DashboardLayout from "@component/layout/CustomerDashboardLayout";
-import CategoriesEditor from "@component/categories/CategoryEditor";
+import NewCategoriesEditor from "@component/categories/CategoryEditor";
 
-const Categories = () => {
+const NewCategories = () => {
   return (
     <div>
-      <CategoriesEditor />
+      <NewCategoriesEditor />
     </div>
   );
 };
 
-Categories.layout = DashboardLayout;
+NewCategories.layout = DashboardLayout;
 
-export default Categories;
+export default NewCategories;
