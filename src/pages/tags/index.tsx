@@ -25,7 +25,7 @@ const TagList = (props) => {
   console.log(data);
 
   const deleteTag = async (id) => {
-    toast.notify("Removendo cartão", {
+    toast.notify("Removendo etiqueta", {
       title: "Deletando...",
       duration: 2,
       type: "info",
@@ -66,7 +66,7 @@ const TagList = (props) => {
         }
       />
 
-      {data?.count === 0 ? (
+      {data?.count === 0 || data === undefined  ? (
         <Result height="300px" type="empty" />
       ) : (
         <>

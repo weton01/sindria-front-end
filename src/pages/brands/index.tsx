@@ -25,7 +25,7 @@ const AddressList = (props) => {
   console.log(data);
 
   const deleteBrand = async (id) => {
-    toast.notify("Removendo cartão", {
+    toast.notify("Removendo marca", {
       title: "Deletando...",
       duration: 2,
       type: "info",
@@ -68,7 +68,7 @@ const AddressList = (props) => {
         }
       />
 
-      {data?.count === 0 ? (
+      {data?.count === 0 || data === undefined  ? (
         <Result height="300px" type="empty" />
       ) : (
         <>
@@ -78,8 +78,10 @@ const AddressList = (props) => {
                 <Card width="42px" height="28px" mr="10px" elevation={4}>
                   <img
                     width="100%"
-                    src={`/assets/images/brands/${item.image}.png`}
-                    alt={item.image}
+                    src={`/assets/images/brands/${item.image}.png` }
+                     alt={item.image}
+                    className="list-image"
+                    onError={(e)=>{  e.currentTarget.src="/assets/images/icons/not-found.svg"}}
                   />
                 </Card>
                 <H5 className="pre" m="6px">

@@ -10,7 +10,6 @@ import TableRow from "@component/TableRow";
 import Typography, { H5 } from "@component/Typography";
 import { ITEMS_PER_PAGE } from "@utils/enums";
 import { GetServerSideProps } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
 import React from "react";
@@ -24,16 +23,16 @@ const AddressList = (props) => {
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
 
-  const deletePaymentMethod = async (id) => {
-    toast.notify("Removendo cartão", {
+  const deleteCategory = async (id) => {
+    toast.notify("Removendo categoria", {
       title: "Deletando...",
       duration: 2,
       type: "info",
     });
     try {
-      await api.delete(`credit-card/v1/${id}`);
+      await api.delete(`category/v1/${id}`);
       router.replace(router.asPath);
-      toast.notify("Cartão removido", {
+      toast.notify("Categoria removida", {
         title: "Sucesso!",
         duration: 5,
         type: "success",
@@ -47,23 +46,29 @@ const AddressList = (props) => {
     }
   };
 
+  const editCategory = (id) => {
+    router.push(`categories/${id}`);
+  };
+
+  console.log(data);
+
   return (
     <div>
       <DashboardPageHeader
-        title="Cartões de crédito"
-        iconName="credit-card_filled"
+        title="Categorias"
+        iconName="category"
         button={
-          <Link href="/payment-methods/add">
-            <a>
-              <Button color="primary" bg="primary.light" px="2rem">
-                Adicionar novo cartão de crédito
-              </Button>
-            </a>
-          </Link>
+          <Button
+            color="primary"
+            bg="primary.light"
+            px="2rem"
+            route="/categories/new"
+          >
+            Adicionar nova categoria
+          </Button>
         }
       />
-
-      {data?.count === 0 || data === undefined  ? (
+      {data?.count === 0 || data === undefined ? (
         <Result height="300px" type="empty" />
       ) : (
         <>
@@ -73,11 +78,15 @@ const AddressList = (props) => {
                 <Card width="42px" height="28px" mr="10px" elevation={4}>
                   <img
                     width="100%"
-                    src={`/assets/images/payment-methods/${item.type}.svg`}
-                    alt={item.type}
+                    src={`/assets/images/icons/${item.image}.svg`}
+                    alt={item.image}
+                    className="list-image"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "/assets/images/icons/not-found.svg";
+                    }}
                   />
                 </Card>
-                {console.log(item)}
                 <H5 className="pre" m="6px">
                   {item.name}
                 </H5>
@@ -90,6 +99,16 @@ const AddressList = (props) => {
               </Typography>
 
               <Typography className="pre" textAlign="right" color="text.muted">
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    editCategory(item.id);
+                  }}
+                >
+                  <Icon variant="small" defaultcolor="currentColor">
+                    edit
+                  </Icon>
+                </IconButton>
                 <Popup
                   closeOnDocumentClick
                   trigger={
@@ -118,7 +137,7 @@ const AddressList = (props) => {
                           bg="primary.light"
                           onClick={() => {
                             close();
-                            deletePaymentMethod(item.id);
+                            deleteCategory(item.id);
                           }}
                           size="small"
                         >
@@ -131,7 +150,6 @@ const AddressList = (props) => {
               </Typography>
             </TableRow>
           ))}
-
           <FlexBox justifyContent="center" mt="2.5rem">
             <Pagination
               initialPage={Math.trunc(skip / ITEMS_PER_PAGE.MAX)}
@@ -158,11 +176,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       config.headers["Authorization"] = `Bearer ${token}`;
       return config;
     });
-
     const take = ITEMS_PER_PAGE.MAX;
     const skip = ctx?.query?.skip || 0;
 
-    const { data } = await api.get(`credit-card/v1`, {
+    const { data } = await api.get(`category/v1/categories`, {
       params: { take: take, skip: skip },
     });
 

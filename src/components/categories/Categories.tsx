@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import CategoryDropdown from "./CategoryDropdown";
-import { StyledCategory } from "./CategoryStyle";
+import { StyledCategory } from "./CategoriesStyle";
 
 export interface CategoriesProps {
   open?: boolean;

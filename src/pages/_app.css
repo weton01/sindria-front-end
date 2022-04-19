@@ -29,3 +29,10 @@
 [data-popup="tooltip"].popup-overlay {
   background: transparent;
 }
+
+.list-image{ 
+  background-color: rgb(240, 240, 240);
+  padding: 6px;
+  border-radius: 5px;
+  height: 100%;
+}

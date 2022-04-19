@@ -62,7 +62,7 @@ const AddressList = (props) => {
           </Button>
         }
       />
-      {data?.count === 0 ? (
+      {data?.count === 0 || data === undefined  ? (
         <Result height="300px" type="empty" />
       ) : (
         <>
