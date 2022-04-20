@@ -36,8 +36,8 @@ const SubcategoryEditor = (props) => {
         name: values.name,
       };
       if (edit) {
-        await api.patch(`category/v1/${id}`, payload);
-      } else await api.post(`category/v1/${id}`, payload);
+        await api.patch(`category/v1/sub-category/${id}`, payload);
+      } else await api.post(`category/v1/sub-category/${id}`, payload);
       toast.notify(`Subcategoria ${edit ? "alterada" : "adicionada"}`, {
         title: "Sucesso!",
         duration: 5,

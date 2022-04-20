@@ -23,16 +23,16 @@ const Subcategory = (props) => {
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
 
-  const deleteCategory = async (id) => {
+  const deleteSubcategory = async (id) => {
     toast.notify("Removendo subcategoria", {
       title: "Deletando...",
       duration: 2,
       type: "info",
     });
     try {
-      await api.delete(`subcategory/v1/${id}`);
+      await api.delete(`category/v1/${id}`);
       router.replace(router.asPath);
-      toast.notify("Categoria removida", {
+      toast.notify("Subcategoria removida", {
         title: "Sucesso!",
         duration: 5,
         type: "success",
@@ -45,12 +45,8 @@ const Subcategory = (props) => {
       });
     }
   };
-
-  console.log("ee");
-
-  console.log(data);
-
-  const editCategory = (id) => {
+ 
+  const editSubcategory = (id) => {
     router.push(`subcategory/${id}`);
   };
 
@@ -58,7 +54,7 @@ const Subcategory = (props) => {
     <div>
       <DashboardPageHeader
         title="Subcategorias"
-        iconName="category"
+        iconName="categories"
         button={
           <Button
             color="primary"
@@ -85,7 +81,7 @@ const Subcategory = (props) => {
                 <IconButton
                   size="small"
                   onClick={() => {
-                    editCategory(item.id);
+                    editSubcategory(item.id);
                   }}
                 >
                   <Icon variant="small" defaultcolor="currentColor">
@@ -120,7 +116,7 @@ const Subcategory = (props) => {
                           bg="primary.light"
                           onClick={() => {
                             close();
-                            deleteCategory(item.id);
+                            deleteSubcategory(item.id);
                           }}
                           size="small"
                         >
@@ -162,7 +158,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const take = ITEMS_PER_PAGE.MAX;
     const skip = ctx?.query?.skip || 0;
 
-    const { data } = await api.get(`category/v1/sub-categories`, {
+    const { data } = await api.get(`category/v1/sub-category`, {
       params: { take: take, skip: skip },
     });
 

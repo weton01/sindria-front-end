@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return config;
     }); 
 
-    const { data } = await api.get(`category/v1`);
+    const { data } = await api.get(`category/v1/`);
     const newData = data.map(item=>{
       return {
         label: item.name,

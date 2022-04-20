@@ -19,7 +19,7 @@ const reducer = (state = initialState, action) => {
       return action.payload;
     case USER_SIGN_IN:  
       const endDate = new Date();
-      endDate.setDate(7); 
+      endDate.setDate(7);
       localStorage.setItem("shop_token", action.payload.token);
       localStorage.setItem("shop_end_date", endDate.toLocaleString()); 
       return { ...action.payload, isLogged: true };

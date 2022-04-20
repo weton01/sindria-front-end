@@ -23,6 +23,9 @@ const Categories = (props) => {
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
 
+  console.log('====================================')
+  console.log(data)
+  console.log('====================================')
   const deleteCategory = async (id) => {
     toast.notify("Removendo categoria", {
       title: "Deletando...",
@@ -171,11 +174,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
     const take = ITEMS_PER_PAGE.MAX;
     const skip = ctx?.query?.skip || 0;
-
-    const { data } = await api.get(`category/v1/categories`, {
+ 
+    const { data } = await api.get(`category/v1/category`, {
       params: { take: take, skip: skip },
     });
-
+     
     return {
       props: { data: data },
     };
