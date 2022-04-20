@@ -81,7 +81,7 @@ const AddressList = (props) => {
                     src={`/assets/images/brands/${item.image}.png` }
                      alt={item.image}
                     className="list-image"
-                    onError={(e)=>{  e.currentTarget.src="/assets/images/icons/not-found.svg"}}
+                    onError={(e)=>{  e.currentTarget.src="/assets/images/icons/cloud-off.svg"}}
                   />
                 </Card>
                 <H5 className="pre" m="6px">

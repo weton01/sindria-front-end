@@ -86,7 +86,7 @@ const Categories = (props) => {
                     className="list-image"
                     onError={(e) => {
                       e.currentTarget.src =
-                        "/assets/images/icons/not-found.svg";
+                        "/assets/images/icons/cloud-off.svg";
                     }}
                   />
                 </Card>
