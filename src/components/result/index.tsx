@@ -64,10 +64,10 @@ const Result: React.FC<ResultProps> = ({
     ),
     empty: (
       <>
-        <IconButton bg={colors.gray[300]} p="16px">
+        <IconButton bg={colors.gray[300]} p="18px">
           <img
-            width="100%"
-            src={`/assets/images/icons/box.svg`}
+            width="40px"
+            src={`/assets/images/icons/no-data.svg`}
             alt={"error"}
           />
         </IconButton>
