@@ -21,10 +21,17 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return config;
     });
 
-    const { data } = await api.get(`subcategory/v1/${id}`);
+    const { data } = await api.get(`category/v1/${id}`);
+    const categories = await api.get(`category/v1/`);
+    const newData = categories.data.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
 
     return {
-      props: { data: data },
+      props: { data: data, options: newData },
     };
   } catch (err) {
     console.log("fail to verify tokens", err);

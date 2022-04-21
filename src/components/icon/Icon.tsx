@@ -16,7 +16,7 @@ const Icon: React.FC<
   IconProps & SpaceProps & ButtonHTMLAttributes<IconProps>
 > = ({ children, ...props }: IconProps) => {
   return (
-    <StyledIcon
+    <StyledIcon 
       src={`/assets/images/icons/${children}.svg`}
       fallback={() => <span>{children?.trim()}</span>}
       {...props}

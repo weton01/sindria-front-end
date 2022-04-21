@@ -13,21 +13,25 @@ import NavLink from "../nav-link/NavLink";
 import { userLogout } from "store/actions/user/actions";
 import { useAppSelector, useAppDispatch } from "hooks/hooks";
 import MenuItem from "@component/MenuItem";
-import Menu from "@component/Menu"
+import Menu from "@component/Menu";
 
 type HeaderProps = {
   isFixed?: boolean;
-  className?: string;
+  className?: string; 
 };
 
-const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
+const Header: React.FC<HeaderProps> = ({
+  isFixed,
+  className, 
+}) => {
   const cartList = [];
   const user = useAppSelector((state) => state?.user);
-  const dispatch = useAppDispatch(); 
+  const dispatch = useAppDispatch();
 
-  const onClickLogout = () =>{
-    dispatch(userLogout())
-  }
+  const onClickLogout = () => {
+    dispatch(userLogout());
+  };
+
   return (
     <StyledHeader className={className}>
       <Container
@@ -59,21 +63,23 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
           <SearchBox />
         </FlexBox>
         <FlexBox className="header-right" alignItems="center" gap="16px">
-          {user.isLogged ? ( 
+          {user.isLogged ? (
             <Menu
-            className="category-dropdown"
-            direction="right"
-            handler={
-              <FlexBox className="dropdown-handler" alignItems="center">
-                <IconButton bg="gray.200" p="12px">
-                  <Icon variant="small">user-2</Icon>
-                </IconButton>
-              </FlexBox>
-            }
-          >
-            <MenuItem key={"profile"}>Perfil</MenuItem>
-            <MenuItem key={"logout"} onClick={onClickLogout}>Sair</MenuItem>
-          </Menu>
+              className="category-dropdown"
+              direction="right"
+              handler={
+                <FlexBox className="dropdown-handler" alignItems="center">
+                  <IconButton bg="gray.200" p="12px">
+                    <Icon variant="small">user-2</Icon>
+                  </IconButton>
+                </FlexBox>
+              }
+            >
+              <MenuItem key={"profile"}>Perfil</MenuItem>
+              <MenuItem key={"logout"} onClick={onClickLogout}>
+                Sair
+              </MenuItem>
+            </Menu>
           ) : (
             <>
               <NavLink

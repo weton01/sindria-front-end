@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import CategoryDropdown from "./CategoryDropdown";
-import { StyledCategory } from "./CategoriesStyle";
+import { StyledCategory } from "./CategoriesStyle"; 
 
 export interface CategoriesProps {
   open?: boolean;
@@ -12,7 +12,7 @@ const Categories: React.FC<CategoriesProps> = ({ open: isOpen, children }) => {
   const popoverRef = useRef(open);
   popoverRef.current = open;
 
-  const toggleMenu = (e) => {
+  const toggleMenu = (e) => { 
     e.stopPropagation();
     if (!isOpen) setOpen(!open);
   };
@@ -27,7 +27,7 @@ const Categories: React.FC<CategoriesProps> = ({ open: isOpen, children }) => {
       window.removeEventListener("click", handleDocumentClick);
     };
   }, []);
-
+ 
   return (
     <StyledCategory open={open}>
       {React.cloneElement(children, {
@@ -38,6 +38,6 @@ const Categories: React.FC<CategoriesProps> = ({ open: isOpen, children }) => {
       <CategoryDropdown open={open} />
     </StyledCategory>
   );
-};
+}; 
 
 export default Categories;

@@ -21,7 +21,15 @@ const CategoryMenuItem: React.FC<CategoryMenuItemProps> = ({
     <StyledCategoryMenuItem>
       <Link href={href}>
         <div className="category-dropdown-link">
-          {icon && <Icon variant="small">{icon}</Icon>}
+          {icon && (
+            <img
+              width="20px"
+              src={`/assets/images/icons/${icon}.svg`}
+              onError={(e) => {
+                e.currentTarget.src = "/assets/images/icons/cloud-off.svg";
+              }}
+            />
+          )}
           <span className="title">{title}</span>
           {caret && <Icon variant="small">chevron-right</Icon>}
         </div>

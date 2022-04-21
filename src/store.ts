@@ -2,10 +2,11 @@ import { useMemo } from "react";
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension"; 
 import { persistReducer } from 'redux-persist'
-import reducer from "./store/actions/user/reducer";
 import { createLogger } from "redux-logger";
 import storage from 'redux-persist/lib/storage';
- 
+  
+import user_reducer from "./store/actions/user/reducer";
+import category_reducer from "./store/actions/category/reducer";
 
 export let store; 
 const logger = createLogger({});
@@ -22,7 +23,8 @@ if (process.env.NODE_ENV === "development") {
   middlewares.push(logger);
 }
 const reducers = combineReducers({
-  user: reducer,
+  user: user_reducer,
+  category: category_reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers)

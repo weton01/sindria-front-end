@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
+import NextApp from "next/app";
 import React, { Fragment } from "react";
 import { ThemeProvider } from "styled-components";
 import { AppProvider } from "../contexts/app/AppContext";
@@ -11,10 +12,13 @@ import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { NextPage } from "next";
 import { Provider } from "react-redux";
-import { ToastContainer } from "react-nextjs-toast"; 
-import 'reactjs-popup/dist/index.css';
-import './_app.css'
-import 'react-credit-cards/es/styles-compiled.css';
+import { ToastContainer } from "react-nextjs-toast";
+import "reactjs-popup/dist/index.css";
+import "./_app.css";
+import "react-credit-cards/es/styles-compiled.css";
+import { parseCookies } from "nookies";
+import { api } from "services/api";
+import { getCategory } from "services/category";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -23,7 +27,7 @@ Router.events.on("routeChangeError", () => NProgress.done());
 
 NProgress.configure({ showSpinner: false });
 
-const App: NextPage = ({ Component, pageProps }: any) => { 
+const App: NextPage = ({ Component, pageProps, categories }: any) => {
   const store = useStore(pageProps.initialReduxState);
   const persistor = persistStore(store, {}, function () {
     persistor.persist();
@@ -54,9 +58,9 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       <AppProvider>
         <Provider store={store}>
           <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-            <Layout> 
-              <div style={{position: "absolute", zIndex: 99999}}>
-              <ToastContainer align={"right"} position={"bottom"}  /> 
+            <Layout categories={categories}>
+              <div style={{ position: "absolute", zIndex: 99999 }}>
+                <ToastContainer align={"right"} position={"bottom"} />
               </div>
               <Component {...pageProps} />
             </Layout>
@@ -65,6 +69,39 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       </AppProvider>
     </ThemeProvider>
   );
+};
+
+App.getInitialProps = async (appContext: any) => {
+  const appProps = await NextApp.getInitialProps(appContext);
+  const { ["shop_token"]: token } = parseCookies(appContext);
+
+  api.interceptors.request.use((config) => {
+    config.headers["Authorization"] = `Bearer ${token}`;
+    return config;
+  });
+  const [categories] = await Promise.all([getCategory()]);
+
+  const newData = categories.map((item) => {
+    const groupNames = item.subCategories.map((aux) => aux.groupName);
+
+    return {
+      icon: item.image,
+      title: item.name,
+      href: `/${item.name}`,
+      menuComponent: "MegaMenu1",
+      menuData: {
+        categories: groupNames.map((aux) => ({
+          title: aux,
+          subCategories: item.subCategories
+            .filter((subs) => subs.groupName === aux)
+            .map((subs) => ({ title: subs.name, href: `/${item.name}/${subs.name}` })),
+          href: "/",
+        })),
+      },
+    };
+  });
+
+  return { ...appProps, categories: newData };
 };
 
 export default App;

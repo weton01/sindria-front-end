@@ -112,22 +112,29 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
         alignItems="center"
         height="100%"
       >
-        <Categories open={navListOpen}>
-          <Button width="278px" height="40px" bg="body.default" variant="text">
-            <Icon>categories</Icon>
-            <Typography
-              fontWeight="600"
-              textAlign="left"
-              flex="1 1 0"
-              ml="10px"
-              color="text.muted"
+        <Categories open={navListOpen}> 
+          <FlexBox color="text.hint" alignItems="center" ml="1rem">
+            <Button
+              width="278px"
+              height="40px"
+              bg="body.default"
+              variant="text"
             >
-              Categories
-            </Typography>
-            <Icon className="dropdown-icon" variant="small">
-              chevron-right
-            </Icon>
-          </Button>
+              <Icon>categories</Icon>
+              <Typography
+                fontWeight="600"
+                textAlign="left"
+                flex="1 1 0"
+                ml="10px"
+                color="text.muted"
+              >
+                Categories
+              </Typography>
+              <Icon className="dropdown-icon" variant="small">
+                chevron-right
+              </Icon>
+            </Button>
+          </FlexBox>
         </Categories>
 
         <FlexBox>{renderNestedNav(navbarNavigations, true)}</FlexBox>

@@ -20,16 +20,13 @@ const SubcategoryEditor = (props) => {
   const edit = router?.query?.id ? true : false;
   let valuesSubcategory = undefined;
 
-  /*   if (props?.data) {
+  if (props?.data) {
     valuesSubcategory = props?.data;
-    delete valuesSubcategory.id;
-    delete valuesSubcategory.created_at;
-    delete valuesSubcategory.updated_at;
-  } */
+    delete valuesSubcategory?.id; 
+  } 
 
   const handleFormSubmit = async (values) => {
-    setLoading(true);
-    console.log(values);
+    setLoading(true); 
     try {
       const payload = {
         groupName: values.groupName,
@@ -83,6 +80,7 @@ const SubcategoryEditor = (props) => {
             handleChange,
             handleBlur,
             handleSubmit,
+            setFieldValue
           }) => (
             <form onSubmit={handleSubmit}>
               <Box mb="30px">
@@ -92,9 +90,11 @@ const SubcategoryEditor = (props) => {
                       placeholder="selecione a categoria"
                       name="id"
                       label="Categoria"
-                      options={props.data}
-                      errorText={touched.groupName && errors.groupName}
+                      options={props.options}
+                      value={values.id}
+                      errorText={touched.id && errors.id}
                       onChange={(event: any) => {
+                        setFieldValue("id", event);
                         setId(event.value);
                       }}
                     />
@@ -142,9 +142,11 @@ const SubcategoryEditor = (props) => {
 const initialValues = {
   groupName: "",
   name: "",
+  id: "",
 };
 
 const checkoutSchema = yup.object().shape({
+  id: yup.object().required("id requerido"),
   groupName: yup.string().required("grupo requerido"),
   name: yup.string().required("nome requerido"),
 });
