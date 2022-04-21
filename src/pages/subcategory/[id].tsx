@@ -22,16 +22,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
 
     const { data } = await api.get(`category/v1/${id}`);
-    const categories = await api.get(`category/v1/`);
-    const newData = categories.data.map((item) => {
-      return {
-        label: item.name,
-        value: item.id,
-      };
-    });
 
     return {
-      props: { data: data, options: newData },
+      props: { data: data },
     };
   } catch (err) {
     console.log("fail to verify tokens", err);

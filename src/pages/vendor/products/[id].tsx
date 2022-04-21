@@ -20,9 +20,7 @@ const OrderDetails = () => {
   const handleFormSubmit = async (values) => {
     console.log(values);
   };
-
-  console.log(id);
-
+ 
   return (
     <div>
       <DashboardPageHeader

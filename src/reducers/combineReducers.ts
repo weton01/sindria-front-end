@@ -1,8 +1,6 @@
 const combineReducers = (reducers) => {
   return (state = {}, action) => {
-    const newState = {};
-
-    console.log(reducers)
+    const newState = {}; 
     for (let key in reducers) {
       newState[key] = reducers[key](state[key], action);
     }

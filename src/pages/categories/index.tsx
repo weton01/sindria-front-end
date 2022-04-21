@@ -22,10 +22,7 @@ const Categories = (props) => {
   const { data } = props;
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
-
-  console.log('====================================')
-  console.log(data)
-  console.log('====================================')
+ 
   const deleteCategory = async (id) => {
     toast.notify("Removendo categoria", {
       title: "Deletando...",
@@ -177,6 +174,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
  
     const { data } = await api.get(`category/v1/category`, {
       params: { take: take, skip: skip },
+ 
     });
      
     return {

@@ -128,7 +128,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
                 ml="10px"
                 color="text.muted"
               >
-                Categories
+                Categorias
               </Typography>
               <Icon className="dropdown-icon" variant="small">
                 chevron-right

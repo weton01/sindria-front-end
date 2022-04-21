@@ -22,7 +22,6 @@ const options = {
       title: () => "",
       filter: () => false,
       label: (tooltipItem) => {
-        console.log(tooltipItem);
 
         var label = tooltipItem.label;
 

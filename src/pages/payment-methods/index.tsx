@@ -1,3 +1,4 @@
+
 import Button from "@component/buttons/Button";
 import IconButton from "@component/buttons/IconButton";
 import Card from "@component/Card";
@@ -76,8 +77,7 @@ const AddressList = (props) => {
                     src={`/assets/images/payment-methods/${item.type}.svg`}
                     alt={item.type}
                   />
-                </Card>
-                {console.log(item)}
+                </Card> 
                 <H5 className="pre" m="6px">
                   {item.name}
                 </H5>

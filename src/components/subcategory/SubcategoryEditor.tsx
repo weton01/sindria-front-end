@@ -22,16 +22,19 @@ const SubcategoryEditor = (props) => {
 
   if (props?.data) {
     valuesSubcategory = props?.data;
-    delete valuesSubcategory?.id; 
-  } 
+    delete valuesSubcategory?.id;
+  }
 
   const handleFormSubmit = async (values) => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const payload = {
         groupName: values.groupName,
         name: values.name,
       };
+
+      if (edit) delete payload.name;
+
       if (edit) {
         await api.patch(`category/v1/sub-category/${id}`, payload);
       } else await api.post(`category/v1/sub-category/${id}`, payload);
@@ -50,6 +53,11 @@ const SubcategoryEditor = (props) => {
     }
     setLoading(false);
   };
+
+  if (edit) {
+    delete checkoutSchema.fields.id;
+    delete checkoutSchema.fields.name;
+  }
 
   return (
     <div>
@@ -80,36 +88,44 @@ const SubcategoryEditor = (props) => {
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue
+            setFieldValue,
           }) => (
             <form onSubmit={handleSubmit}>
               <Box mb="30px">
                 <Grid container horizontal_spacing={6} vertical_spacing={4}>
-                  <Grid item md={4} xs={12}>
-                    <Select
-                      placeholder="selecione a categoria"
-                      name="id"
-                      label="Categoria"
-                      options={props.options}
-                      value={values.id}
-                      errorText={touched.id && errors.id}
-                      onChange={(event: any) => {
-                        setFieldValue("id", event);
-                        setId(event.value);
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={8} xs={12}>
-                    <TextField
-                      name="name"
-                      label="Nome"
-                      fullwidth
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.name || ""}
-                      errorText={touched.name && errors.name}
-                    />
-                  </Grid>
+                  {!edit ? (
+                    <Grid item md={4} xs={12}>
+                      <Select
+                        placeholder="selecione a categoria"
+                        name="id"
+                        label="Categoria"
+                        options={props.options}
+                        value={values.id}
+                        errorText={touched.id && errors.id}
+                        onChange={(event: any) => {
+                          setFieldValue("id", event);
+                          setId(event.value);
+                        }}
+                      />
+                    </Grid>
+                  ) : (
+                    <></>
+                  )}
+                  {!edit ? (
+                    <Grid item md={8} xs={12}>
+                      <TextField
+                        name="name"
+                        label="Nome"
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.name || ""}
+                        errorText={touched.name && errors.name}
+                      />
+                    </Grid>
+                  ) : (
+                    <></>
+                  )}
                   <Grid item md={12} xs={12}>
                     <TextField
                       name="groupName"
@@ -146,7 +162,7 @@ const initialValues = {
 };
 
 const checkoutSchema = yup.object().shape({
-  id: yup.object().required("id requerido"),
+  id: yup.object().required("categoria requerido"),
   groupName: yup.string().required("grupo requerido"),
   name: yup.string().required("nome requerido"),
 });

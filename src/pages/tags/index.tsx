@@ -1,3 +1,4 @@
+
 import Button from "@component/buttons/Button";
 import IconButton from "@component/buttons/IconButton";
 import Card from "@component/Card";
@@ -22,7 +23,7 @@ const TagList = (props) => {
   const { data } = props;
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
-  console.log(data);
+ 
 
   const deleteTag = async (id) => {
     toast.notify("Removendo etiqueta", {
@@ -46,8 +47,7 @@ const TagList = (props) => {
       });
     }
   };
-
-  console.log(data?.items);
+ 
 
   return (
     <div>

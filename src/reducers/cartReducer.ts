@@ -50,8 +50,7 @@ export const cartReducer: React.Reducer<cartStateType, cartActionType> = (
 ) => {
   
   switch (action.type) {
-    case CHANGE_CART_AMOUNT:
-      console.log('cheogu asduhasdhas')
+    case CHANGE_CART_AMOUNT: 
       let cartList = state.cartList;
       let cartItem = action.payload;
       let exist = cartList.find((item) => item.id === cartItem.id);

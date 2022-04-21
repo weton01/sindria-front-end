@@ -22,8 +22,7 @@ const AddressList = (props) => {
   const { data } = props;
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
-  console.log(data);
-
+ 
   const deleteBrand = async (id) => {
     toast.notify("Removendo marca", {
       title: "Deletando...",

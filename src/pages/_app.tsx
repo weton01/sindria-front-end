@@ -83,14 +83,15 @@ App.getInitialProps = async (appContext: any) => {
 
   const newData = categories.map((item) => {
     const groupNames = item.subCategories.map((aux) => aux.groupName);
-
+    const newCategories = [...new Set(groupNames)];
+    
     return {
       icon: item.image,
       title: item.name,
       href: `/${item.name}`,
       menuComponent: "MegaMenu1",
       menuData: {
-        categories: groupNames.map((aux) => ({
+        categories: newCategories.map((aux) => ({
           title: aux,
           subCategories: item.subCategories
             .filter((subs) => subs.groupName === aux)

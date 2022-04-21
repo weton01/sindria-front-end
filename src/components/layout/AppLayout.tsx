@@ -21,13 +21,13 @@ const AppLayout: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (categories.length > 0)
+  if (categories.length > 0)
+    useEffect(() => {
       dispatch({
         type: "SET_CATEGORY",
         payload: categories,
       });
-  }, [categories]);
+    }, [categories]);
 
   return (
     <StyledAppLayout>
