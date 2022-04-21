@@ -26,7 +26,7 @@ export const post = async (route, payload) => {
     const { data } = await api.post(route, payload);
     return data;
   } catch (err) {
-    return err.req.body.message || "Erro inesperado!";
+    return err?.req?.body?.message || "Erro inesperado!";
   }
 };
 
@@ -35,7 +35,7 @@ export const patch = async (route, payload) => {
     const { data } = await api.patch(route, payload);
     return data;
   } catch (err) {
-    return err.req.body.message || "Erro inesperado!";
+    return err?.req?.body?.message || "Erro inesperado!";
   }
 };
 
@@ -44,7 +44,7 @@ export const get = async (route, params) => {
     const { data } = await api.get(route, { params: params });
     return data;
   } catch (err) {
-    return err.req.body.message || "Erro inesperado!";
+    return err?.req?.body?.message || "Erro inesperado!";
   }
 };
 
@@ -53,6 +53,6 @@ export const remove = async (route) => {
     const { data } = await api.post(route);
     return data;
   } catch (err) {
-    return err.req.body.message || "Erro inesperado!";
+    return err?.req?.body?.message || "Erro inesperado!";
   }
 };
