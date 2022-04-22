@@ -7,7 +7,7 @@ import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import Pagination from "@component/pagination/Pagination";
 import Result from "@component/result";
 import TableRow from "@component/TableRow";
-import Typography from "@component/Typography";
+import Typography from "@component/Typography"; 
 import { ITEMS_PER_PAGE } from "@utils/enums";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
@@ -175,4 +175,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default AddressList;
+export default  AddressList;

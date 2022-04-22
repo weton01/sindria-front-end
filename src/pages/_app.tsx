@@ -5,7 +5,6 @@ import NextApp from "next/app";
 import React, { Fragment } from "react";
 import { ThemeProvider } from "styled-components";
 import { AppProvider } from "../contexts/app/AppContext";
-import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
 import { useStore } from "../store";
 import { persistStore } from "redux-persist";
@@ -13,12 +12,16 @@ import { PersistGate } from "redux-persist/integration/react";
 import { NextPage } from "next";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-nextjs-toast";
-import "reactjs-popup/dist/index.css";
-import "./_app.css";
-import "react-credit-cards/es/styles-compiled.css";
 import { parseCookies } from "nookies";
 import { api } from "services/api";
 import { getCategory } from "services/category";
+import withAuth from "@component/withAuth";
+
+import { GlobalStyles } from "../utils/globalStyles";
+
+import "reactjs-popup/dist/index.css";
+import "./_app.css";
+import "react-credit-cards/es/styles-compiled.css";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -105,4 +108,4 @@ App.getInitialProps = async (appContext: any) => {
   return { ...appProps, categories: newData };
 };
 
-export default App;
+export default withAuth(App);
