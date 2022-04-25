@@ -39,9 +39,20 @@ export const patch = async (route, payload) => {
   }
 };
 
+export const put = async (route, payload, config = {}) => {
+  try {
+    const { data } = await api.put(route, payload, config);
+    return data;
+  } catch (err) {
+    return err?.req?.body?.message || "Erro inesperado!";
+  }
+};
+
 export const get = async (route, params) => {
   try {
-    const { data } = await api.get(route, { params: params });
+    const { data } = await api.get(route, {
+      params: params,
+    });
     return data;
   } catch (err) {
     return err?.req?.body?.message || "Erro inesperado!";
@@ -50,7 +61,7 @@ export const get = async (route, params) => {
 
 export const remove = async (route) => {
   try {
-    const { data } = await api.post(route);
+    const { data } = await api.delete(route);
     return data;
   } catch (err) {
     return err?.req?.body?.message || "Erro inesperado!";

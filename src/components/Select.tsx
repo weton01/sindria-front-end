@@ -18,6 +18,7 @@ interface SelectProps
   defaultValue?: any;
   label?: string;
   errorText?: any;
+  isMulti?: any;
 }
 
 const Select: React.FC<SelectProps> = ({

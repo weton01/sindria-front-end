@@ -5,16 +5,33 @@ import Grid from "@component/grid/Grid";
 import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import VendorDashboardLayout from "@component/layout/VendorDashboardLayout";
 import Select from "@component/Select";
-import TextField from "@component/text-field/TextField";
+import TextField, { MaskInput } from "@component/text-field/TextField";
 import TextArea from "@component/textarea/TextArea";
-import { Formik } from "formik";
+import { Field, Formik } from "formik";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
 import React from "react";
+import { parseCookies } from "nookies";
 import * as yup from "yup";
+import { api, post, put } from "services/api";
+import { getSubCategory } from "services/category";
+import { getTags } from "services/tags";
+import { postUrlAssign } from "services/product";
+import ErrorMessage from "@component/ErrorMessage";
 
-const AddProduct = () => {
+const AddProduct = (props) => {
+  const { categories, tags } = props;
   const handleFormSubmit = async (values) => {
-    console.log(values);
+    const payload = {
+      ...values,
+      categories: values.categories.map((item) => ({
+        id: item.value,
+      })),
+      tags: values.tags.map((item) => ({
+        id: item.value,
+      })),
+    };
+    console.log(payload);
   };
 
   return (
@@ -48,42 +65,69 @@ const AddProduct = () => {
           }) => (
             <form onSubmit={handleSubmit}>
               <Grid container spacing={6}>
-                <Grid item sm={6} xs={12}>
+                <Grid item sm={12} xs={12}>
                   <TextField
                     name="name"
-                    label="Name"
-                    placeholder="Name"
+                    label="Nome"
+                    placeholder="Nome do produto"
                     fullwidth
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.name || ""}
                     errorText={touched.name && errors.name}
                   />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <Select
-                    label="Caterogy"
-                    placeholder="Select category"
-                    options={[]}
-                    value={values.tags || "US"}
-                    onChange={(country) => {
-                      setFieldValue("tags", country);
-                    }}
-                    errorText={touched.tags && errors.tags}
-                  />
-                </Grid>
+                </Grid> 
                 <Grid item xs={12}>
-                  <DropZone
-                    onChange={(files) => {
-                      console.log(files);
-                    }}
-                  />
+                  <Field name="images">
+                    {({ meta }) => (
+                      <div>
+                        <DropZone
+                          imgs={values.images}
+                          removeImage={(index) => {
+                            const images = values.images;
+                            images.splice(index, 1)
+                            setFieldValue("images", images);
+                          }}
+                          title="Arraste ou solte a imagem do produto aqui"
+                          onChange={async (files) => {
+                            const { url } = await postUrlAssign();
+                            console.log(files);
+
+                            files.forEach(async (file) => {
+                              const reader = new FileReader();
+                              reader.onabort = () =>
+                                console.log("file reading was aborted");
+                              reader.onerror = () =>
+                                console.log("file reading has failed");
+                              reader.onloadend = async () => {
+                                const binaryStr = reader.result;
+                                console.log(binaryStr);
+
+                                const result = await put(url.put, binaryStr, {
+                                  headers: { "Content-Type": "image/webp" },
+                                });
+                              }; 
+                              const images = values.images;
+                              images.push(
+                                "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1588187076-greentshirt-1588187065.jpg"
+                              );
+                              setFieldValue("images", images);
+                              reader.readAsBinaryString(file); 
+                            });
+                          }}
+                        />
+                        {meta.touched && meta.error && (
+                          <ErrorMessage name="images" />
+                        )}
+                      </div>
+                    )}
+                  </Field>
                 </Grid>
                 <Grid item xs={12}>
                   <TextArea
                     name="description"
-                    label="Description"
-                    placeholder="Description"
+                    label="Descrição"
+                    placeholder="Descrição"
                     rows={6}
                     fullwidth
                     onBlur={handleBlur}
@@ -94,52 +138,60 @@ const AddProduct = () => {
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <TextField
-                    name="stock"
-                    label="Stock"
-                    placeholder="Stock"
+                    name="grossAmount"
+                    label="Valor Bruto"
+                    placeholder="Valor bruto"
+                    mask={MaskInput.money}
+                    addonBefore="R$"
                     fullwidth
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.stock || ""}
-                    errorText={touched.stock && errors.stock}
+                    value={values.grossAmount || ""}
+                    errorText={touched.grossAmount && errors.grossAmount}
                   />
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <TextField
+                    name="netAmount"
+                    label="Valor liquido"
+                    placeholder="Valor liquido"
+                    mask={MaskInput.money}
+                    addonBefore="R$"
+                    fullwidth
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.netAmount || ""}
+                    errorText={touched.netAmount && errors.netAmount}
+                  />
+                </Grid>
+                <Grid item sm={12} xs={12}>
+                  <Select
+                    name="categories"
+                    label="Categorias"
+                    placeholder="Selecione as categorias"
+                    isMulti
+                    options={categories}
+                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      setFieldValue("categories", e || []);
+                    }}
+                    defaultValue={values.categories || ""}
+                    errorText={touched.categories && errors.categories}
+                  />
+                </Grid>
+                <Grid item sm={12} xs={12}>
+                  <Select
                     name="tags"
-                    label="Tags"
-                    placeholder="Tags"
-                    fullwidth
+                    label="Etiquetas"
+                    placeholder="Selecione as etiquetas"
+                    isMulti
+                    options={tags}
                     onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.tags || ""}
+                    onChange={(e) => {
+                      setFieldValue("tags", e || []);
+                    }}
+                    defaultValue={values.tags || ""}
                     errorText={touched.tags && errors.tags}
-                  />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField
-                    name="price"
-                    label="Regular Price"
-                    placeholder="Regular Price"
-                    type="number"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.price || ""}
-                    errorText={touched.price && errors.price}
-                  />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField
-                    name="sale_price"
-                    label="Sale Price"
-                    placeholder="Sale Price"
-                    type="number"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.sale_price || ""}
-                    errorText={touched.sale_price && errors.sale_price}
                   />
                 </Grid>
               </Grid>
@@ -161,24 +213,69 @@ const AddProduct = () => {
 
 const initialValues = {
   name: "",
-  stock: "",
-  price: "",
-  sale_price: "",
-  description: "",
-  tags: "",
-  category: "",
+  grossAmount: "",
+  netAmount: "",
+  tags: [],
+  categories: [],
+  images: ["https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1588187076-greentshirt-1588187065.jpg"],
 };
 
 const checkoutSchema = yup.object().shape({
-  name: yup.string().required("required"),
-  category: yup.string().required("required"),
-  description: yup.string().required("required"),
-  stock: yup.number().required("required"),
-  price: yup.number().required("required"),
-  sale_price: yup.number().required("required"),
-  tags: yup.object().required("required"),
+  name: yup.string().required("campo requerido"),
+  description: yup.string().required("campo requerido"),
+  grossAmount: yup.number().required("campo requerido"),
+  netAmount: yup.number().required("campo requerido"),
+  images: yup
+    .array()
+    .min(1, "selecione uma imagem")
+    .required("campo requerido"),
+  categories: yup
+    .array()
+    .min(1, "selecione uma categoria")
+    .required("campo requerido"),
+  tags: yup
+    .array()
+    .min(1, "selecione uma etiqueta")
+    .required("campo requerido"),
 });
 
 AddProduct.layout = VendorDashboardLayout;
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { ["shop_token"]: token } = parseCookies(ctx);
+
+  try {
+    api.interceptors.request.use((config) => {
+      config.headers["Authorization"] = `Bearer ${token}`;
+      return config;
+    });
+
+    const [categories, tags] = await Promise.all([getSubCategory(), getTags()]);
+
+    const newCategories = categories?.items?.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+
+    const newTags = tags?.items?.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+
+    return {
+      props: { categories: newCategories, tags: newTags },
+    };
+  } catch (err) {
+    console.log("fail to verify tokens", err);
+  }
+
+  return {
+    props: {},
+  };
+};
 
 export default AddProduct;

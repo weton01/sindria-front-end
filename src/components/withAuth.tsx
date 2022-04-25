@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import ErrorNotFound from "./errors/not-found";
 
 const withAuth = (Component) => {
   const blackList = [
@@ -10,6 +11,7 @@ const withAuth = (Component) => {
   ];
   const whiteList = [
     "",
+    "404",
     "login",
     "signup",
     "recover-password",
@@ -35,19 +37,16 @@ const withAuth = (Component) => {
       const router = useRouter();
       const token = localStorage.getItem("shop_token");
       const route = props.router.asPath.split("/")[1];
-      console.log(route);
 
       if (privateRoute(route, token)) {
         return <Component {...props} />;
       } else {
-        if (publicRoute(route, token)) {
+        if (publicRoute(route, token)) 
           return <Component {...props} />;
-        } else {
-          router.push("/");
-        }
+        router.push("/");
       }
     }
-    return null;
+    return <Component {...props} />;
   };
 
   if (Component.getInitialProps) {

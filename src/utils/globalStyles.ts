@@ -97,6 +97,11 @@ export const GlobalStyles = createGlobalStyle`
   position: absolute;
 }
 
+.error-input{ 
+  color: #E94560 !important; 
+  font-size: 12px;
+}
+
 @-webkit-keyframes nprogress-spinner {
   0%   { -webkit-transform: rotate(0deg); }
   100% { -webkit-transform: rotate(360deg); }

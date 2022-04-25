@@ -103,7 +103,7 @@ const SubcategoryEditor = (props) => {
                         value={values.id}
                         errorText={touched.id && errors.id}
                         onChange={(event: any) => {
-                          setFieldValue("id", event);
+                          setFieldValue("id", event || []);
                           setId(event.value);
                         }}
                       />
