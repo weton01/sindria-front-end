@@ -101,6 +101,42 @@ export const GlobalStyles = createGlobalStyle`
   color: #E94560 !important; 
   font-size: 12px;
 }
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.placeholder-image, .real-image {
+  width: 100%;
+}
+
+.blur .real-image {
+  opacity: 0;
+}
+
+.real-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.blur {
+  filter: blur(5px);
+}
+
+.unblur {
+  animation: unblur 1s linear;
+}
+
+@keyframes unblur {
+  from {
+    filter: blur(5px)
+  }
+  to {
+    filter: blur(0);
+  }
+}
+
 
 @-webkit-keyframes nprogress-spinner {
   0%   { -webkit-transform: rotate(0deg); }
@@ -110,4 +146,5 @@ export const GlobalStyles = createGlobalStyle`
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 `;

@@ -9,45 +9,128 @@ import TextField, { MaskInput } from "@component/text-field/TextField";
 import TextArea from "@component/textarea/TextArea";
 import { Field, Formik } from "formik";
 import { GetServerSideProps } from "next";
-import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import * as yup from "yup";
-import { api, post, put } from "services/api";
+import { api, patch, post } from "services/api";
 import { getSubCategory } from "services/category";
 import { getTags } from "services/tags";
-import { postUrlAssign } from "services/product";
+import { getUrlAssign } from "services/product";
 import ErrorMessage from "@component/ErrorMessage";
+import Stepper from "@component/stepper/Stepper";
+import { useRouter } from "next/router";
+import Box from "@component/Box";
+import axios from "axios";
+import { getBrands } from "services/brand";
+import { processFile } from "@utils/utils";
+import { toast } from "react-nextjs-toast";
 
 const AddProduct = (props) => {
-  const { categories, tags } = props;
+  const { categories, tags, brands } = props;
+  const [selectedStep, setSelectedStep] = useState(0);
+  const router = useRouter();
+  const edit = router?.query?.id ? true : false;
+  const id = router?.query?.id;
+  const { pathname } = router;
+
+  const handleStepChange = (_step, ind) => {
+    switch (ind) {
+      case 0:
+        router.push("/vendor/add-product");
+        break;
+      case 1:
+        router.push("/vendor/add-product/colors");
+        break;
+      case 2:
+        router.push("/vendor/add-product/sizes");
+        break;
+      case 3:
+        router.push("/vendor/add-product/variations");
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    switch (pathname) {
+      case "/vendor/add-product":
+        setSelectedStep(1);
+        break;
+      case "/vendor/add-product/colors":
+        setSelectedStep(2);
+        break;
+      case "/vendor/add-product/sizes":
+        setSelectedStep(3);
+        break;
+      case "/vendor/add-product/variations":
+        setSelectedStep(4);
+        break;
+      default:
+        break;
+    }
+  }, [pathname]);
+
   const handleFormSubmit = async (values) => {
+    console.log(values);
+
+    const { categories, tags, brand, grossAmount, netAmount } = values;
     const payload = {
       ...values,
-      categories: values.categories.map((item) => ({
+      brand: { id: brand.value },
+      grossAmount: Number(grossAmount),
+      netAmount: Number(netAmount),
+      categories: categories.map((item) => ({
         id: item.value,
       })),
-      tags: values.tags.map((item) => ({
+      tags: tags.map((item) => ({
         id: item.value,
       })),
     };
-    console.log(payload);
+    let product;
+
+    if (edit) product = await patch("product/v1", payload);
+    else product = await post("product/v1", payload);
+
+    if (typeof product === "string") {
+      toast.notify(product, {
+        title: "Erro!",
+        duration: 5,
+        type: "error",
+      });
+    } else {
+      toast.notify(`Produto ${edit ? "alterada" : "adicionada"}`, {
+        title: "Sucesso!",
+        duration: 5,
+        type: "success",
+      });
+    }
   };
 
   return (
     <div>
       <DashboardPageHeader
-        title="Add Product"
+        title="Adicionar produto"
         iconName="delivery-box"
         button={
-          <Link href="/vendor/products">
-            <Button color="primary" bg="primary.light" px="2rem">
-              Back to Product List
-            </Button>
-          </Link>
+          <Button
+            color="primary"
+            bg="primary.light"
+            px="2rem"
+            route="/vendor/add-product/products"
+          >
+            Voltar para produtos
+          </Button>
         }
       />
 
+      <Box mb="14px" width="100%">
+        <Stepper
+          stepperList={stepperList}
+          selectedStep={selectedStep}
+          onChange={handleStepChange}
+        />
+      </Box>
       <Card p="30px">
         <Formik
           initialValues={initialValues}
@@ -76,7 +159,7 @@ const AddProduct = (props) => {
                     value={values.name || ""}
                     errorText={touched.name && errors.name}
                   />
-                </Grid> 
+                </Grid>
                 <Grid item xs={12}>
                   <Field name="images">
                     {({ meta }) => (
@@ -85,34 +168,62 @@ const AddProduct = (props) => {
                           imgs={values.images}
                           removeImage={(index) => {
                             const images = values.images;
-                            images.splice(index, 1)
+                            images.splice(index, 1);
                             setFieldValue("images", images);
                           }}
                           title="Arraste ou solte a imagem do produto aqui"
                           onChange={async (files) => {
-                            const { url } = await postUrlAssign();
-                            console.log(files);
+                            const { url } = await getUrlAssign();
+                            files.forEach(async (file: File) => {
+                              let fd = new FormData();
+                              const blob: any = await processFile(file);
+                              const image = new Image();
+                              image.onload = () => {
+                                const canvas = document.createElement("canvas");
+                                canvas.width = image.naturalWidth;
+                                canvas.height = image.naturalHeight;
+                                canvas.getContext("2d").drawImage(image, 0, 0);
+                                canvas.toBlob(async (blob) => {
+                                  const myImage = new File([blob], file.name, {
+                                    type: blob.type,
+                                  });
+                                  fd.append("acl", "public-read");
+                                  fd.append("Content-Type", "image/webp");
 
-                            files.forEach(async (file) => {
-                              const reader = new FileReader();
-                              reader.onabort = () =>
-                                console.log("file reading was aborted");
-                              reader.onerror = () =>
-                                console.log("file reading has failed");
-                              reader.onloadend = async () => {
-                                const binaryStr = reader.result;
-                                console.log(binaryStr);
+                                  fd.append("key", url.put.fields["key"]);
+                                  fd.append("bucket", url.put.fields["bucket"]);
+                                  fd.append(
+                                    "X-Amz-Algorithm",
+                                    url.put.fields["X-Amz-Algorithm"]
+                                  );
+                                  fd.append(
+                                    "X-Amz-Credential",
+                                    url.put.fields["X-Amz-Credential"]
+                                  );
+                                  fd.append(
+                                    "X-Amz-Date",
+                                    url.put.fields["X-Amz-Date"]
+                                  );
 
-                                const result = await put(url.put, binaryStr, {
-                                  headers: { "Content-Type": "image/webp" },
-                                });
-                              }; 
-                              const images = values.images;
-                              images.push(
-                                "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1588187076-greentshirt-1588187065.jpg"
-                              );
-                              setFieldValue("images", images);
-                              reader.readAsBinaryString(file); 
+                                  fd.append(
+                                    "X-Amz-Signature",
+                                    url.put.fields["X-Amz-Signature"]
+                                  );
+
+                                  fd.append("Policy", url.put.fields["Policy"]);
+
+                                  fd.append("file", myImage);
+                                  const result = await axios.post(
+                                    url.put.url,
+                                    fd
+                                  );
+                                  const images = values.images;
+
+                                  images.push(url.get);
+                                  setFieldValue("images", images);
+                                }, "image/webp");
+                              };
+                              image.src = blob;
                             });
                           }}
                         />
@@ -166,6 +277,20 @@ const AddProduct = (props) => {
                 </Grid>
                 <Grid item sm={12} xs={12}>
                   <Select
+                    name="brand"
+                    label="Marcas"
+                    placeholder="Selecione a marca"
+                    options={brands}
+                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      setFieldValue("brand", e || []);
+                    }}
+                    defaultValue={values.brand || ""}
+                    errorText={touched.brand && errors.brand}
+                  />
+                </Grid>
+                <Grid item sm={12} xs={12}>
+                  <Select
                     name="categories"
                     label="Categorias"
                     placeholder="Selecione as categorias"
@@ -201,7 +326,7 @@ const AddProduct = (props) => {
                 color="primary"
                 type="submit"
               >
-                Save product
+                Criar
               </Button>
             </form>
           )}
@@ -217,7 +342,8 @@ const initialValues = {
   netAmount: "",
   tags: [],
   categories: [],
-  images: ["https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1588187076-greentshirt-1588187065.jpg"],
+  images: [],
+  brand: "",
 };
 
 const checkoutSchema = yup.object().shape({
@@ -237,9 +363,29 @@ const checkoutSchema = yup.object().shape({
     .array()
     .min(1, "selecione uma etiqueta")
     .required("campo requerido"),
+  brand: yup.object().required("campo requerido"),
 });
 
 AddProduct.layout = VendorDashboardLayout;
+
+const stepperList = [
+  {
+    title: "Produto",
+    disabled: false,
+  },
+  {
+    title: "Cores",
+    disabled: false,
+  },
+  {
+    title: "Tamanhos",
+    disabled: false,
+  },
+  {
+    title: "Variações",
+    disabled: false,
+  },
+];
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
@@ -250,7 +396,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return config;
     });
 
-    const [categories, tags] = await Promise.all([getSubCategory(), getTags()]);
+    const [categories, tags, brands] = await Promise.all([
+      getSubCategory(),
+      getTags(),
+      getBrands(),
+    ]);
 
     const newCategories = categories?.items?.map((item) => {
       return {
@@ -266,8 +416,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       };
     });
 
+    const newBrands = brands?.items?.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+
     return {
-      props: { categories: newCategories, tags: newTags },
+      props: { categories: newCategories, tags: newTags, brands: newBrands },
     };
   } catch (err) {
     console.log("fail to verify tokens", err);

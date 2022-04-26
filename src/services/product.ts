@@ -1,3 +1,3 @@
-import { post } from "./api";
+import { get } from "./api";
 
-export const postUrlAssign = async () => post(`product/v1/assign-url`);
+export const getUrlAssign = async () => get(`product/v1/s3/assign-url`);

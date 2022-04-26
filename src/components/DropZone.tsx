@@ -6,11 +6,12 @@ import IconButton from "./buttons/IconButton";
 import Divider from "./Divider";
 import Grid from "./grid/Grid";
 import Icon from "./icon/Icon";
+import LazyImage from "./LazyImage";
 import Spinner from "./Spinner";
 import Typography, { H5, Small } from "./Typography";
 
 export interface DropZoneProps {
-  onChange?: (files: []) => void; 
+  onChange?: (files: []) => void;
   removeImage?: (index: number) => void;
   title?: string;
   imgs?: [];
@@ -24,7 +25,7 @@ const DropZone: React.FC<DropZoneProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const onDrop = useCallback(async (acceptedFiles) => {
+  const onDrop = useCallback(async (acceptedFiles) => { 
     setLoading(true);
     if (onChange) await onChange(acceptedFiles);
     setLoading(false);
@@ -33,7 +34,7 @@ const DropZone: React.FC<DropZoneProps> = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: true,
-    accept: ".jpeg,.jpg,.png,.gif,.webp",
+    accept: ".jpeg,.jpg,.png,.webp",
     maxFiles: 10,
   });
 
@@ -102,7 +103,7 @@ const DropZone: React.FC<DropZoneProps> = ({
               return (
                 <Grid
                   item
-                  xl={1}
+                  xl={2}
                   xs={2}
                   style={{
                     display: "flex",
@@ -121,7 +122,11 @@ const DropZone: React.FC<DropZoneProps> = ({
                     color={"gray.700"}
                     marginRight="-8px"
                   >
-                    <Icon variant="small" defaultcolor="currentColor" onClick={() => removeImage(index)}>
+                    <Icon
+                      variant="small"
+                      defaultcolor="currentColor"
+                      onClick={() => removeImage(index)}
+                    >
                       x
                     </Icon>
                   </IconButton>
@@ -130,8 +135,8 @@ const DropZone: React.FC<DropZoneProps> = ({
                     flexDirection="column"
                     justifyContent="center"
                     alignItems="center"
-                    minHeight="40px"
-                    minWidth={"50px"}
+                    minHeight="120px"
+                    minWidth={"120px"}
                     border="1px dashed"
                     borderColor="gray.500"
                     borderRadius="10px"
@@ -140,7 +145,7 @@ const DropZone: React.FC<DropZoneProps> = ({
                     transition="all 250ms ease-in-out"
                     style={{ outline: "none" }}
                   >
-                    <img src={item} alt={item} width="40px" height="auto" />
+                    <LazyImage src={item} width="100px" height="100px" />
                   </Box>
                 </Grid>
               );

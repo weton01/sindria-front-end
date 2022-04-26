@@ -42,8 +42,53 @@ export const getDateDifference = (date) => {
   return `${diff.toFixed(1)} year${ceil(diff) === 0 ? "" : "s"} ago`;
 };
 
-export const getHourMinute = (d) => { 
+export const getHourMinute = (d) => {
   let datetext = d.toTimeString();
   datetext = datetext.split(" ")[0];
   return datetext;
 };
+
+export const toBase64 = async (url) => {
+  return fetch(url)
+    .then((response) => response.blob())
+    .then(
+      (blob) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        })
+    );
+};
+
+export const processFile = (file) => {
+  if (!file) {
+    return;
+  } 
+  
+  return new Promise(function (resolve, reject) {
+    let rawImage = new Image();
+
+    rawImage.addEventListener("load", function () {
+      resolve(rawImage);
+    });
+
+    rawImage.src = URL.createObjectURL(file);
+  })
+  .then(function (rawImage: any) {
+    // Convert image to webp ObjectURL via a canvas blob
+    return new Promise(function (resolve, reject) {
+      let canvas = document.createElement('canvas');
+      let ctx = canvas.getContext("2d");
+
+      canvas.width = rawImage.width;
+      canvas.height = rawImage.height;
+      ctx.drawImage(rawImage, 0, 0);
+
+      canvas.toBlob(function (blob) {
+        resolve(URL.createObjectURL(blob));
+      }, "image/webp");
+    });
+  }) 
+}

@@ -15,5 +15,7 @@ module.exports = {
     // number of pages that should be kept simultaneously without being disposed
     pagesBufferLength: 2,
   },
-
+  images: {
+    domains: ['flora-express-images.s3.amazonaws.com'],
+  },
 };
