@@ -26,13 +26,13 @@ const ProductSize = (props) => {
         router.push("/vendor/add-product");
         break;
       case 1:
-        router.push("/vendor/add-product/colors");
+        router.push("/vendor/add-product/variations");
         break;
       case 2:
-        router.push("/vendor/add-product/sizes");
+        router.push("/vendor/add-product/colors");
         break;
       case 3:
-        router.push("/vendor/add-product/variations");
+        router.push("/vendor/add-product/sizes");
         break;
       default:
         break;
@@ -44,15 +44,16 @@ const ProductSize = (props) => {
       case "/vendor/add-product":
         setSelectedStep(1);
         break;
-      case "/vendor/add-product/colors":
+      case "/vendor/add-product/variations":
         setSelectedStep(2);
         break;
-      case "/vendor/add-product/sizes":
+      case "/vendor/add-product/colors":
         setSelectedStep(3);
         break;
-      case "/vendor/add-product/variations":
+      case "/vendor/add-product/sizes":
         setSelectedStep(4);
         break;
+
       default:
         break;
     }
@@ -155,15 +156,15 @@ const stepperList = [
     disabled: false,
   },
   {
+    title: "Variações",
+    disabled: false,
+  },
+  {
     title: "Cores",
     disabled: false,
   },
   {
     title: "Tamanhos",
-    disabled: false,
-  },
-  {
-    title: "Variações",
     disabled: false,
   },
 ];

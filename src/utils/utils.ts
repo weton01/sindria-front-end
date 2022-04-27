@@ -65,8 +65,8 @@ export const toBase64 = async (url) => {
 export const processFile = (file) => {
   if (!file) {
     return;
-  } 
-  
+  }
+
   return new Promise(function (resolve, reject) {
     let rawImage = new Image();
 
@@ -75,11 +75,10 @@ export const processFile = (file) => {
     });
 
     rawImage.src = URL.createObjectURL(file);
-  })
-  .then(function (rawImage: any) {
+  }).then(function (rawImage: any) {
     // Convert image to webp ObjectURL via a canvas blob
     return new Promise(function (resolve, reject) {
-      let canvas = document.createElement('canvas');
+      let canvas = document.createElement("canvas");
       let ctx = canvas.getContext("2d");
 
       canvas.width = rawImage.width;
@@ -90,5 +89,5 @@ export const processFile = (file) => {
         resolve(URL.createObjectURL(blob));
       }, "image/webp");
     });
-  }) 
-}
+  });
+}; 

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import Box from "./Box";
 import Button from "./buttons/Button";
@@ -7,7 +7,6 @@ import Divider from "./Divider";
 import Grid from "./grid/Grid";
 import Icon from "./icon/Icon";
 import LazyImage from "./LazyImage";
-import Spinner from "./Spinner";
 import Typography, { H5, Small } from "./Typography";
 
 export interface DropZoneProps {
@@ -23,20 +22,51 @@ const DropZone: React.FC<DropZoneProps> = ({
   title = "Arraste ou solte o arquivo aqui",
   imgs = [],
 }) => {
-  const [loading, setLoading] = useState(false);
-
-  const onDrop = useCallback(async (acceptedFiles) => { 
-    setLoading(true);
-    if (onChange) await onChange(acceptedFiles);
-    setLoading(false);
+  const onDrop = useCallback((acceptedFiles) => {
+    if (onChange) onChange(acceptedFiles);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: true,
-    accept: ".jpeg,.jpg,.png,.webp",
-    maxFiles: 10,
-  });
+  const validatorFile =  (file: File) => {
+    const maxLength = 20;
+    const maxSize = 10000000;
+
+    if (file.size > maxSize) {
+      return {
+        code: "file-too-large",
+        message: `a imagem não pode exceder ${maxSize} bytes`,
+      };
+    }
+
+    if (file.name.length > maxLength) {
+      return {
+        code: "name-too-large",
+        message: `o nome da imagem é muito grande não pode exceder ${maxLength} caracteres`,
+      };
+    }
+
+    return null;
+  };
+
+  const { getRootProps, getInputProps, fileRejections, isDragActive } =
+    useDropzone({
+      onDrop,
+      validator: validatorFile,
+      multiple: true,
+      accept: ".jpeg,.jpg,.png,.webp",
+      maxFiles: 10,
+    });
+
+  const fileRejectionItems = fileRejections.map(({ file, errors }: any) => (
+    <li key={file.path}>
+      {file.path}
+      <ul>
+        {console.log(errors)}
+        {errors.map((e) => (
+          <li key={e.code}>{e.message}</li>
+        ))}
+      </ul>
+    </li>
+  ));
 
   return (
     <>
@@ -71,31 +101,20 @@ const DropZone: React.FC<DropZoneProps> = ({
         >
           em
         </Typography>
-        {loading ? (
-          <Box
-            minHeight="100px"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            gap={10}
-          >
-            <Spinner />
-            <div>Carregando arquivo...</div>
-          </Box>
-        ) : (
-          <Button
-            color="primary"
-            bg="primary.light"
-            px="2rem"
-            mb="22px"
-            type="button"
-          >
-            Selecione o arquivo
-          </Button>
-        )}
+        <Button
+          color="primary"
+          bg="primary.light"
+          px="2rem"
+          mb="22px"
+          type="button"
+        >
+          Selecione o arquivo
+        </Button>
 
-        <Small color="text.muted">Carregar imagem 280*280</Small>
+        <Small color="text.muted">Carregar imagem 480*480</Small>
+        <aside>
+          <ul className="error-input">{fileRejectionItems}</ul>
+        </aside>
       </Box>
       <Grid container spacing={4}>
         {imgs.length > 0

@@ -39,13 +39,13 @@ const AddProduct = (props) => {
         router.push("/vendor/add-product");
         break;
       case 1:
-        router.push("/vendor/add-product/colors");
+        router.push("/vendor/add-product/variations");
         break;
       case 2:
-        router.push("/vendor/add-product/sizes");
+        router.push("/vendor/add-product/colors");
         break;
       case 3:
-        router.push("/vendor/add-product/variations");
+        router.push("/vendor/add-product/sizes");
         break;
       default:
         break;
@@ -57,15 +57,16 @@ const AddProduct = (props) => {
       case "/vendor/add-product":
         setSelectedStep(1);
         break;
-      case "/vendor/add-product/colors":
+      case "/vendor/add-product/variations":
         setSelectedStep(2);
         break;
-      case "/vendor/add-product/sizes":
+      case "/vendor/add-product/colors":
         setSelectedStep(3);
         break;
-      case "/vendor/add-product/variations":
+      case "/vendor/add-product/sizes":
         setSelectedStep(4);
         break;
+
       default:
         break;
     }
@@ -143,8 +144,9 @@ const AddProduct = (props) => {
             touched,
             handleChange,
             handleBlur,
-            handleSubmit,
+            handleSubmit,setFieldTouched,
             setFieldValue,
+            setFieldError,
           }) => (
             <form onSubmit={handleSubmit}>
               <Grid container spacing={6}>
@@ -172,9 +174,9 @@ const AddProduct = (props) => {
                             setFieldValue("images", images);
                           }}
                           title="Arraste ou solte a imagem do produto aqui"
-                          onChange={async (files) => {
-                            const { url } = await getUrlAssign();
-                            files.forEach(async (file: File) => {
+                          onChange={ (files) => {
+                            files.forEach(async (file: File) => { 
+                              const { url } = await getUrlAssign();
                               let fd = new FormData();
                               const blob: any = await processFile(file);
                               const image = new Image();
@@ -182,6 +184,12 @@ const AddProduct = (props) => {
                                 const canvas = document.createElement("canvas");
                                 canvas.width = image.naturalWidth;
                                 canvas.height = image.naturalHeight;
+                                  console.log(image.naturalWidth);
+                                if(image.naturalWidth > 480 || image.naturalHeight > 480){ 
+                                  setFieldError("images", "limite da dimensão da imagem é 480*480");
+                                  setFieldTouched("images", true, false);
+                                  return
+                                }
                                 canvas.getContext("2d").drawImage(image, 0, 0);
                                 canvas.toBlob(async (blob) => {
                                   const myImage = new File([blob], file.name, {
@@ -374,15 +382,15 @@ const stepperList = [
     disabled: false,
   },
   {
+    title: "Variações",
+    disabled: false,
+  },
+  {
     title: "Cores",
     disabled: false,
   },
   {
     title: "Tamanhos",
-    disabled: false,
-  },
-  {
-    title: "Variações",
     disabled: false,
   },
 ];
