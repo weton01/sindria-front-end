@@ -26,7 +26,9 @@ export const post = async (route, payload) => {
     const { data } = await api.post(route, payload);
     return data;
   } catch (err) {
-    return err?.response?.data?.message || "Erro inesperado!";
+    return Array.isArray(err?.response?.data?.message)
+      ? err?.response?.data?.message[0]
+      : err?.response?.data?.message || "Erro inesperado!";
   }
 };
 
@@ -35,7 +37,11 @@ export const patch = async (route, payload) => {
     const { data } = await api.patch(route, payload);
     return data;
   } catch (err) {
-    return err?.response?.data?.message || "Erro inesperado!";
+    return Array.isArray(err?.response?.data?.message)
+      ? err?.response?.data?.message[0]
+      : Array.isArray(err?.response?.data?.message)
+      ? err?.response?.data?.message[0]
+      : err?.response?.data?.message || "Erro inesperado!";
   }
 };
 
@@ -44,7 +50,9 @@ export const put = async (route, payload, config = {}) => {
     const { data } = await api.put(route, payload, config);
     return data;
   } catch (err) {
-    return err?.response?.data?.message || "Erro inesperado!";
+    return Array.isArray(err?.response?.data?.message)
+      ? err?.response?.data?.message[0]
+      : err?.response?.data?.message || "Erro inesperado!";
   }
 };
 
@@ -52,10 +60,12 @@ export const get = async (route, params = {}) => {
   try {
     const { data } = await api.get(route, {
       params: params,
-    });
+    }); 
     return data;
   } catch (err) {
-    return err?.response?.data?.message || "Erro inesperado!";
+    return Array.isArray(err?.response?.data?.message)
+      ? err?.response?.data?.message[0]
+      : err?.response?.data?.message || "Erro inesperado!";
   }
 };
 
@@ -64,6 +74,8 @@ export const remove = async (route) => {
     const { data } = await api.delete(route);
     return data;
   } catch (err) {
-    return err?.response?.data?.message || "Erro inesperado!";
+    return Array.isArray(err?.response?.data?.message)
+      ? err?.response?.data?.message[0]
+      : err?.response?.data?.message || "Erro inesperado!";
   }
 };

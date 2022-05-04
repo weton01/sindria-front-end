@@ -28,10 +28,15 @@ const LazyImageStyle = styled(NextImage)<
 const LazyImage: React.FC<
   LazyImageProps & ImageProps & BorderProps & SpaceProps & ColorProps
 > = ({ onLoad, ...props }) => {
-  const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const onLoadImage = async () => {
-    setLoading(!loading);
+  const onLoadImage = async (props) => {
+    let currentCount = count;
+    setCount(currentCount + 1);
+    if (count === 2) {
+      setLoading(false);
+    }
   };
 
   return (

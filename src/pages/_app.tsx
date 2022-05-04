@@ -12,9 +12,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { NextPage } from "next";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-nextjs-toast";
-import { parseCookies } from "nookies";
-import { api } from "services/api";
-import { getCategory } from "services/category";
+import { parseCookies } from "nookies";  
 import withAuth from "@component/withAuth";
 
 import { GlobalStyles } from "../utils/globalStyles";
@@ -22,6 +20,7 @@ import { GlobalStyles } from "../utils/globalStyles";
 import "reactjs-popup/dist/index.css";
 import "./_app.css";
 import "react-credit-cards/es/styles-compiled.css";
+import axios from "axios";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -77,14 +76,17 @@ const App: NextPage = ({ Component, pageProps, categories }: any) => {
 App.getInitialProps = async (appContext: any) => {
   const appProps = await NextApp.getInitialProps(appContext);
   const { ["shop_token"]: token } = parseCookies(appContext);
-
+  const api = axios.create({
+    baseURL: "https://92yiuy5790.execute-api.us-east-1.amazonaws.com/production/",
+  });
+  
   api.interceptors.request.use((config) => {
     config.headers["Authorization"] = `Bearer ${token}`;
     return config;
   });
-  const [categories] = await Promise.all([getCategory()]);
-
-  const newData = categories.map((item) => {
+  const [categories]: any = await Promise.all([api.get(`category/v1/`)]);
+ 
+  const newData = categories.data.map((item) => {
     const groupNames = item.subCategories.map((aux) => aux.groupName);
     const newCategories = [...new Set(groupNames)];
     

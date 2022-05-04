@@ -1,12 +1,12 @@
 import React from "react";
-import {ErrorMessage} from "formik";
+import {ErrorMessage as ErrorComponent} from "formik";
 
-const ErrorMessageComponent = ({ name }) => {
+const ErrorMessage= ({ name }) => {
   return (
     <div className="error-input">
-      <ErrorMessage name={name} />
+      <ErrorComponent name={name} />
     </div>
   );
 };
 
-export default ErrorMessageComponent;
+export default ErrorMessage;

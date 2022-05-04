@@ -25,7 +25,7 @@ import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
 import { toast } from "react-nextjs-toast";
 
-const AddProduct = (props) => {
+const EditProduct = (props) => {
   const { categories, tags, brands } = props;
   const [selectedStep, setSelectedStep] = useState(0);
   const router = useRouter();
@@ -36,16 +36,16 @@ const AddProduct = (props) => {
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
-        router.push(`/vendor/add-product/`);
+        router.push(`/vendor/add-product/${id}`);
         break;
       case 1:
-        router.push(`/vendor/add-product/variations`);
+        router.push(`/vendor/add-product/variations/${id}`);
         break;
       case 2:
-        router.push(`/vendor/add-product/colors`);
+        router.push(`/vendor/add-product/colors/${id}`);
         break;
       case 3:
-        router.push(`/vendor/add-product/sizes`);
+        router.push(`/vendor/add-product/sizes/${id}`);
         break;
       default:
         break;
@@ -54,7 +54,7 @@ const AddProduct = (props) => {
 
   useEffect(() => {  
     switch (route) {
-      case `/vendor/add-product`:
+      case `/vendor/add-product/[id]`:
         setSelectedStep(1);
         break;
       case `/vendor/add-product/variations/[id]`:
@@ -410,7 +410,7 @@ const checkoutSchema = yup.object().shape({
   brand: yup.object().required("campo requerido"),
 });
 
-AddProduct.layout = VendorDashboardLayout;
+EditProduct.layout = VendorDashboardLayout;
 
 const stepperList = [
   {
@@ -419,15 +419,15 @@ const stepperList = [
   },
   {
     title: "Variações",
-    disabled: true,
+    disabled: false,
   },
   {
     title: "Cores",
-    disabled: true,
+    disabled: false,
   },
   {
     title: "Tamanhos",
-    disabled: true,
+    disabled: false,
   },
 ];
 
@@ -479,4 +479,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default AddProduct;
+export default EditProduct;

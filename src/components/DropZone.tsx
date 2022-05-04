@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Box from "./Box";
 import Button from "./buttons/Button";
@@ -7,30 +7,40 @@ import Divider from "./Divider";
 import Grid from "./grid/Grid";
 import Icon from "./icon/Icon";
 import LazyImage from "./LazyImage";
+import Spinner from "./Spinner";
 import Typography, { H5, Small } from "./Typography";
 
 export interface DropZoneProps {
-  onChange?: (files: []) => void;
+  onChange?: (files: [], setLoading: any) => void;
   removeImage?: (index: number) => void;
   title?: string;
+  multiple?: boolean;
   imgs?: [];
+  disabled?: boolean; 
+  notEdit?: boolean;
 }
 
 const DropZone: React.FC<DropZoneProps> = ({
   onChange,
   removeImage,
-  title = "Arraste ou solte o arquivo aqui",
-  imgs = [],
+  multiple,
+  title,
+  imgs,
+  disabled,
+  notEdit
 }) => {
-  const onDrop = useCallback((acceptedFiles) => {
-    if (onChange) onChange(acceptedFiles);
+  const [loading, setLoading] = useState(false);
+
+  const onDrop = useCallback(async (acceptedFiles) => {
+    if (onChange) onChange(acceptedFiles, setLoading);
   }, []);
 
-  const validatorFile =  (file: File) => {
+  const validatorFile = (file: File) => {
     const maxLength = 20;
     const maxSize = 10000000;
 
     if (file.size > maxSize) {
+      setLoading(false);
       return {
         code: "file-too-large",
         message: `a imagem não pode exceder ${maxSize} bytes`,
@@ -38,12 +48,13 @@ const DropZone: React.FC<DropZoneProps> = ({
     }
 
     if (file.name.length > maxLength) {
+      setLoading(false);
       return {
         code: "name-too-large",
         message: `o nome da imagem é muito grande não pode exceder ${maxLength} caracteres`,
       };
     }
-
+    setLoading(true);
     return null;
   };
 
@@ -51,9 +62,10 @@ const DropZone: React.FC<DropZoneProps> = ({
     useDropzone({
       onDrop,
       validator: validatorFile,
-      multiple: true,
+      multiple,
       accept: ".jpeg,.jpg,.png,.webp",
       maxFiles: 10,
+      disabled,
     });
 
   const fileRejectionItems = fileRejections.map(({ file, errors }: any) => (
@@ -83,6 +95,7 @@ const DropZone: React.FC<DropZoneProps> = ({
         bg={isDragActive && "gray.200"}
         transition="all 250ms ease-in-out"
         style={{ outline: "none" }}
+        className={`${disabled ? "disabled" : ""}`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
@@ -101,15 +114,20 @@ const DropZone: React.FC<DropZoneProps> = ({
         >
           em
         </Typography>
-        <Button
-          color="primary"
-          bg="primary.light"
-          px="2rem"
-          mb="22px"
-          type="button"
-        >
-          Selecione o arquivo
-        </Button>
+
+        {loading ? (
+          <Spinner />
+        ) : (
+          <Button
+            color="primary"
+            bg="primary.light"
+            px="2rem"
+            mb="22px"
+            type="button"
+          >
+            Selecione o arquivo
+          </Button>
+        )}
 
         <Small color="text.muted">Carregar imagem 480*480</Small>
         <aside>
@@ -131,24 +149,27 @@ const DropZone: React.FC<DropZoneProps> = ({
                     gap: 4,
                   }}
                 >
-                  <IconButton
-                    size="small"
-                    variant="contained"
-                    type="button"
-                    bg="gray.400"
-                    p="0.15rem"
-                    mr="0.15rem"
-                    color={"gray.700"}
-                    marginRight="-8px"
-                  >
-                    <Icon
-                      variant="small"
-                      defaultcolor="currentColor"
-                      onClick={() => removeImage(index)}
+                  {notEdit ? null : (
+                    <IconButton
+                      size="small"
+                      variant="contained"
+                      type="button"
+                      bg="gray.400"
+                      p="0.15rem"
+                      mr="0.15rem"
+                      color={"gray.700"}
+                      marginRight="-8px"
                     >
-                      x
-                    </Icon>
-                  </IconButton>
+                      <Icon
+                        variant="small"
+                        defaultcolor="currentColor"
+                        onClick={() => removeImage(index)}
+                      >
+                        x
+                      </Icon>
+                    </IconButton>
+                  )}
+
                   <Box
                     display="flex"
                     flexDirection="column"
@@ -175,4 +196,11 @@ const DropZone: React.FC<DropZoneProps> = ({
   );
 };
 
+DropZone.defaultProps = {
+  title: "Arraste ou solte o arquivo aqui",
+  imgs: [],
+  multiple: false,
+  notEdit: false,
+  disabled: false
+};
 export default DropZone;

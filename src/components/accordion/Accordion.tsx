@@ -10,11 +10,13 @@ import { AccordionWrapper } from "./AccordionStyle";
 
 export interface AccordionProps {
   expanded?: boolean;
+  isForm?: boolean;
   children: ReactElement[] | any;
 }
 
 const Accordion: React.FC<AccordionProps> = ({
-  expanded = false,
+  expanded,
+  isForm,
   children,
 }) => {
   const [open, setOpen] = useState(expanded);
@@ -42,7 +44,11 @@ const Accordion: React.FC<AccordionProps> = ({
   });
 
   return (
-    <AccordionWrapper ref={ref} height={open ? parentHeight : headerHeight}>
+    <AccordionWrapper
+      style={open && isForm ? { height: "auto" } : {}}
+      ref={ref}
+      height={open ? parentHeight : headerHeight}
+    >
       {modifiedChildren}
     </AccordionWrapper>
   );
@@ -50,6 +56,7 @@ const Accordion: React.FC<AccordionProps> = ({
 
 Accordion.defaultProps = {
   expanded: false,
+  isForm: false
 };
 
 export default Accordion;

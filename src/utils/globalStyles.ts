@@ -102,6 +102,11 @@ export const GlobalStyles = createGlobalStyle`
   font-size: 12px;
 }
 
+.disabled{
+  cursor: not-allowed; 
+  background: ${({ theme }: any) => theme.colors.gray["100"]};
+}
+
 @-webkit-keyframes nprogress-spinner {
   0%   { -webkit-transform: rotate(0deg); }
   100% { -webkit-transform: rotate(360deg); }
