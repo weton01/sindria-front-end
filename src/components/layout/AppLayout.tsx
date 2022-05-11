@@ -7,21 +7,29 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import StyledAppLayout from "./AppLayoutStyle";
 
+type Categories =  {
+  clean: any[],
+  formated: any[]
+}
+
 type Props = {
   title?: string;
-  categories?: [];
+  categories?: Categories;
   navbar?: React.ReactChild;
 };
 
 const AppLayout: React.FC<Props> = ({
   children,
   navbar,
-  categories = [],
+  categories,
   title = "React Next.js Ecommerce Template",
 }) => {
   const dispatch = useDispatch();
 
-  if (categories.length > 0)
+  if (
+    categories?.clean?.length === 0 && 
+    categories?.formated?.length === 0
+  )
     useEffect(() => {
       dispatch({
         type: "SET_CATEGORY",

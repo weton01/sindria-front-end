@@ -1,26 +1,23 @@
+import withAuth from "@component/withAuth";
+import { NextPage } from "next";
+import NextApp from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import NextApp from "next/app";
-import React, { Fragment } from "react";
-import { ThemeProvider } from "styled-components";
-import { AppProvider } from "../contexts/app/AppContext";
-import { theme } from "../utils/theme";
-import { useStore } from "../store";
+import React, { Fragment, useEffect } from "react";
+import "react-credit-cards/es/styles-compiled.css";
+import { ToastContainer } from "react-nextjs-toast";
+import { Provider, useDispatch } from "react-redux";
+import "reactjs-popup/dist/index.css";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import { NextPage } from "next";
-import { Provider } from "react-redux";
-import { ToastContainer } from "react-nextjs-toast";
-import { parseCookies } from "nookies";  
-import withAuth from "@component/withAuth";
-
+import { get } from "services/api";
+import { ThemeProvider } from "styled-components";
+import { AppProvider } from "../contexts/app/AppContext";
+import { useStore } from "../store";
 import { GlobalStyles } from "../utils/globalStyles";
-
-import "reactjs-popup/dist/index.css";
+import { theme } from "../utils/theme";
 import "./_app.css";
-import "react-credit-cards/es/styles-compiled.css";
-import axios from "axios";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -29,7 +26,8 @@ Router.events.on("routeChangeError", () => NProgress.done());
 
 NProgress.configure({ showSpinner: false });
 
-const App: NextPage = ({ Component, pageProps, categories }: any) => {
+const App: NextPage = ({ Component, pageProps }: any) => {
+
   const store = useStore(pageProps.initialReduxState);
   const persistor = persistStore(store, {}, function () {
     persistor.persist();
@@ -60,7 +58,7 @@ const App: NextPage = ({ Component, pageProps, categories }: any) => {
       <AppProvider>
         <Provider store={store}>
           <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-            <Layout categories={categories}>
+            <Layout categories={pageProps.categories}>
               <div style={{ position: "absolute", zIndex: 99999 }}>
                 <ToastContainer align={"right"} position={"bottom"} />
               </div>
@@ -75,21 +73,13 @@ const App: NextPage = ({ Component, pageProps, categories }: any) => {
 
 App.getInitialProps = async (appContext: any) => {
   const appProps = await NextApp.getInitialProps(appContext);
-  const { ["shop_token"]: token } = parseCookies(appContext);
-  const api = axios.create({
-    baseURL: "https://92yiuy5790.execute-api.us-east-1.amazonaws.com/production/",
-  });
-  
-  api.interceptors.request.use((config) => {
-    config.headers["Authorization"] = `Bearer ${token}`;
-    return config;
-  });
-  const [categories]: any = await Promise.all([api.get(`category/v1/`)]);
- 
-  const newData = categories.data.map((item) => {
+
+  const [categories]: any = await Promise.all([get(`category/v1/`)]);
+
+  const newData = categories.map((item) => {
     const groupNames = item.subCategories.map((aux) => aux.groupName);
     const newCategories = [...new Set(groupNames)];
-    
+
     return {
       icon: item.image,
       title: item.name,
@@ -107,7 +97,15 @@ App.getInitialProps = async (appContext: any) => {
     };
   });
 
-  return { ...appProps, categories: newData };
+  return {
+    ...appProps,
+    pageProps: {
+      categories: {
+        formated: newData,
+        clean: categories
+      }
+    }
+  };
 };
 
 export default withAuth(App);
