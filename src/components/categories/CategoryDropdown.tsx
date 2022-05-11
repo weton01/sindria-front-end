@@ -13,15 +13,17 @@ export interface CategoryDropdownProps {
 
 const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   open,
-  position, 
+  position,
 }) => {
   const megaMenu = {
     MegaMenu1,
     MegaMenu2,
   };
- 
-  const categories = useSelector((selec: any )=> selec.category.items); 
-  
+
+  const categories = useSelector((selec: any) =>
+    selec?.category?.items?.formated
+  );
+
   return (
     <StyledCategoryDropdown open={open} position={position}>
       {categories?.map((item) => {

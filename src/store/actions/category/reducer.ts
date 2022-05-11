@@ -2,7 +2,10 @@ import types from "./types";
 import { HYDRATE } from "next-redux-wrapper";
 
 const initialState = {
-  items: [],
+  items: {
+    formated: [],
+    clean: []
+  },
 };
 
 const reducer = (state = initialState, action) => {
