@@ -2,8 +2,8 @@ import { get } from "./api";
 
 export const getUrlAssign = async () => get(`product/v1/s3/assign-url`);
 
-export const getProductById = async (id: any) =>
-  get(`product/v1/${id}`).then((value) => { 
+export const getProductById = async (id: any) =>{ 
+  return get(`product/v1/${id}`, {relations: ["tags"]}).then((value) => { 
     return {
       ...value,
       variations: value?.variations?.map((item) => {
@@ -15,3 +15,4 @@ export const getProductById = async (id: any) =>
       }) || [],
     };
   });
+}

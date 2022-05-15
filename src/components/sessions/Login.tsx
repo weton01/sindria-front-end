@@ -44,7 +44,8 @@ const Login: React.FC = () => {
     try {
       const { data } = await api.post("auth/v1/signin", values); 
       setCookie(undefined, 'shop_token', data?.token.toString(), {
-        maxAge: 60 * 60  * 7
+        maxAge: 60 * 60  * 7,
+        path: '/'
       })
       dispatch(userSignIn(data));
       router.push("/");

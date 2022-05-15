@@ -48,7 +48,6 @@ const ProductVariation = (props) => {
         break;
     }
   };
-
   useEffect(() => {
     switch (route) {
       case `/vendor/add-product/[id]`:
@@ -70,24 +69,19 @@ const ProductVariation = (props) => {
   }, [route]);
 
   const handleFormSubmit = async (values) => {
-    let result;
-    console.log(1);
+    let result; 
 
     const index =
       values.id === undefined
         ? product.variations.length - 1
         : props?.product?.variations?.findIndex(
             (item) => item.id === values.id
-          );
-    console.log(index);
-    let newVariations = [...product.variations];
-    console.log(newVariations);
+          ); 
+    let newVariations = [...product.variations]; 
 
     newVariations[index].loading.create = true;
 
-    console.log(3);
     setProduct({ ...product, variations: newVariations });
-    console.log(4);
     const {
       grossAmount,
       netAmount,
@@ -165,7 +159,7 @@ const ProductVariation = (props) => {
   return (
     <div>
       <DashboardPageHeader
-        title="Adicionar produto"
+        title={`Produto ${product.name}`}
         iconName="delivery-box"
         button={
           <Button
@@ -261,8 +255,7 @@ const ProductVariation = (props) => {
                                         const canvas =
                                           document.createElement("canvas");
                                         canvas.width = image.naturalWidth;
-                                        canvas.height = image.naturalHeight;
-                                        console.log(image.naturalWidth);
+                                        canvas.height = image.naturalHeight; 
                                         if (
                                           image.naturalWidth > 480 ||
                                           image.naturalHeight > 480
@@ -474,7 +467,6 @@ const ProductVariation = (props) => {
                             <Button
                               mt="25px"
                               variant="outlined"
-                              color="secondary"
                               type="button"
                               route={`/vendor/add-product/colors/${id}`}
                             >
@@ -545,7 +537,6 @@ const stepperList = [
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
   const { id } = ctx.query;
-
   try {
     api.interceptors.request.use((config) => {
       config.headers["Authorization"] = `Bearer ${token}`;
@@ -554,11 +545,19 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const [product] = await Promise.all([getProductById(id)]);
 
-    product.variations.push(initialValues);
-
+    if ("name" in product) {
+      product.variations.push(initialValues);
+      return {
+        props: { product },
+      };
+    } /* 
     return {
-      props: { product },
-    };
+      redirect: {
+        permanent: false,
+        destination: "/404",
+      },
+      props: {},
+    }; */
   } catch (err) {
     console.log("fail to verify tokens", err);
   }

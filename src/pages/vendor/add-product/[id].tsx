@@ -15,7 +15,7 @@ import * as yup from "yup";
 import { api, patch, post } from "services/api";
 import { getSubCategory } from "services/category";
 import { getTags } from "services/tags";
-import { getUrlAssign } from "services/product";
+import { getProductById, getUrlAssign } from "services/product";
 import ErrorMessage from "@component/ErrorMessage";
 import Stepper from "@component/stepper/Stepper";
 import { useRouter } from "next/router";
@@ -24,15 +24,27 @@ import axios from "axios";
 import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
 import { toast } from "react-nextjs-toast";
+import Icon from "@component/icon/Icon";
 
 const EditProduct = (props) => {
-  const { categories, tags, brands } = props;
+  const { categories, tags, brands, product } = props;
   const [selectedStep, setSelectedStep] = useState(0);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const edit = router?.query?.id ? true : false;
   const id = router?.query?.id;
   const { route } = router;
 
+  const valuesForm = {
+    name: product.name,
+    categories: product.categories,
+    brand: product.brand,
+    description: product.description,
+    grossAmount: product.grossAmount,
+    netAmount: product.netAmount,
+  };
+
+  console.log("product", product);
+  
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
@@ -52,7 +64,7 @@ const EditProduct = (props) => {
     }
   };
 
-  useEffect(() => {  
+  useEffect(() => {
     switch (route) {
       case `/vendor/add-product/[id]`:
         setSelectedStep(1);
@@ -86,10 +98,8 @@ const EditProduct = (props) => {
         id: item.value,
       })),
     };
-    let product;
-
-    if (edit) product = await patch(`product/v1/${id}`, payload);
-    else product = await post("product/v1", payload); 
+    setLoading(true);
+    const product = await patch(`product/v1/${id}`, payload);
 
     if (typeof product === "string") {
       toast.notify(product, {
@@ -98,19 +108,20 @@ const EditProduct = (props) => {
         type: "error",
       });
     } else {
-      toast.notify(`Produto ${edit ? "alterado" : "adicionado"}`, {
+      toast.notify(`Produto alterado`, {
         title: "Sucesso!",
         duration: 5,
         type: "success",
       });
       router.push(`/vendor/add-product/variations/${product.id}`);
     }
+    setLoading(false);
   };
-
+ 
   return (
     <div>
       <DashboardPageHeader
-        title="Adicionar produto"
+        title={`Produto ${product.name}`}
         iconName="delivery-box"
         button={
           <Button
@@ -133,7 +144,7 @@ const EditProduct = (props) => {
       </Box>
       <Card p="30px">
         <Formik
-          initialValues={initialValues}
+          initialValues={valuesForm}
           validationSchema={checkoutSchema}
           onSubmit={handleFormSubmit}
         >
@@ -147,233 +158,247 @@ const EditProduct = (props) => {
             setFieldTouched,
             setFieldValue,
             setFieldError,
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={6}>
-                <Grid item sm={12} xs={12}>
-                  <TextField
-                    name="name"
-                    label="Nome"
-                    placeholder="Nome do produto"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.name || ""}
-                    errorText={touched.name && errors.name}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Field name="images">
-                    {({ meta }) => (
-                      <div>
-                        <DropZone
-                          multiple={true}
-                          imgs={values.images}
-                          removeImage={(index) => {
-                            const images = values.images;
-                            images.splice(index, 1);
-                            setFieldValue("images", images);
-                          }}
-                          title="Arraste ou solte a imagem do produto aqui"
-                          onChange={(files, setLoading) => {
-                            files.forEach(async (file: File, index) => {
-                              const { url } = await getUrlAssign();
-                              let fd = new FormData();
-                              const blob: any = await processFile(file);
-                              const image = new Image();
-                              image.onload = () => {
-                                const canvas = document.createElement("canvas");
-                                canvas.width = image.naturalWidth;
-                                canvas.height = image.naturalHeight;
-                                console.log(image.naturalWidth);
-                                if (
-                                  image.naturalWidth > 480 ||
-                                  image.naturalHeight > 480
-                                ) {
-                                  setFieldError(
-                                    "images",
-                                    "limite da dimensão da imagem é 480*480"
-                                  );
-                                  setFieldTouched("images", true, false);
-                                  setLoading(false);
-                                  return;
-                                }
-                                canvas.getContext("2d").drawImage(image, 0, 0);
-                                canvas.toBlob(async (blob) => {
-                                  const myImage = new File([blob], file.name, {
-                                    type: blob.type,
-                                  });
-                                  fd.append("acl", "public-read");
-                                  fd.append("Content-Type", "image/webp");
+          }) => {
+            return (
+              <form onSubmit={handleSubmit}>
+                <Grid container spacing={6}>
+                  <Grid item sm={12} xs={12}>
+                    <TextField
+                      disabled
+                      name="name"
+                      label="Nome"
+                      placeholder="Nome do produto"
+                      fullwidth
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.name || ""}
+                      errorText={touched?.name && errors?.name}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Field name="images">
+                      {({ meta }) => (
+                        <div>
+                          <DropZone
+                            multiple={true}
+                            imgs={values.images}
+                            removeImage={(index) => {
+                              const images = values.images;
+                              images.splice(index, 1);
+                              setFieldValue("images", images);
+                            }}
+                            title="Arraste ou solte a imagem do produto aqui"
+                            onChange={(files, setLoading) => {
+                              files.forEach(async (file: File, index) => {
+                                const { url } = await getUrlAssign();
+                                let fd = new FormData();
+                                const blob: any = await processFile(file);
+                                const image = new Image();
+                                image.onload = () => {
+                                  const canvas =
+                                    document.createElement("canvas");
+                                  canvas.width = image.naturalWidth;
+                                  canvas.height = image.naturalHeight;
+                                  console.log(image.naturalWidth);
+                                  if (
+                                    image.naturalWidth > 480 ||
+                                    image.naturalHeight > 480
+                                  ) {
+                                    setFieldError(
+                                      "images",
+                                      "limite da dimensão da imagem é 480*480"
+                                    );
+                                    setFieldTouched("images", true, false);
+                                    setLoading(false);
+                                    return;
+                                  }
+                                  canvas
+                                    .getContext("2d")
+                                    .drawImage(image, 0, 0);
+                                  canvas.toBlob(async (blob) => {
+                                    const myImage = new File(
+                                      [blob],
+                                      file.name,
+                                      {
+                                        type: blob.type,
+                                      }
+                                    );
+                                    fd.append("acl", "public-read");
+                                    fd.append("Content-Type", "image/webp");
 
-                                  fd.append("key", url.put.fields["key"]);
-                                  fd.append("bucket", url.put.fields["bucket"]);
-                                  fd.append(
-                                    "X-Amz-Algorithm",
-                                    url.put.fields["X-Amz-Algorithm"]
-                                  );
-                                  fd.append(
-                                    "X-Amz-Credential",
-                                    url.put.fields["X-Amz-Credential"]
-                                  );
-                                  fd.append(
-                                    "X-Amz-Date",
-                                    url.put.fields["X-Amz-Date"]
-                                  );
+                                    fd.append("key", url.put.fields["key"]);
+                                    fd.append(
+                                      "bucket",
+                                      url.put.fields["bucket"]
+                                    );
+                                    fd.append(
+                                      "X-Amz-Algorithm",
+                                      url.put.fields["X-Amz-Algorithm"]
+                                    );
+                                    fd.append(
+                                      "X-Amz-Credential",
+                                      url.put.fields["X-Amz-Credential"]
+                                    );
+                                    fd.append(
+                                      "X-Amz-Date",
+                                      url.put.fields["X-Amz-Date"]
+                                    );
 
-                                  fd.append(
-                                    "X-Amz-Signature",
-                                    url.put.fields["X-Amz-Signature"]
-                                  );
+                                    fd.append(
+                                      "X-Amz-Signature",
+                                      url.put.fields["X-Amz-Signature"]
+                                    );
 
-                                  fd.append("Policy", url.put.fields["Policy"]);
+                                    fd.append(
+                                      "Policy",
+                                      url.put.fields["Policy"]
+                                    );
 
-                                  fd.append("file", myImage);
-                                  await axios.post(
-                                    url.put.url,
-                                    fd,
-                                    {
+                                    fd.append("file", myImage);
+                                    await axios.post(url.put.url, fd, {
                                       onUploadProgress: (
                                         progress: ProgressEvent
                                       ) => {
-                                        let percent =
-                                          Math.round(
-                                            (progress.loaded *
-                                              100) /
-                                              progress.total
-                                          );
-                                          console.log('====================================')
-                                          console.log(percent)
-                                          console.log('====================================')
-                                          console.log('====================================');
-                                          console.log(index);
-                                          console.log('====================================');
+                                        let percent = Math.round(
+                                          (progress.loaded * 100) /
+                                            progress.total
+                                        );
                                         if (
                                           percent === 100 &&
-                                          files.length -
-                                            1 ===
-                                            index
+                                          files.length - 1 === index
                                         ) {
-                                          console.log("aqui");
-                                          
                                           setLoading(false);
                                         }
                                       },
-                                    }
-                                  );
-                                  const images = values.images;
+                                    });
+                                    const images = values.images;
 
-                                  images.push(url.get);
-                                  setFieldValue("images", images);
-                                }, "image/webp");
-                              };
-                              image.src = blob;
-                            });
-                          }}
-                        />
-                        {meta.touched && meta.error && (
-                          <ErrorMessage name="images" />
-                        )}
-                      </div>
-                    )}
-                  </Field>
+                                    images.push(url.get);
+                                    setFieldValue("images", images);
+                                  }, "image/webp");
+                                };
+                                image.src = blob;
+                              });
+                            }}
+                          />
+                          {meta.touched && meta.error && (
+                            <ErrorMessage name="images" />
+                          )}
+                        </div>
+                      )}
+                    </Field>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextArea
+                      name="description"
+                      label="Descrição"
+                      placeholder="Descrição"
+                      rows={6}
+                      fullwidth
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.description || ""}
+                      errorText={touched.description && errors.description}
+                    />
+                  </Grid>
+                  <Grid item sm={6} xs={12}>
+                    <TextField
+                      name="grossAmount"
+                      label="Valor Bruto"
+                      placeholder="Valor bruto"
+                      mask={MaskInput.money}
+                      addonBefore="R$"
+                      fullwidth
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.grossAmount || ""}
+                      errorText={touched.grossAmount && errors.grossAmount}
+                    />
+                  </Grid>
+                  <Grid item sm={6} xs={12}>
+                    <TextField
+                      name="netAmount"
+                      label="Valor liquido"
+                      placeholder="Valor liquido"
+                      mask={MaskInput.money}
+                      addonBefore="R$"
+                      fullwidth
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.netAmount || ""}
+                      errorText={touched.netAmount && errors.netAmount}
+                    />
+                  </Grid>
+                  <Grid item sm={12} xs={12}>
+                    <Select
+                      name="brand"
+                      label="Marcas"
+                      placeholder="Selecione a marca"
+                      options={brands}
+                      onBlur={handleBlur}
+                      onChange={(e) => {
+                        setFieldValue("brand", e || []);
+                      }}
+                      defaultValue={values.brand || ""}
+                      errorText={touched.brand && errors.brand}
+                    />
+                  </Grid>
+                  <Grid item sm={12} xs={12}>
+                    <Select
+                      name="categories"
+                      label="Categorias"
+                      placeholder="Selecione as categorias"
+                      isMulti
+                      options={categories}
+                      onBlur={handleBlur}
+                      onChange={(e) => {
+                        setFieldValue("categories", e || []);
+                      }}
+                      defaultValue={values.categories || ""}
+                      errorText={touched.categories && errors.categories}
+                    />
+                  </Grid>
+                  <Grid item sm={12} xs={12}>
+                    <Select
+                      name="tags"
+                      label="Etiquetas"
+                      placeholder="Selecione as etiquetas"
+                      isMulti
+                      options={tags}
+                      onBlur={handleBlur}
+                      onChange={(e) => {
+                        setFieldValue("tags", e || []);
+                      }}
+                      defaultValue={values.tags || ""}
+                      errorText={touched.tags && errors.tags}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <TextArea
-                    name="description"
-                    label="Descrição"
-                    placeholder="Descrição"
-                    rows={6}
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.description || ""}
-                    errorText={touched.description && errors.description}
-                  />
+                <Grid item sm={12} xs={12} style={{ display: "flex", gap: 16 }}>
+                  <Button
+                    mt="25px"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    loading={loading}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    mt="25px"
+                    variant="outlined"
+                    type="button"
+                    route={`/vendor/add-product/variations/${id}`}
+                  >
+                    Próximo
+                    <Icon size="18px" defaultcolor="auto">
+                      arrow-right
+                    </Icon>
+                  </Button>
                 </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField
-                    name="grossAmount"
-                    label="Valor Bruto"
-                    placeholder="Valor bruto"
-                    mask={MaskInput.money}
-                    addonBefore="R$"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.grossAmount || ""}
-                    errorText={touched.grossAmount && errors.grossAmount}
-                  />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField
-                    name="netAmount"
-                    label="Valor liquido"
-                    placeholder="Valor liquido"
-                    mask={MaskInput.money}
-                    addonBefore="R$"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.netAmount || ""}
-                    errorText={touched.netAmount && errors.netAmount}
-                  />
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                  <Select
-                    name="brand"
-                    label="Marcas"
-                    placeholder="Selecione a marca"
-                    options={brands}
-                    onBlur={handleBlur}
-                    onChange={(e) => {
-                      setFieldValue("brand", e || []);
-                    }}
-                    defaultValue={values.brand || ""}
-                    errorText={touched.brand && errors.brand}
-                  />
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                  <Select
-                    name="categories"
-                    label="Categorias"
-                    placeholder="Selecione as categorias"
-                    isMulti
-                    options={categories}
-                    onBlur={handleBlur}
-                    onChange={(e) => {
-                      setFieldValue("categories", e || []);
-                    }}
-                    defaultValue={values.categories || ""}
-                    errorText={touched.categories && errors.categories}
-                  />
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                  <Select
-                    name="tags"
-                    label="Etiquetas"
-                    placeholder="Selecione as etiquetas"
-                    isMulti
-                    options={tags}
-                    onBlur={handleBlur}
-                    onChange={(e) => {
-                      setFieldValue("tags", e || []);
-                    }}
-                    defaultValue={values.tags || ""}
-                    errorText={touched.tags && errors.tags}
-                  />
-                </Grid>
-              </Grid>
-              <Button
-                mt="25px"
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Criar
-              </Button>
-            </form>
-          )}
+              </form>
+            );
+          }}
         </Formik>
       </Card>
     </div>
@@ -433,6 +458,7 @@ const stepperList = [
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
+  const { id } = ctx.query;
 
   try {
     api.interceptors.request.use((config) => {
@@ -440,10 +466,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return config;
     });
 
-    const [categories, tags, brands] = await Promise.all([
+    let [categories, tags, brands, product] = await Promise.all([
       getSubCategory(),
       getTags(),
       getBrands(),
+      getProductById(id),
     ]);
 
     const newCategories = categories?.items?.map((item) => {
@@ -467,8 +494,26 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       };
     });
 
+    
+    product.categories = product?.categories?.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    }); 
+
+    product.brand = {
+      label: product.brand.name,
+      value: product.brand.id,
+    }
+    
     return {
-      props: { categories: newCategories, tags: newTags, brands: newBrands },
+      props: {
+        categories: newCategories,
+        tags: newTags,
+        brands: newBrands,
+        product,
+      },
     };
   } catch (err) {
     console.log("fail to verify tokens", err);
