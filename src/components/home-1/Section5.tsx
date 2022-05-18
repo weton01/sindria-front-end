@@ -4,7 +4,15 @@ import CategorySectionCreator from "../CategorySectionCreator";
 import Grid from "../grid/Grid";
 import ProductCard2 from "../product-cards/ProductCard2";
 
-const Section5: React.FC = () => {
+export interface Section5Props {
+  data: {
+    items: any[],
+    count: number
+  }
+}
+
+const Section5: React.FC<Section5Props> = ({ data }: Section5Props) => {
+  console.log(data)
   return (
     <CategorySectionCreator
       iconName="new-product-1"
@@ -13,9 +21,14 @@ const Section5: React.FC = () => {
     >
       <Card p="1rem">
         <Grid container spacing={6}>
-          {productList.map((item) => (
+          {data?.items?.map((item) => (
             <Grid item lg={2} md={3} sm={4} xs={6} key={item.title}>
-              <ProductCard2 {...item} />
+              <ProductCard2
+                imgUrl={item.images[0]}
+                price={item.netAmount}
+                productUrl={``}
+                title={item.name}
+              />
             </Grid>
           ))}
         </Grid>

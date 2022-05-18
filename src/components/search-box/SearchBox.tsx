@@ -30,17 +30,14 @@ const SearchBox: React.FC<SearchBoxProps> = () => {
   );
 
   const handleCategoryChange = (cat) => () => {
-    console.log('here', cat)
     setCategory(cat);
   };
 
   useEffect(() => { 
-    console.log('changed', category)
   }, [category])
 
   const search = async (e) => {
     const value = e.target?.value;
-    console.log(category)
     if (!value) setResultList([]);
     else {
       const { data } = await api.get(`product/v1/navbar/${value}`, {
@@ -55,7 +52,6 @@ const SearchBox: React.FC<SearchBoxProps> = () => {
   };
 
   const hanldeSearch = (event) => {
-   
     search(event);
   };
 

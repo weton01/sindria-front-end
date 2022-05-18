@@ -8,7 +8,11 @@ import Container from "../Container";
 import Grid from "../grid/Grid";
 import Typography from "../Typography";
 
-const Section10: React.FC = () => {
+export interface Section10Props {
+  data: any []
+}
+
+const Section10: React.FC<Section10Props> = ({ data }: Section10Props) => {
   return (
     <Container mb="70px">
       <CategorySectionHeader
@@ -18,7 +22,7 @@ const Section10: React.FC = () => {
       />
 
       <Grid container spacing={6}>
-        {categoryList.map((item, ind) => (
+        {data.map((item, ind) => (
           <Grid item lg={2} md={3} sm={4} xs={12} key={ind}>
             <Link href="/">
               <a>
@@ -31,7 +35,7 @@ const Section10: React.FC = () => {
                   hoverEffect
                 >
                   <LazyImage
-                    src={productDatabase[ind * 13 + 100].imgUrl}
+                    src={`/assets/images/icons/${item.image}.svg`}
                     alt="fashion"
                     height="52px"
                     width="52px"
@@ -39,7 +43,7 @@ const Section10: React.FC = () => {
                     borderRadius={8}
                   />
                   <Typography fontWeight="600" fontSize="14px" ml="10px">
-                    {item}
+                    {item.name}
                   </Typography>
                 </Card>
               </a>
@@ -50,20 +54,6 @@ const Section10: React.FC = () => {
     </Container>
   );
 };
-
-const categoryList = [
-  "Automóvel",
-  "Carro",
-  "Moda",
-  "Eletrônicos",
-  "Móvel",
-  "Computador portátil",
-  "Área de Trabalho",
-  "Tábua",
-  "Moda",
-  "Eletrônicos",
-  "Mobília",
-  "Câmera",
-];
+ 
 
 export default Section10;
