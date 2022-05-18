@@ -5,7 +5,11 @@ import Carousel from "../carousel/Carousel";
 import CategorySectionCreator from "../CategorySectionCreator";
 import ProductCard1 from "../product-cards/ProductCard1";
 
-const Section2: React.FC = () => {
+export interface Section2Props {
+  data: any []
+}
+
+const Section2: React.FC<Section2Props> = ({ data }: Section2Props) => {
   const [visibleSlides, setVisibleSlides] = useState(4);
   const width = useWindowSize();
 
@@ -19,20 +23,20 @@ const Section2: React.FC = () => {
   return (
     <CategorySectionCreator
       iconName="light"
-      title="Ofertas relâmpago"
+      title="Mais Vendidos"
       seeMoreLink="#"
     >
       <Box mt="-0.25rem" mb="-0.25rem">
         <Carousel totalSlides={10} visibleSlides={visibleSlides}>
-          {productList.map((item, ind) => (
+          {data.map((item, ind) => (
             <Box py="0.25rem" key={ind}>
               <ProductCard1
-                id={ind}
-                imgUrl={item.imgUrl}
+                id={item.p_id}
+                imgUrl={item.p_images}
                 title="Smart watch black"
                 rating={4}
-                price={250}
-                off={56}
+                price={item.p_grossAmount}
+                off={item.p_netAmount}
                 key={ind}
               />
             </Box>
@@ -42,38 +46,5 @@ const Section2: React.FC = () => {
     </CategorySectionCreator>
   );
 };
-
-const productList = [
-  {
-    imgUrl: "/assets/images/products/flash-1.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-2.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-3.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-4.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-1.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-2.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-3.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-4.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-1.png",
-  },
-  {
-    imgUrl: "/assets/images/products/flash-2.png",
-  },
-];
-
+ 
 export default Section2;

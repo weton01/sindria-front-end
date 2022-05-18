@@ -6,7 +6,13 @@ import React, { useEffect, useState } from "react";
 import CategorySectionCreator from "../CategorySectionCreator";
 import ProductCard6 from "../product-cards/ProductCard6";
 
-const Section3: React.FC = () => {
+export interface Section3Props {
+  data: any []
+}
+
+const imageUrlMock = 'https://flora-express-images.s3.amazonaws.com/generic-shop/743425c0-1295-4062-b5c2-9d7e9faeec04'
+
+const Section3: React.FC<Section3Props> = ({ data }: Section3Props) => {
   const [visibleSlides, setVisibleSlides] = useState(3);
   const width = useWindowSize();
 
@@ -19,18 +25,18 @@ const Section3: React.FC = () => {
   return (
     <CategorySectionCreator
       iconName="categories"
-      title="Top categorias"
+      title="Top Categorias"
       seeMoreLink="#"
     >
       <Carousel totalSlides={5} visibleSlides={visibleSlides}>
-        {categoryList.map((item, ind) => (
-          <Link href={item.categoryUrl} key={ind}>
+        {data.map((item, ind) => (
+          <Link href={imageUrlMock} key={ind}>
             <a>
               <Card p="1rem">
                 <ProductCard6
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  imgUrl={item.imgUrl}
+                  title={item.c_name}
+                  subtitle={`${item.salesQuantity} vendidos esta semana`}
+                  imgUrl={`/assets/images/icons/${item.c_image}.svg`}
                 />
               </Card>
             </a>

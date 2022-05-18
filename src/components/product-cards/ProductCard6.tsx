@@ -2,6 +2,7 @@ import Card from "@component/Card";
 import { Chip } from "@component/Chip";
 import HoverBox from "@component/HoverBox";
 import LazyImage from "@component/LazyImage";
+import Image from 'next/image'
 import React from "react";
 
 export interface ProductCard6Props {
@@ -46,11 +47,10 @@ const ProductCard6: React.FC<ProductCard6Props> = ({
       </Chip>
 
       <HoverBox position="relative" height="120px">
-        <LazyImage
+        <Image
           src={imgUrl}
-          layout="fill"
+          layout={"fill"}
           objectFit="cover"
-          borderRadius={8}
         />
       </HoverBox>
     </Card>

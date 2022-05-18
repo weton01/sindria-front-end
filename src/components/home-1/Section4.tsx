@@ -8,7 +8,17 @@ import Grid from "../grid/Grid";
 import ProductCard4 from "../product-cards/ProductCard4";
 import ProductCard5 from "../product-cards/ProductCard5";
 
-const Section4: React.FC = () => {
+export interface Section4Props {
+  data: {
+    reviews: any[],
+    brands: any[]
+  }
+}
+
+const imageUrlMock = 'https://flora-express-images.s3.amazonaws.com/generic-shop/743425c0-1295-4062-b5c2-9d7e9faeec04'
+
+const Section4: React.FC<Section4Props> = ({ data }: Section4Props) => {
+
   return (
     <Box mb="3.75rem">
       <Container>
@@ -22,11 +32,18 @@ const Section4: React.FC = () => {
               />
               <Card p="1rem">
                 <Grid container spacing={4}>
-                  {topRatedList.map((item) => (
+                  {data.reviews.map((item) => (
                     <Grid item md={3} sm={6} xs={6} key={item.title}>
-                      <Link href={item.productUrl}>
+                      <Link href={item.p_images}>
                         <a>
-                          <ProductCard4 {...item} />
+                          <ProductCard4
+                            imgUrl={item.p_images}
+                            price={item.p_netAmount}
+                            rating={item.rate}
+                            reviewCount={item.qtd}
+                            title={item.p_name}
+                            key={item.p_id}
+                          />
                         </a>
                       </Link>
                     </Grid>
@@ -37,16 +54,20 @@ const Section4: React.FC = () => {
             <Grid item md={6} xs={12}>
               <CategorySectionHeader
                 iconName="Group"
-                title="Marcas em destaque"
+                title="Marcas em Destaque"
                 seeMoreLink="#"
               />
               <Card p="1rem">
                 <Grid container spacing={4}>
-                  {brandList.map((item) => (
+                  {data.brands.map((item) => (
                     <Grid item sm={6} xs={12} key={item.title}>
-                      <Link href={item.productUrl}>
+                      <Link href={imageUrlMock}>
                         <a>
-                          <ProductCard5 {...item} />
+                          <ProductCard5
+                            imgUrl={imageUrlMock}
+                            title={item.b_name}
+                            key={item.p_id}
+                          />
                         </a>
                       </Link>
                     </Grid>
