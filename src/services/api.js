@@ -1,8 +1,10 @@
 import axios from "axios";
 import { store } from "store";
 
+export const PROD_URL = "https://92yiuy5790.execute-api.us-east-1.amazonaws.com/production/"
+
 export const api = axios.create({
-  baseURL: "https://92yiuy5790.execute-api.us-east-1.amazonaws.com/production/",
+  baseURL: PROD_URL,
 });
 
 if (typeof window !== "undefined") {

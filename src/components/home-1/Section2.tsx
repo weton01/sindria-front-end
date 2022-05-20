@@ -32,8 +32,8 @@ const Section2: React.FC<Section2Props> = ({ data }: Section2Props) => {
             <Box py="0.25rem" key={ind}>
               <ProductCard1
                 id={item.p_id}
-                imgUrl={item.p_images}
-                title="Smart watch black"
+                imgUrl={item.p_images.split(',')[0]}
+                title={item.p_name}
                 rating={4}
                 price={item.p_grossAmount}
                 off={item.p_netAmount}

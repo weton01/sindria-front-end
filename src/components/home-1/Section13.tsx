@@ -7,6 +7,7 @@ import LazyImage from "@component/LazyImage";
 import { H4 } from "@component/Typography";
 import productDatabase from "@data/product-database";
 import useWindowSize from "@hook/useWindowSize";
+import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import CategorySectionCreator from "../CategorySectionCreator";
@@ -55,11 +56,11 @@ const Section13: React.FC = () => {
                         color="primary.main"
                         mr="0.5rem"
                       >
-                        R${Math.ceil(item.price).toLocaleString()}
+                         {formatCurrency(Math.ceil(item.price))}
                       </H4>
 
                       <H4 fontWeight="600" fontSize="14px" color="text.muted">
-                        <del>R${Math.ceil(item.price).toLocaleString()}</del>
+                        <del>{formatCurrency(Math.ceil(item.price))}</del>
                       </H4>
                     </FlexBox>
                   </a>

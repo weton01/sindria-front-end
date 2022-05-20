@@ -1,6 +1,7 @@
 import HoverBox from "@component/HoverBox";
 import LazyImage from "@component/LazyImage";
 import { H4 } from "@component/Typography";
+import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
 import React from "react";
 
@@ -33,7 +34,7 @@ const ProductCard2: React.FC<ProductCard2Props> = ({
           {title}
         </H4>
         <H4 fontWeight="600" fontSize="14px" color="primary.main">
-          R${Math.ceil(price).toLocaleString()}
+          {formatCurrency(Math.ceil(price))}
         </H4>
       </a>
     </Link>

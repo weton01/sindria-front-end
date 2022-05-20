@@ -16,6 +16,7 @@ export interface GridProps {
   vertical_spacing?: number;
   className?: string;
   children: ReactElement<GridProps>[] | any;
+  height?: string | number;
   [key: string]: unknown;
 }
 

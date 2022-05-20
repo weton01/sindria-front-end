@@ -37,7 +37,7 @@ const Section4: React.FC<Section4Props> = ({ data }: Section4Props) => {
                       <Link href={item.p_images}>
                         <a>
                           <ProductCard4
-                            imgUrl={item.p_images}
+                            imgUrl={item.p_images.split(',')[0]}
                             price={item.p_netAmount}
                             rating={item.rate}
                             reviewCount={item.qtd}

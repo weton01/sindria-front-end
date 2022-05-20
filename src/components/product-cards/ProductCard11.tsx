@@ -74,7 +74,7 @@ const ProductCard11: React.FC<ProductCard11Props> = ({
 
           <FlexBox alignItems="center">
             <SemiSpan pr="0.25rem" fontWeight="600" color="primary.main">
-              ${price?.toLocaleString()}
+              ${price?.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}
             </SemiSpan>
 
             {oldPrice && (

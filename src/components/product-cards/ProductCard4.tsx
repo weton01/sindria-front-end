@@ -2,6 +2,7 @@ import Box from "@component/Box";
 import HoverBox from "@component/HoverBox";
 import LazyImage from "@component/LazyImage";
 import { H4, Small } from "@component/Typography";
+import { formatCurrency } from "@utils/formatCurrency";
 import React from "react";
 import { CSSProperties } from "styled-components";
 import FlexBox from "../FlexBox";
@@ -60,7 +61,7 @@ const ProductCard4: React.FC<ProductCard4Props> = ({
         textAlign="center"
         color="primary.main"
       >
-        R${Math.ceil(price).toLocaleString()}
+        {formatCurrency(Math.ceil(price))}
       </H4>
     </Box>
   );

@@ -14,7 +14,7 @@ import {
 import Box from "./Box";
 
 interface FlexTypes {
-  gap?: string 
+  gap?: string | number
 }
 
 const FlexBox = styled(Box)<

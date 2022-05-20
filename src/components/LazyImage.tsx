@@ -16,6 +16,10 @@ interface LazyImageProps {
   props?: any;
 }
 
+interface LazySpinn {
+  spinning: boolean
+}
+
 const LazyImageStyle = styled(NextImage)<
   ImageProps & BorderProps & SpaceProps & ColorProps
 >`
@@ -26,10 +30,10 @@ const LazyImageStyle = styled(NextImage)<
 `;
 
 const LazyImage: React.FC<
-  LazyImageProps & ImageProps & BorderProps & SpaceProps & ColorProps
-> = ({ onLoad, ...props }) => {
+  LazyImageProps & ImageProps & BorderProps & SpaceProps & ColorProps & LazySpinn
+> = ({ onLoad,   ...props }) => {
   const [count, setCount] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const onLoadImage = async (props) => {
     let currentCount = count;
@@ -40,7 +44,7 @@ const LazyImage: React.FC<
   };
 
   return (
-    <Spin loading={loading}>
+    <Spin loading={props.spinning? loading: false}>
       <LazyImageStyle onLoad={onLoadImage} {...props} />
     </Spin>
   );
