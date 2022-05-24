@@ -16,3 +16,7 @@ export const getProductById = async (id: any) =>{
     };
   });
 }
+
+export const getProduct = async (skip, take) =>{ 
+  return get(`product/v1/`, {skip, take});
+}

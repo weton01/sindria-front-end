@@ -28,7 +28,7 @@ const Section2: React.FC<Section2Props> = ({ data }: Section2Props) => {
     >
       <Box mt="-0.25rem" mb="-0.25rem">
         <Carousel totalSlides={10} visibleSlides={visibleSlides}>
-          {data.map((item, ind) => (
+          {data?.map((item, ind) => (
             <Box py="0.25rem" key={ind}>
               <ProductCard1
                 id={item.p_id}

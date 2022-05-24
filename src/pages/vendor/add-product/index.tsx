@@ -24,15 +24,18 @@ import axios from "axios";
 import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
 import { toast } from "react-nextjs-toast";
+import type { NextRequest } from 'next/server'
 
 const AddProduct = (props) => {
   const { categories, tags, brands } = props;
   const [selectedStep, setSelectedStep] = useState(0);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const edit = router?.query?.id ? true : false;
   const id = router?.query?.id;
   const { route } = router;
 
+  
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
@@ -87,10 +90,10 @@ const AddProduct = (props) => {
       })),
     };
     let product;
-
+    setLoading(true);
     if (edit) product = await patch(`product/v1/single/${id}`, payload);
-    else product = await post("product/v1", payload); 
-
+    else product = await post("product/v1", payload);  
+    setLoading(false);
     if (typeof product === "string") {
       toast.notify(product, {
         title: "Erro!",
@@ -117,7 +120,7 @@ const AddProduct = (props) => {
             color="primary"
             bg="primary.light"
             px="2rem"
-            route="/vendor/add-product/products"
+            route="/vendor/products"
           >
             Voltar para produtos
           </Button>
@@ -261,7 +264,7 @@ const AddProduct = (props) => {
                                       },
                                     }
                                   );
-                                  const images = values.images;
+                                  const images = [...values.images];
 
                                   images.push(url.get);
                                   setFieldValue("images", images);
@@ -322,7 +325,7 @@ const AddProduct = (props) => {
                 <Grid item sm={12} xs={12}>
                   <Select
                     name="brand"
-                    label="Marcas"
+                    label="Marca"
                     placeholder="Selecione a marca"
                     options={brands}
                     onBlur={handleBlur}
@@ -369,6 +372,7 @@ const AddProduct = (props) => {
                 variant="contained"
                 color="primary"
                 type="submit"
+                loading={loading}
               >
                 Criar
               </Button>
@@ -433,7 +437,9 @@ const stepperList = [
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
-
+  console.log('====================================')
+  console.log(ctx.locale)
+  console.log('====================================')
   try {
     api.interceptors.request.use((config) => {
       config.headers["Authorization"] = `Bearer ${token}`;

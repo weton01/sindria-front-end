@@ -29,7 +29,7 @@ const Section3: React.FC<Section3Props> = ({ data }: Section3Props) => {
       seeMoreLink="#"
     >
       <Carousel totalSlides={5} visibleSlides={visibleSlides}>
-        {data.map((item, ind) => (
+        {data?.map((item, ind) => (
           <Link href={imageUrlMock} key={ind}>
             <a>
               <Card p="1rem">

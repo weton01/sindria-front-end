@@ -22,7 +22,7 @@ const Section10: React.FC<Section10Props> = ({ data }: Section10Props) => {
       />
 
       <Grid container spacing={6}>
-        {data.map((item, ind) => (
+        {data?.map((item, ind) => (
           <Grid item lg={2} md={3} sm={4} xs={12} key={ind}>
             <Link href="/">
               <a>

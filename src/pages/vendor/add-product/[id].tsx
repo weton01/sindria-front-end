@@ -38,12 +38,14 @@ const EditProduct = (props) => {
     name: product.name,
     categories: product.categories,
     brand: product.brand,
+    tags: product.tags,
     description: product.description,
     grossAmount: product.grossAmount,
     netAmount: product.netAmount,
+    images: product.images
   };
 
-  console.log("product", product);
+  console.log(tags);
   
   const handleStepChange = (_step, ind) => {
     switch (ind) {
@@ -86,8 +88,7 @@ const EditProduct = (props) => {
 
   const handleFormSubmit = async (values) => {
     const { categories, tags, brand, grossAmount, netAmount } = values;
-    const payload = {
-      ...values,
+    const payload = { 
       brand: { id: brand.value },
       grossAmount: Number(grossAmount),
       netAmount: Number(netAmount),
@@ -128,7 +129,7 @@ const EditProduct = (props) => {
             color="primary"
             bg="primary.light"
             px="2rem"
-            route="/vendor/add-product/products"
+            route="/vendor/products"
           >
             Voltar para produtos
           </Button>
@@ -332,7 +333,7 @@ const EditProduct = (props) => {
                   <Grid item sm={12} xs={12}>
                     <Select
                       name="brand"
-                      label="Marcas"
+                      label="Marca"
                       placeholder="Selecione a marca"
                       options={brands}
                       onBlur={handleBlur}
@@ -404,17 +405,7 @@ const EditProduct = (props) => {
     </div>
   );
 };
-
-const initialValues = {
-  name: "",
-  grossAmount: "",
-  netAmount: "",
-  tags: [],
-  categories: [],
-  images: [],
-  brand: "",
-};
-
+ 
 const checkoutSchema = yup.object().shape({
   name: yup.string().required("campo requerido"),
   description: yup.string().required("campo requerido"),
@@ -494,7 +485,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       };
     });
 
-    
+    product.brand = {
+      label: product.brand.name,
+      value: product.brand.id,
+    }
+
     product.categories = product?.categories?.map((item) => {
       return {
         label: item.name,
@@ -502,10 +497,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       };
     }); 
 
-    product.brand = {
-      label: product.brand.name,
-      value: product.brand.id,
-    }
+    product.tags = product?.tags?.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    }); 
     
     return {
       props: {

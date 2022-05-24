@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 
-const Error404 = () => {
+const Error = () => {
   const router = useRouter();
 
   const handleGoBack = async () => {
@@ -45,4 +45,4 @@ const Error404 = () => {
   );
 };
 
-export default Error404;
+export default Error;

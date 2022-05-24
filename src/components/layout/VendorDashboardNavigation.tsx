@@ -39,29 +39,29 @@ const VendorDashboardNavigation = () => {
 const linkList = [
   {
     href: "/vendor/dashboard",
-    title: "Dashboard",
+    title: "Painel de controle",
     iconName: "board",
   },
   {
     href: "/vendor/products",
-    title: "Products",
+    title: "Produtos",
     iconName: "box",
     count: 300,
   },
   {
     href: "/vendor/add-product",
-    title: "Add New Product",
+    title: "Novo Produto",
     iconName: "upload",
   },
   {
     href: "/vendor/orders",
-    title: "Orders",
+    title: "Pedidos",
     iconName: "shopping-cart",
     count: 40,
   },
   {
     href: "/vendor/account-settings",
-    title: "Account Settings",
+    title: "Configurações de conta",
     iconName: "gear-2",
   },
 ];

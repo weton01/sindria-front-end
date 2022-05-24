@@ -69,15 +69,15 @@ const ProductVariation = (props) => {
   }, [route]);
 
   const handleFormSubmit = async (values) => {
-    let result; 
+    let result;
 
     const index =
       values.id === undefined
         ? product.variations.length - 1
         : props?.product?.variations?.findIndex(
             (item) => item.id === values.id
-          ); 
-    let newVariations = [...product.variations]; 
+          );
+    let newVariations = [...product.variations];
 
     newVariations[index].loading.create = true;
 
@@ -255,7 +255,7 @@ const ProductVariation = (props) => {
                                         const canvas =
                                           document.createElement("canvas");
                                         canvas.width = image.naturalWidth;
-                                        canvas.height = image.naturalHeight; 
+                                        canvas.height = image.naturalHeight;
                                         if (
                                           image.naturalWidth > 480 ||
                                           image.naturalHeight > 480
@@ -550,16 +550,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return {
         props: { product },
       };
-    } /* 
+    }
     return {
-      redirect: {
-        permanent: false,
-        destination: "/404",
-      },
-      props: {},
-    }; */
+      notFound: true,
+    };
   } catch (err) {
-    console.log("fail to verify tokens", err);
+    return {
+      notFound: true,
+    };
   }
 
   return {

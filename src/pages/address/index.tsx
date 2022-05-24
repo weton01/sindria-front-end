@@ -7,7 +7,7 @@ import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import Pagination from "@component/pagination/Pagination";
 import Result from "@component/result";
 import TableRow from "@component/TableRow";
-import Typography from "@component/Typography"; 
+import Typography from "@component/Typography";
 import { ITEMS_PER_PAGE } from "@utils/enums";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
@@ -21,7 +21,7 @@ import { api } from "services/api";
 const AddressList = (props) => {
   const { data } = props;
   const router = useRouter();
-  const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
+  const { skip = 0 } = router.query;
 
   const deleteAddress = async (id) => {
     toast.notify("Removendo endereço", {
@@ -74,7 +74,7 @@ const AddressList = (props) => {
               <Typography flex="1 1 260px !important" m="6px" textAlign="left">
                 {`${item.city}, ${item.state}, ${item.street}, ${item.number}`}
               </Typography>
-              <Typography className="pre" m="6px" textAlign="left"></Typography> 
+              <Typography className="pre" m="6px" textAlign="left"></Typography>
               <Typography className="pre" textAlign="right" color="text.muted">
                 <Link href={`/address/${item.id}`}>
                   <Typography
@@ -157,7 +157,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
 
     const take = ITEMS_PER_PAGE.MAX;
-    const skip = ctx?.query?.skip || 0;
+    const { skip = 0 } = ctx.query;
 
     const { data } = await api.get(`address/v1`, {
       params: { take: take, skip: skip },
@@ -175,4 +175,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default  AddressList;
+export default AddressList;
