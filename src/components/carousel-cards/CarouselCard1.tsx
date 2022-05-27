@@ -26,7 +26,7 @@ const CarouselCard1: React.FC<CarouselCard1Props> = () => {
 
       <div className="image-holder">
         <img
-          src="/assets/images/products/apple-watch-0.png"
+          src="/images/products/apple-watch-0.png"
           alt="apple-watch-1"
         />
       </div>

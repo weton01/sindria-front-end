@@ -4,10 +4,10 @@ import MobileNavigationBar from "@component/mobile-navigation/MobileNavigationBa
 import Sticky from "@component/sticky/Sticky";
 import Head from "next/head";
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import StyledAppLayout from "./AppLayoutStyle";
 
-type Categories =  {
+type Categories = {
   clean: any[],
   formated: any[]
 }
@@ -26,16 +26,16 @@ const AppLayout: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
 
-  if (
-    categories?.clean?.length === 0 && 
-    categories?.formated?.length === 0
-  )
-    useEffect(() => {
-      dispatch({
-        type: "SET_CATEGORY",
-        payload: categories,
-      });
-    }, [categories]);
+  const categoriesToValidate = useSelector((selec: any) =>
+    selec?.category?.items
+  );
+
+  useEffect(() => {
+    dispatch({
+      type: "SET_CATEGORY",
+      payload: categories,
+    });
+  }, [categories]);
 
   return (
     <StyledAppLayout>

@@ -55,12 +55,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   return {
     props: {
-      section2: rest.bestSalers,
-      section3: rest.bestCategories,
-      section5,
+      section2: [],
+      section3: [],
+      section5: [],
       section4: {
-        reviews: rest.bestReviews,
-        brands: rest.bestBrands
+        reviews: [],
+        brands: []
       },
     }
   }
