@@ -30,16 +30,16 @@ export const getDateDifference = (date) => {
   if (diff < 60) return diff + " minutes ago";
 
   diff = ceil(diff / 60);
-  if (diff < 24) return `${diff} hour${diff === 0 ? "" : "s"} ago`;
+  if (diff < 24) return `${diff} hora${diff === 0 ? "" : "s"} atrás`;
 
   diff = ceil(diff / 24);
-  if (diff < 30) return `${diff} day${diff === 0 ? "" : "s"} ago`;
+  if (diff < 30) return `${diff} dia${diff === 0 ? "" : "s"} atrás`;
 
   diff = ceil(diff / 30);
-  if (diff < 12) return `${diff} month${diff === 0 ? "" : "s"} ago`;
+  if (diff < 12) return `${diff} mes${diff === 0 ? "" : "es"} atrás`;
 
   diff = diff / 12;
-  return `${diff.toFixed(1)} year${ceil(diff) === 0 ? "" : "s"} ago`;
+  return `${diff.toFixed(1)} ano${ceil(diff) === 0 ? "" : "s"} atrás`;
 };
 
 export const getHourMinute = (d) => {

@@ -5,13 +5,14 @@ import AvailableShops from "@component/products/AvailableShops";
 import FrequentlyBought from "@component/products/FrequentlyBought";
 import ProductDescription from "@component/products/ProductDescription";
 import ProductIntro from "@component/products/ProductIntro";
+import ProductQuestion from "@component/products/ProductQuestion";
 import ProductReview from "@component/products/ProductReview";
 import RelatedProducts from "@component/products/RelatedProducts";
 import { H5 } from "@component/Typography";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import React, { useState } from "react";
-import { get, PROD_URL } from "services/api";
+import { PROD_URL } from "services/api";
 
 const ProductDetails = ({product}) => {
   const state = {
@@ -61,12 +62,13 @@ const ProductDetails = ({product}) => {
         <H5
           className="cursor-pointer"
           p="4px 10px"
+          mr="25px"
           color={selectedOption === "review" ? "primary.main" : "text.muted"}
           onClick={handleOptionClick("review")}
           borderBottom={selectedOption === "review" && "2px solid"}
           borderColor="primary.main"
         >
-          Avaliações (3)
+          Avaliações ({product.reviews.length})
         </H5>
         <H5
           className="cursor-pointer"
@@ -76,13 +78,25 @@ const ProductDetails = ({product}) => {
           borderBottom={selectedOption === "questions" && "2px solid"}
           borderColor="primary.main"
         >
-          Perguntas (3)
+          Perguntas ({product.comments.length})
         </H5>
       </FlexBox>
       <Box mb="50px">
         {selectedOption === "description" && <ProductDescription description={product?.description}/>}
-        {selectedOption === "review" && <ProductReview />}
-        {selectedOption === "questions" && <ProductReview />}
+        {selectedOption === "review" && 
+          <ProductReview 
+            reviews={product.reviews} 
+            user={product.user}
+            productId={product.id}
+          />
+        }
+        {selectedOption === "questions" && 
+          <ProductQuestion 
+            comments={product.comments} 
+            user={product.user}
+            productId={product.id}
+          />
+        }
       </Box>
       <FrequentlyBought />
       <AvailableShops />

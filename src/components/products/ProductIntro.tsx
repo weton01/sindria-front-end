@@ -205,6 +205,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     alignItems="center"
                   >
                     <FlexBox justifyContent="space-between" width="100%" flexWrap="wrap">
+
                       <FlexBox flexDirection="column" gap={2} minWidth={125}>
                         <SemiSpan color="white">
                           Boleto
@@ -229,16 +230,18 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         </Small>
                       </FlexBox>
 
-                      <FlexBox flexDirection="column" gap={2} minWidth={125}>
-                        <SemiSpan color="white">
-                          Crédito
-                        </SemiSpan>
-                        <H2 color="white" lineHeight="1">
-                          {formatCurrency(creditPrice)}
-                        </H2>
-                        <Small color="white">
-                          Sem desconto
-                        </Small>
+                      <FlexBox gap={4}>
+                        <FlexBox flexDirection="column" gap={2} minWidth={125}>
+                          <SemiSpan color="white">
+                            Crédito
+                          </SemiSpan>
+                          <H2 color="white" lineHeight="1">
+                            {formatCurrency(creditPrice)}
+                          </H2>
+                          <Small color="white">
+                            Sem desconto
+                          </Small>
+                        </FlexBox>
                       </FlexBox>
                     </FlexBox>
 
@@ -381,7 +384,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       1233
                     </Button>
                   </FlexBox>
-                  
+
                   <FlexBox mb="16px" justifyContent="flex-start" alignItems="center">
                     <Icon size="40px">
                       shield
