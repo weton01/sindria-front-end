@@ -91,7 +91,7 @@ const AddProduct = (props) => {
     };
     let product;
     setLoading(true);
-    if (edit) product = await patch(`product/v1/single/${id}`, payload);
+    if (edit) product = await patch(`product/v1/${id}`, payload);
     else product = await post("product/v1", payload);  
     setLoading(false);
     if (typeof product === "string") {

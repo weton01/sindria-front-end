@@ -88,13 +88,13 @@ App.getInitialProps = async (appContext: any) => {
       menuData: {
         categories: newCategories.map((aux) => ({
           title: aux,
-          subCategories: item.subCategories
-            .filter((subs) => subs.groupName === aux)
-            .map((subs) => ({ title: subs.name, href: `/${item.name}/${subs.name}` })),
+          subCategories: item.subCategories?.filter((subs) => subs.groupName === aux)
+              .map((subs) => ({ title: subs.name, href: `/${item.name}/${subs.name}` })),
           href: "/",
         })),
       },
     };
+
   });
 
   return {

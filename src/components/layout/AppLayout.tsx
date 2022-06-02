@@ -26,14 +26,15 @@ const AppLayout: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
 
-  const categoriesToValidate = useSelector((selec: any) =>
-    selec?.category?.items
-  );
-
   useEffect(() => {
     dispatch({
       type: "SET_CATEGORY",
-      payload: categories,
+      payload: categories? categories : {
+        items: {
+          formated: [],
+          clean: []
+        }
+      },
     });
   }, [categories]);
 

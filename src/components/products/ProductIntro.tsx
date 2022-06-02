@@ -1,9 +1,6 @@
 import LazyImage from "@component/LazyImage";
-import { useAppContext } from "@context/app/AppContext";
-import { CartItem } from "@reducer/cartReducer";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "../avatar/Avatar";
 import Box from "../Box";
 import Button from "../buttons/Button";
@@ -11,7 +8,7 @@ import FlexBox from "../FlexBox";
 import Grid from "../grid/Grid";
 import Icon from "../icon/Icon";
 import Rating from "../rating/Rating";
-import { H1, H2, H3, H6, SemiSpan, Small, Tiny } from "../Typography";
+import { H1, H2, H6, SemiSpan, Small, Tiny } from "../Typography";
 import Card from "@component/Card";
 import { formatCurrency } from "@utils/formatCurrency";
 
@@ -23,10 +20,13 @@ export interface ProductIntroProps {
   categories: any[]
   variations: any[]
   images: string[]
-  description: string
   tags: any[]
   sizes: any[]
   colors: any[]
+  salesQuantity: number;
+  reviewsQuantity: number;
+  rating: number;
+  mutations: any[]
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -37,23 +37,83 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   categories,
   variations,
   images,
-  description,
   tags,
   sizes,
-  colors
+  colors,
+  salesQuantity,
+  reviewsQuantity,
+  rating,
+  mutations
 }) => {
+  console.log(categories)
+  const defaultSize = mutations[0]?.variations?.find((v) => v?.type === "size")
+  const defaultColor = mutations[0]?.variations?.find((v) => v?.type === "color")
+  const defaultVariation = mutations[0]?.variations?.find((v) => v?.type === "default")
+
   const [viewimage, setViewImage] = useState(images[0]);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedType, setSelectedType] = useState(variations[0])
-  const [selectedSize, setSelectedSize] = useState(sizes[0])
-  const [selectedColor, setSelectedColor] = useState(colors[0])
-
-  const cartList: CartItem[] = [];
-  const router = useRouter();
+  const [selectedType, setSelectedType] = useState(defaultSize)
+  const [selectedSize, setSelectedSize] = useState(defaultColor)
+  const [selectedColor, setSelectedColor] = useState(defaultVariation)
+  const [selectedMutations, setSelectedMutations] = useState(mutations)
 
   const pixPrice: number = price - (price * 0.01)
   const boletoPrice: number = price - (price * 0.048)
   const creditPrice: number = price - (price * 0)
+
+  const findShirtColorProductExists = (iparam): boolean => {
+    return selectedMutations.find(item => {
+      const foundColor = item?.variations?.find(v => v.id === iparam?.id)
+      const foundSize = item?.variations?.find(v => v.id === selectedSize?.id)
+
+      return foundColor && foundSize
+    }) ? true : false
+  }
+
+  const findShirtSizeProductExists = (iparam): boolean => {
+    return mutations.find(item => {
+      const foundSize = item?.variations?.find(v => v.id === iparam?.id)
+
+      return foundSize
+    }) ? true : false
+  }
+
+  const findOtherSizeProductExists = (iparam): boolean => {
+    return selectedMutations.find(item => {
+      const foundSize = item?.variations?.find(v => v.id === iparam?.id)
+      const foundType = item?.variations?.find(v => v.id === iparam?.id)
+
+      return foundSize && foundType
+    }) ? true : false
+  }
+
+  const filterMutations = (iparam: any) => {
+    const selected = mutations.filter(item => {
+      const foundSize = item?.variations?.find(v => v.id === iparam.id)
+
+      return foundSize
+    })
+
+    setSelectedMutations([...selected])
+  }
+
+  useEffect(() => {
+    setSelectedType(defaultVariation)
+    setSelectedSize(defaultSize)
+    setSelectedColor(defaultColor)
+  }, [defaultSize, defaultColor, defaultVariation])
+
+  useEffect(() => {
+    const size = selectedMutations[0]?.variations?.find((v) => v?.type === "size")
+    const color = selectedMutations[0]?.variations?.find((v) => v?.type === "color")
+
+    setSelectedSize(size)
+    setSelectedColor(color)
+  }, [selectedMutations])
+
+  useEffect(() => {
+    setSelectedMutations(mutations)
+  }, [])
 
   return (
     <Box  >
@@ -133,17 +193,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     <FlexBox alignItems="center" gap={10}>
                       <FlexBox alignItems="center" gap={4}>
                         <Box>
-                          <Rating color="warn" value={4} outof={5} />
+                          <Rating color="warn" value={rating} outof={5} />
                         </Box>
-                        4.0
+                        {rating.toFixed(1)}
                       </FlexBox>
                       <FlexBox alignItems="center" gap={4}>
-                        (50)
+                        ({reviewsQuantity})
                         Avaliações
                       </FlexBox>
                       <FlexBox alignItems="center" gap={4}>
                         <Box>
-                          {1405}
+                          {salesQuantity}
                         </Box>
                         pedidos
                       </FlexBox>
@@ -158,32 +218,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   </FlexBox>
 
                   <FlexBox justifyContent="flex-start" alignItems="center" mb="0.8rem" gap={4}>
-                    {categories.map(item => (
-                      item.image ?
-                        <Box
-                          key={item.id}
-                          backgroundColor="rgb(239, 239, 239)"
-                          padding="0 7px"
-                          fontSize={15}
-                          borderRadius={2}
-                          color="#000000d9"
-                        >
-                          <FlexBox justifyContent="flex-start" alignItems="center" gap={4}>
-                            <Icon size="20px" defaultcolor="currentColor">
-                              {item.image}
-                            </Icon>
-                            {item.name}
-                          </FlexBox>
-                        </Box>
-                        : null
-                    ))
-                    }
-                  </FlexBox>
-
-                  <FlexBox justifyContent="flex-start" alignItems="center" mb="0.8rem" gap={4}>
                     {tags.map(item => (
                       <Box
-                        key={item.id}
+                        key={item?.id}
                         backgroundColor="rgb(239, 239, 239)"
                         padding="0 7px"
                         fontSize={13}
@@ -194,6 +231,27 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       </Box>
                     ))}
                   </FlexBox>
+
+                  <FlexBox justifyContent="flex-start" alignItems="center" mb="0.8rem" gap={4}>
+                    {categories.map(item => (
+                      <Box
+                        key={item?.id}
+                        backgroundColor="rgb(239, 239, 239)"
+                        padding="0 7px"
+                        fontSize={15}
+                        borderRadius={2}
+                        color="#000000d9"
+                      >
+                        <FlexBox justifyContent="flex-start" alignItems="center" gap={4}>
+                          <Icon size="20px" defaultcolor="currentColor">
+                            {item.image}
+                          </Icon>
+                          {item.name}
+                        </FlexBox>
+                      </Box>
+                    ))}
+                  </FlexBox>
+
 
                   <FlexBox
                     mb="0.8rem"
@@ -247,6 +305,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                   </FlexBox>
 
+                </Box>
+                <Box>
+
                   {
                     colors.length > 0 ?
                       <FlexBox
@@ -255,36 +316,41 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         mb="1rem"
                         gap={8}
                       >
-                        {colors.map((item, ind) => (
-                          <Box
-                            size={35}
-                            width={35}
-                            bg="white"
-                            display="flex"
-                            borderRadius="50%"
-                            justifyContent="center"
-                            alignItems="center"
-                            cursor="pointer"
-                            border="1px solid"
-                            key={item.id}
-                            padding="3px"
-
-                            mr={ind === images.length - 1 ? "10px" : "10px"}
-                            borderColor={
-                              selectedColor?.id === item.id ? "primary.main" : "gray.400"
-                            }
-                            onClick={() => {
-                              setSelectedColor(item)
-                            }}
-                          >
+                        {colors.map((item, ind) => {
+                          const foundVariation = findShirtColorProductExists(item)
+                          return (
                             <Box
-                              width="100%"
-                              height="100%"
-                              backgroundColor={item.color}
+                              size={35}
+                              width={35}
+                              bg="white"
+                              display="flex"
                               borderRadius="50%"
-                            />
-                          </Box>
-                        ))}
+                              justifyContent="center"
+                              alignItems="center"
+                              cursor={foundVariation ? "pointer" : "not-allowed"}
+                              border="1px solid"
+                              key={item?.id}
+                              padding="3px"
+                              mr={ind === images.length - 1 ? "10px" : "10px"}
+                              borderColor={
+                                selectedColor?.id === item?.id ? "primary.main" : "gray.400"
+                              }
+                              onClick={() => {
+                                if (foundVariation) {
+                                  setSelectedColor(item)
+                                }
+                              }}
+                            >
+                              <Box
+                                width="100%"
+                                height="100%"
+                                opacity={foundVariation ? 1 : 0.5}
+                                backgroundColor={item.color}
+                                borderRadius="50%"
+                              />
+                            </Box>
+                          )
+                        })}
                       </FlexBox>
                       : null
                   }
@@ -297,64 +363,85 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         mb="1rem"
                         gap={8}
                       >
-                        {sizes.map((item, ind) => (
-                          <Box
-                            size={35}
-                            width={35}
-                            bg="white"
-                            display="flex"
-                            borderRadius="5px"
-                            justifyContent="center"
-                            alignItems="center"
-                            cursor="pointer"
-                            border="1px solid"
-                            key={item.id}
-                            mr={ind === images.length - 1 ? "10px" : "10px"}
-                            borderColor={
-                              selectedSize?.id === item.id ? "primary.main" : "gray.400"
-                            }
-                            onClick={() => {
-                              setSelectedSize(item)
-                            }}
-                          >
-                            {item.size}
-                          </Box>
-                        ))}
+                        {sizes.map((item, ind) => {
+                          const foundVariation = variations.length === 0 ?
+                            findShirtSizeProductExists(item) :
+                            findOtherSizeProductExists(item)
+                          return (
+                            <Box
+                              size={35}
+                              width={35}
+                              bg="white"
+                              display="flex"
+                              borderRadius="5px"
+                              justifyContent="center"
+                              alignItems="center"
+                              opacity={foundVariation ? 1 : 0.5}
+                              cursor={foundVariation ? "pointer" : "not-allowed"}
+                              border="1px solid"
+                              key={item?.id}
+                              mr={ind === images.length - 1 ? "10px" : "10px"}
+                              borderColor={
+                                selectedSize?.id === item?.id ? "primary.main" : "gray.400"
+                              }
+                              onClick={() => {
+                                if (foundVariation){
+                                  setSelectedSize(item)
+                                  if(variations.length === 0)
+                                    filterMutations(item)
+                                }
+                              }}
+                            >
+                              {item.size}
+                            </Box>
+                          )
+                        })}
                       </FlexBox>
                       : null
                   }
 
                   {
-                    variations.length > 0 ?
+                    variations?.length > 0 ?
                       <FlexBox
                         overflow="auto"
                         justifyContent="flex-start"
                         mb="1rem"
                       >
-                        {variations.map((item, ind) => (
-                          <Box
-                            size={70}
-                            width={70}
-                            bg="white"
-                            borderRadius="5px"
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            cursor="pointer"
-                            border="1px solid"
-                            key={item.id}
-                            mr={ind === images.length - 1 ? "10px" : "10px"}
-                            borderColor={
-                              selectedType?.id === item.id ? "primary.main" : "gray.400"
-                            }
-                            onClick={() => {
-                              setSelectedType(item)
-                              setViewImage(item.image)
-                            }}
-                          >
-                            <Avatar src={item.image} borderRadius="5px" size={60} />
-                          </Box>
-                        ))}
+                        {variations?.map((item, ind) => {
+                          let foundVariation = false
+                          mutations.forEach((m) => {
+                            const ids = m.variations?.map(v => v?.id)
+                            if (ids.includes(item?.id))
+                              foundVariation = true
+                          })
+                          return (
+                            <Box
+                              size={70}
+                              width={70}
+                              bg="white"
+                              borderRadius="5px"
+                              display="flex"
+                              justifyContent="center"
+                              alignItems="center"
+                              opacity={foundVariation ? 1 : 0.5}
+                              cursor={foundVariation ? "pointer" : "not-allowed"}
+                              border="1px solid"
+                              key={item?.id}
+                              mr={ind === images.length - 1 ? "10px" : "10px"}
+                              borderColor={
+                                selectedType?.id === item?.id ? "primary.main" : "gray.400"
+                              }
+                              onClick={() => {
+                                if (foundVariation) {
+                                  setSelectedType(item)
+                                  filterMutations(item)
+                                }
+                              }}
+                            >
+                              <Avatar src={item.image} borderRadius="5px" size={60} />
+                            </Box>
+                          )
+                        })}
                       </FlexBox>
                       : null
                   }

@@ -1,7 +1,6 @@
 import Box from "@component/Box";
 import FlexBox from "@component/FlexBox";
 import NavbarLayout from "@component/layout/NavbarLayout";
-import AvailableShops from "@component/products/AvailableShops";
 import FrequentlyBought from "@component/products/FrequentlyBought";
 import ProductDescription from "@component/products/ProductDescription";
 import ProductIntro from "@component/products/ProductIntro";
@@ -14,12 +13,7 @@ import { GetServerSideProps } from "next";
 import React, { useState } from "react";
 import { PROD_URL } from "services/api";
 
-const ProductDetails = ({product}) => {
-  const state = {
-    title: "Mi Note 11 Pro",
-    price: 1135,
-  };
-
+const ProductDetails = ({product, reviews, comments, bestSalersRelated, relatedProducts}) => {
   const [selectedOption, setSelectedOption] = useState("description");
 
   const handleOptionClick = (opt) => () => {
@@ -29,16 +23,13 @@ const ProductDetails = ({product}) => {
   return (
     <div>
       <ProductIntro 
+        {...product}
         title ={ product.name } 
         price={product.netAmount}
-        brand={product.brand}
-        categories={product.categories}
-        variations={product.variations.filter(item => item.type === "default")}
-        sizes={product.variations.filter(item=> item.type === "size")}
-        colors={product.variations.filter(item=> item.type === "color")}
-        images={product.images}
-        description={product.description}
-        tags={product.tags}
+        mutations={product?.mutations.filter(item => item.stock > 0)}
+        variations={product?.variations?.filter(item => item.type === "default")}
+        sizes={product?.variations?.filter(item=> item.type === "size")}
+        colors={product?.variations?.filter(item=> item.type === "color")}
       />
       <FlexBox
         borderBottom="1px solid"
@@ -68,7 +59,7 @@ const ProductDetails = ({product}) => {
           borderBottom={selectedOption === "review" && "2px solid"}
           borderColor="primary.main"
         >
-          Avaliações ({product.reviews.length})
+          Avaliações ({reviews.count})
         </H5>
         <H5
           className="cursor-pointer"
@@ -78,29 +69,32 @@ const ProductDetails = ({product}) => {
           borderBottom={selectedOption === "questions" && "2px solid"}
           borderColor="primary.main"
         >
-          Perguntas ({product.comments.length})
+          Perguntas ({comments.count})
         </H5>
       </FlexBox>
       <Box mb="50px">
-        {selectedOption === "description" && <ProductDescription description={product?.description}/>}
+        {selectedOption === "description" && 
+          <ProductDescription 
+            description={product?.description}
+          />
+        }
         {selectedOption === "review" && 
           <ProductReview 
-            reviews={product.reviews} 
+            reviews={reviews.items} 
             user={product.user}
             productId={product.id}
           />
         }
         {selectedOption === "questions" && 
           <ProductQuestion 
-            comments={product.comments} 
+            comments={comments.items} 
             user={product.user}
             productId={product.id}
           />
         }
       </Box>
-      <FrequentlyBought />
-      <AvailableShops />
-      <RelatedProducts />
+      <FrequentlyBought data={relatedProducts}/>
+      <RelatedProducts data={bestSalersRelated}/>
     </div>
   );
 };
@@ -111,11 +105,19 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { id } = ctx.query;
 
   try {
-    const {data} = await axios.get(`${PROD_URL}product/v1/single/${id}`)
+    const [ single, comments, reviews ] = await Promise.all([
+      axios.get(`${PROD_URL}product/v1/single/${id}`),
+      axios.get(`${PROD_URL}comment/v1/${id}?skip=0&take=3`),
+      axios.get(`${PROD_URL}review/v1/${id}?skip=0&take=3`),
+    ])
 
     return {
       props: {
-        product: data
+        product: single.data?.product,
+        bestSalersRelated: single.data.bestSalersRelated,
+        relatedProducts: single.data.relatedProducts,
+        comments: comments.data,
+        reviews: reviews.data
       }
     }
 

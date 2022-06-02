@@ -18,6 +18,7 @@ const withAuth = (Component) => {
     "recover-password-callback",
     "mail",
     "code-user",
+    "product"
   ];
 
   const privateRoute = (route, token) => {
