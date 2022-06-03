@@ -1,7 +1,8 @@
-import { useAppContext } from "@context/app/AppContext";
 import { CartItem } from "@reducer/cartReducer";
+import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import Box from "../components/Box";
 import Button from "../components/buttons/Button";
 import { Card1 } from "../components/Card1";
@@ -16,24 +17,41 @@ import TextArea from "../components/textarea/TextArea";
 import Typography from "../components/Typography";
 import countryList from "../data/countryList";
 
-const Cart = () => { 
-  const cartList: CartItem[] = [];
 
-  const getTotalPrice = () => {
-    return (
-      cartList.reduce(
-        (accumulator, item) => accumulator + item.price * item.qty,
-        0
-      ) || 0
-    );
-  };
+const Cart = () => {
+  const products = useSelector((selec: any) =>
+    selec?.cart?.orderProducts
+  )
+
+  const cartList: CartItem[] = [];
+  const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+    let newTotal = 0
+
+    products.forEach(element => {
+      newTotal += element.netAmount
+    });
+
+    setTotal(newTotal)
+  }, [products])
 
   return (
     <Fragment>
       <Grid container spacing={6}>
         <Grid item lg={8} md={8} xs={12}>
-          {cartList.map((item) => (
-            <ProductCard7 key={item.id} mb="1.5rem" {...item} />
+          {products.map((item, index) => (
+            <ProductCard7
+            {...item?.otherProps} 
+            key={index} 
+            mb="1.5rem" 
+            qty={item.quantity}
+            price={item.netAmount}
+            name={item?.otherProps?.title}
+            imgUrl={item?.otherProps?.images[0]}
+            mutation={item?.otherProps?.mutation}
+            item={item}
+            />
           ))}
         </Grid>
         <Grid item lg={4} md={4} xs={12}>
@@ -46,7 +64,7 @@ const Cart = () => {
               <Typography color="gray.600">Total:</Typography>
               <FlexBox alignItems="flex-end">
                 <Typography fontSize="18px" fontWeight="600" lineHeight="1">
-                  ${getTotalPrice().toFixed(2)}
+                  {formatCurrency(total)}
                 </Typography>
                 <Typography fontWeight="600" fontSize="14px" lineHeight="1">
                   00

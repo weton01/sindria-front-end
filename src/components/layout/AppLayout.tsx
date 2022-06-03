@@ -4,7 +4,7 @@ import MobileNavigationBar from "@component/mobile-navigation/MobileNavigationBa
 import Sticky from "@component/sticky/Sticky";
 import Head from "next/head";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import StyledAppLayout from "./AppLayoutStyle";
 
 type Categories = {
