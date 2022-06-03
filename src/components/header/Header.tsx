@@ -14,15 +14,16 @@ import { userLogout } from "store/actions/user/actions";
 import { useAppSelector, useAppDispatch } from "hooks/hooks";
 import MenuItem from "@component/MenuItem";
 import Menu from "@component/Menu";
+import { useSelector } from "react-redux";
 
 type HeaderProps = {
   isFixed?: boolean;
-  className?: string; 
+  className?: string;
 };
 
 const Header: React.FC<HeaderProps> = ({
   isFixed,
-  className, 
+  className,
 }) => {
   const cartList = [];
   const user = useAppSelector((state) => state?.user);
@@ -31,6 +32,10 @@ const Header: React.FC<HeaderProps> = ({
   const onClickLogout = () => {
     dispatch(userLogout());
   };
+
+  const products = useSelector((selec: any) =>
+    selec?.cart?.orderProducts
+  )
 
   return (
     <StyledHeader className={className}>
@@ -62,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({
         <FlexBox justifyContent="center" flex="1 1 0">
           <SearchBox />
         </FlexBox>
-        <FlexBox className="header-right" alignItems="center" gap="16px">
+        <FlexBox className="header-right" alignItems="center" gap={16}>
           {user.isLogged ? (
             <Menu
               className="category-dropdown"
@@ -112,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({
                 <Icon size="20px">bag</Icon>
               </IconButton>
 
-              {!!cartList.length && (
+              {!!products.length && (
                 <FlexBox
                   borderRadius="300px"
                   bg="error.main"
@@ -124,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({
                   mt="-9px"
                 >
                   <Tiny color="white" fontWeight="600">
-                    {cartList.length}
+                    {products.length}
                   </Tiny>
                 </FlexBox>
               )}

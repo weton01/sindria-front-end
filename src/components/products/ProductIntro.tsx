@@ -11,6 +11,7 @@ import Rating from "../rating/Rating";
 import { H1, H2, H6, SemiSpan, Small, Tiny } from "../Typography";
 import Card from "@component/Card";
 import { formatCurrency } from "@utils/formatCurrency";
+import { useAppDispatch } from "@hook/hooks";
 
 export interface ProductIntroProps {
   title: string;
@@ -43,12 +44,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   salesQuantity,
   reviewsQuantity,
   rating,
-  mutations
+  mutations,
 }) => {
-  console.log(categories)
+  const dispatch = useAppDispatch();
+
   const defaultSize = mutations[0]?.variations?.find((v) => v?.type === "size")
   const defaultColor = mutations[0]?.variations?.find((v) => v?.type === "color")
   const defaultVariation = mutations[0]?.variations?.find((v) => v?.type === "default")
+
+  const pixPrice: number = price - (price * 0.01)
+  const boletoPrice: number = price - (price * 0.048)
+  const creditPrice: number = price - (price * 0)
 
   const [viewimage, setViewImage] = useState(images[0]);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -56,10 +62,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   const [selectedSize, setSelectedSize] = useState(defaultColor)
   const [selectedColor, setSelectedColor] = useState(defaultVariation)
   const [selectedMutations, setSelectedMutations] = useState(mutations)
-
-  const pixPrice: number = price - (price * 0.01)
-  const boletoPrice: number = price - (price * 0.048)
-  const creditPrice: number = price - (price * 0)
+  const [selectedPrice, setSelectedPrice] = useState({ pixPrice, boletoPrice, creditPrice })
 
   const findShirtColorProductExists = (iparam): boolean => {
     return selectedMutations.find(item => {
@@ -81,9 +84,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   const findOtherSizeProductExists = (iparam): boolean => {
     return selectedMutations.find(item => {
       const foundSize = item?.variations?.find(v => v.id === iparam?.id)
-      const foundType = item?.variations?.find(v => v.id === iparam?.id)
 
-      return foundSize && foundType
+      return foundSize
     }) ? true : false
   }
 
@@ -97,6 +99,43 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     setSelectedMutations([...selected])
   }
 
+  const addItemToCart = () => {
+    const mutation = mutations.find(item => {
+      const foundSize = item?.variations?.find(v => v.id === selectedSize?.id)
+      const foundColor = item?.variations?.find(v => v.id === selectedColor?.id)
+      const foundType = item?.variations?.find(v => v.id === selectedType?.id)
+
+      if (variations.length > 0)
+        return foundSize && foundType
+      else
+        return foundColor && foundSize
+    })
+
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: {
+        quantity: 1,
+        netAmount: selectedPrice.creditPrice,
+        grossAmount: price,
+        product: {
+          id: id
+        },
+        otherProps: {
+          title, price, brand, 
+          categories, images, tags,
+          mutation: mutation
+        },
+        mutation: {
+          id: mutation.id
+        }
+      },
+    });
+  }
+
+  useEffect(() => {
+    setSelectedMutations(mutations)
+  }, [mutations])
+
   useEffect(() => {
     setSelectedType(defaultVariation)
     setSelectedSize(defaultSize)
@@ -106,14 +145,27 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   useEffect(() => {
     const size = selectedMutations[0]?.variations?.find((v) => v?.type === "size")
     const color = selectedMutations[0]?.variations?.find((v) => v?.type === "color")
+    const type = selectedMutations[0]?.variations?.find((v) => v?.type === "default")
 
+    setSelectedType(type)
     setSelectedSize(size)
     setSelectedColor(color)
   }, [selectedMutations])
 
   useEffect(() => {
-    setSelectedMutations(mutations)
-  }, [])
+    const typeToSum: number = selectedType?.netAmount
+    const colorToSum: number = (price * selectedColor?.netAmount)
+    const sizeToSum: number = (price * selectedSize?.netAmount)
+    const grossPriceShirt: number = price - colorToSum - sizeToSum
+    const grossPriceStore: number = typeToSum - sizeToSum
+    const definedPrice: number = variations.length > 0 ? grossPriceStore : grossPriceShirt
+
+    const pixPrice: number = definedPrice - (definedPrice * 0.01)
+    const boletoPrice: number = definedPrice - (definedPrice * 0.048)
+    const creditPrice: number = definedPrice - (definedPrice * 0)
+
+    setSelectedPrice({ pixPrice, boletoPrice, creditPrice })
+  }, [selectedSize, selectedColor, selectedType])
 
   return (
     <Box  >
@@ -269,7 +321,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                           Boleto
                         </SemiSpan>
                         <H2 color="white" lineHeight="1">
-                          {formatCurrency(boletoPrice)}
+                          {formatCurrency(selectedPrice.boletoPrice)}
                         </H2>
                         <Small color="white">
                           4.8% de desconto
@@ -281,7 +333,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                           Pix
                         </SemiSpan>
                         <H2 color="white" lineHeight="1">
-                          {formatCurrency(pixPrice)}
+                          {formatCurrency(selectedPrice.pixPrice)}
                         </H2>
                         <Small color="white">
                           3.6% de desconto
@@ -294,7 +346,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             Crédito
                           </SemiSpan>
                           <H2 color="white" lineHeight="1">
-                            {formatCurrency(creditPrice)}
+                            {formatCurrency(selectedPrice.creditPrice)}
                           </H2>
                           <Small color="white">
                             Sem desconto
@@ -385,9 +437,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 selectedSize?.id === item?.id ? "primary.main" : "gray.400"
                               }
                               onClick={() => {
-                                if (foundVariation){
+                                if (foundVariation) {
                                   setSelectedSize(item)
-                                  if(variations.length === 0)
+                                  if (variations.length === 0)
                                     filterMutations(item)
                                 }
                               }}
@@ -455,6 +507,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       mb="16px"
                       width="60%"
                       height="46px"
+                      onClick={addItemToCart}
                     >
                       Adicionar no carrinho
                     </Button>

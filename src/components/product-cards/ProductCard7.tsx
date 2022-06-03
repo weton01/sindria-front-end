@@ -1,6 +1,7 @@
 import Box from "@component/Box";
 import Image from "@component/Image";
-import { useAppContext } from "@context/app/AppContext";
+import { useAppDispatch } from "@hook/hooks";
+import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
 import React, { useCallback } from "react";
 import { SpaceProps } from "styled-system";
@@ -17,6 +18,8 @@ export interface ProductCard7Props {
   qty: number;
   price: number;
   imgUrl?: string;
+  item: any;
+  mutation: any;
 }
 
 const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
@@ -25,24 +28,18 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
   qty,
   price,
   imgUrl,
+  item,
+  mutation,
   ...props
 }) => {
-  const { dispatch } = useAppContext();
-  const handleCartAmountChange = useCallback(
-    (amount) => () => {
-      dispatch({
-        type: "CHANGE_CART_AMOUNT",
-        payload: {
-          qty: amount,
-          name,
-          price,
-          imgUrl,
-          id,
-        },
-      });
-    },
-    []
-  );
+  const dispatch = useAppDispatch();
+
+  const onClickRemove = () => {
+    dispatch({
+      type: "REMOVE_FROM_CART",
+      payload: item
+    });
+  }
 
   return (
     <StyledProductCard7 {...props}>
@@ -76,11 +73,43 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
             padding="4px"
             ml="12px"
             size="small"
-            onClick={handleCartAmountChange(0)}
+            onClick={onClickRemove}
           >
             <Icon size="1.25rem">close</Icon>
           </IconButton>
         </Box>
+
+        <FlexBox alignItems="center">
+          {
+            mutation?.variations?.map((item, index) => (
+              <Typography key={`typeo-${index}`} color="gray.600" mr="0.5rem">
+                {item.type === "size" ? item.size : null}
+                {item.type === "default" ? item.name : null}
+                {item.type === "color" ? (
+                  <Box
+                    size={25}
+                    width={25}
+                    bg="white"
+                    display="flex"
+                    borderRadius="50%"
+                    justifyContent="center"
+                    alignItems="center"
+                    border="1px solid"
+                    key={item?.id}
+                    padding="3px"
+                  >
+                    <Box
+                      width="100%"
+                      height="100%"
+                      backgroundColor={item.color}
+                      borderRadius="50%"
+                    />
+                  </Box>
+                ) : null}
+              </Typography>
+            ))
+          }
+        </FlexBox>
 
         <FlexBox
           // width="100%"
@@ -89,10 +118,10 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
         >
           <FlexBox flexWrap="wrap" alignItems="center">
             <Typography color="gray.600" mr="0.5rem">
-              ${price.toFixed(2)} x {qty}
+              {formatCurrency(price / qty)} x {qty}
             </Typography>
             <Typography fontWeight={600} color="primary.main" mr="1rem">
-              ${(price * qty).toFixed(2)}
+              {formatCurrency(price)}
             </Typography>
           </FlexBox>
 
@@ -103,7 +132,6 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
               padding="5px"
               size="none"
               borderColor="primary.light"
-              onClick={handleCartAmountChange(qty - 1)}
               disabled={qty === 1}
             >
               <Icon variant="small">minus</Icon>
@@ -117,7 +145,6 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
               padding="5px"
               size="none"
               borderColor="primary.light"
-              onClick={handleCartAmountChange(qty + 1)}
             >
               <Icon variant="small">plus</Icon>
             </Button>

@@ -1,8 +1,7 @@
 import Card from "@component/Card";
 import { Span } from "@component/Typography";
-import { debounce } from "lodash";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { api } from "services/api";
 import Box from "../Box";
