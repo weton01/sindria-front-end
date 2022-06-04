@@ -1,22 +1,23 @@
-import { get } from "./api";
+import { get, patch, post } from "./api";
 
 export const getUrlAssign = async () => get(`product/v1/s3/assign-url`);
 
-export const getProductById = async (id: any) =>{ 
-  return get(`product/v1/creation/${id}`,  ).then((value) => { 
+export const getProductById = async (id: any) => {
+  return get(`product/v1/creation/${id}`).then((value) => {
     return {
       ...value,
-      variations: value?.variations?.map((item) => {
-        return {
-          ...item,
-          loading: { create: false, delete: false},
-          image: [item.image],
-        };
-      }) || [],
+      variations:
+        value?.variations?.map((item) => {
+          return {
+            ...item,
+            loading: { create: false, delete: false },
+            image: [item.image],
+          };
+        }) || [],
     };
   });
-}
+};
 
-export const getProduct = async (skip, take) =>{ 
-  return get(`product/v1/`, {skip, take});
-}
+export const getProduct = async (skip, take) => {
+  return get(`product/v1/`, { skip, take });
+};

@@ -1,3 +1,4 @@
+import ErrorBoundary from "@component/ErrorBoundary";
 import withAuth from "@component/withAuth";
 import { NextPage } from "next";
 import NextApp from "next/app";
@@ -27,7 +28,6 @@ Router.events.on("routeChangeError", () => NProgress.done());
 NProgress.configure({ showSpinner: false });
 
 const App: NextPage = ({ Component, pageProps }: any) => {
-
   const store = useStore(pageProps.initialReduxState);
   const persistor = persistStore(store, {}, function () {
     persistor.persist();
@@ -58,12 +58,14 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       <AppProvider>
         <Provider store={store}>
           <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-            <Layout categories={pageProps.categories}>
-              <div style={{ position: "absolute", zIndex: 99999 }}>
-                <ToastContainer align={"right"} position={"bottom"} />
-              </div>
-              <Component {...pageProps} />
-            </Layout>
+            <ErrorBoundary>
+              <Layout categories={pageProps.categories}>
+                <div style={{ position: "absolute", zIndex: 99999 }}>
+                  <ToastContainer align={"right"} position={"bottom"} />
+                </div>
+                <Component {...pageProps} />
+              </Layout>{" "}
+            </ErrorBoundary>
           </PersistGate>
         </Provider>
       </AppProvider>
@@ -88,13 +90,16 @@ App.getInitialProps = async (appContext: any) => {
       menuData: {
         categories: newCategories.map((aux) => ({
           title: aux,
-          subCategories: item.subCategories?.filter((subs) => subs.groupName === aux)
-              .map((subs) => ({ title: subs.name, href: `/${item.name}/${subs.name}` })),
+          subCategories: item.subCategories
+            .filter((subs) => subs.groupName === aux)
+            .map((subs) => ({
+              title: subs.name,
+              href: `/${item.name}/${subs.name}`,
+            })),
           href: "/",
         })),
       },
     };
-
   });
 
   return {
@@ -102,9 +107,9 @@ App.getInitialProps = async (appContext: any) => {
     pageProps: {
       categories: {
         formated: newData,
-        clean: categories
-      }
-    }
+        clean: categories,
+      },
+    },
   };
 };
 
