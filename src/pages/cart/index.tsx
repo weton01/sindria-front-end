@@ -3,19 +3,19 @@ import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
 import React, { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Box from "../components/Box";
-import Button from "../components/buttons/Button";
-import { Card1 } from "../components/Card1";
-import Divider from "../components/Divider";
-import FlexBox from "../components/FlexBox";
-import Grid from "../components/grid/Grid";
-import CheckoutNavLayout from "../components/layout/CheckoutNavLayout";
-import ProductCard7 from "../components/product-cards/ProductCard7";
-import Select from "../components/Select";
-import TextField from "../components/text-field/TextField";
-import TextArea from "../components/textarea/TextArea";
-import Typography from "../components/Typography";
-import countryList from "../data/countryList";
+import Box from "../../components/Box";
+import Button from "../../components/buttons/Button";
+import { Card1 } from "../../components/Card1";
+import Divider from "../../components/Divider";
+import FlexBox from "../../components/FlexBox";
+import Grid from "../../components/grid/Grid";
+import CheckoutNavLayout from "../../components/layout/CheckoutNavLayout";
+import ProductCard7 from "../../components/product-cards/ProductCard7";
+import Select from "../../components/Select";
+import TextField from "../../components/text-field/TextField";
+import TextArea from "../../components/textarea/TextArea";
+import Typography from "../../components/Typography";
+import countryList from "../../data/countryList";
 
 
 const Cart = () => {
@@ -65,9 +65,6 @@ const Cart = () => {
               <FlexBox alignItems="flex-end">
                 <Typography fontSize="18px" fontWeight="600" lineHeight="1">
                   {formatCurrency(total)}
-                </Typography>
-                <Typography fontWeight="600" fontSize="14px" lineHeight="1">
-                  00
                 </Typography>
               </FlexBox>
             </FlexBox>

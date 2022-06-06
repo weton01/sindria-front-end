@@ -19,10 +19,10 @@ const CheckoutNavLayout: React.FC = ({ children }) => {
         router.push("/cart");
         break;
       case 1:
-        router.push("/checkout");
+        router.push("/cart/checkout");
         break;
       case 2:
-        router.push("/payment");
+        router.push("/cart/payment");
         break;
       case 3:
         router.push("/orders");
@@ -70,19 +70,19 @@ const CheckoutNavLayout: React.FC = ({ children }) => {
 
 const stepperList = [
   {
-    title: "Cart",
+    title: "Carrinho",
     disabled: false,
   },
   {
-    title: "Details",
+    title: "Entrega",
     disabled: false,
   },
   {
-    title: "Payment",
+    title: "Pagamento",
     disabled: false,
   },
   {
-    title: "Review",
+    title: "Confirmação",
     disabled: true,
   },
 ];

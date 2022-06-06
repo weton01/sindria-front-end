@@ -36,9 +36,32 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
 
   const onClickRemove = () => {
     dispatch({
-      type: "REMOVE_FROM_CART",
+      type: "DELETE_FROM_CART",
       payload: item
     });
+  }
+
+  const onClickAddCart = () => {
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: {
+        ...item,
+        quantity: 1,
+        netAmount: item?.otherProps?.netAmount,
+        grossAmount: item?.otherProps?.grossAmount
+      }
+    })
+  }
+
+  const onClickRemoveFromCart = () => {
+    dispatch({
+      type: "REMOVE_PRODUCT_FROM_CART",
+      payload: {
+        ...item,
+        netAmount: item?.otherProps?.netAmount,
+        grossAmount: item?.otherProps?.grossAmount
+      }
+    })
   }
 
   return (
@@ -133,6 +156,7 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
               size="none"
               borderColor="primary.light"
               disabled={qty === 1}
+              onClick={onClickRemoveFromCart}
             >
               <Icon variant="small">minus</Icon>
             </Button>
@@ -145,6 +169,7 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
               padding="5px"
               size="none"
               borderColor="primary.light"
+              onClick={onClickAddCart}
             >
               <Icon variant="small">plus</Icon>
             </Button>
