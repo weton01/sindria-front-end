@@ -11,15 +11,36 @@ const initialState = {
 const addNewProduct = (item, orderProducts) => {
   const newOrderProducts = [...orderProducts]
 
-  const foundIndex = newOrderProducts.findIndex(p => 
+  const foundIndex = newOrderProducts.findIndex(p =>
     p.product.id === item.product.id &&
     p.mutation.id === item.mutation.id
   )
 
-  if(foundIndex >= 0){
+  if (foundIndex >= 0) {
     newOrderProducts[foundIndex].quantity += item.quantity;
     newOrderProducts[foundIndex].netAmount += item.netAmount
-    newOrderProducts[foundIndex].grossAmount  += item.grossAmount
+    newOrderProducts[foundIndex].grossAmount += item.grossAmount
+  }
+  else {
+    newOrderProducts.push(item)
+  }
+
+  return newOrderProducts
+}
+
+const removeProduct = (item, orderProducts) => {
+  const newOrderProducts = [...orderProducts]
+
+  const foundIndex = newOrderProducts.findIndex(p =>
+    p.product.id === item.product.id &&
+    p.mutation.id === item.mutation.id
+  )
+
+  if (foundIndex >= 0) {
+    console.log(item)
+    newOrderProducts[foundIndex].quantity--;
+    newOrderProducts[foundIndex].netAmount -= item.netAmount
+    newOrderProducts[foundIndex].grossAmount -= item.grossAmount
   }
   else {
     newOrderProducts.push(item)
@@ -31,14 +52,14 @@ const addNewProduct = (item, orderProducts) => {
 const deleteProduct = (item, orderProducts) => {
   const newOrderProducts = [...orderProducts]
 
-  const foundIndex = newOrderProducts.findIndex(p => 
+  const foundIndex = newOrderProducts.findIndex(p =>
     p.product.id === item.product.id &&
     p.mutation.id === item.mutation.id
   )
- 
-  return newOrderProducts.filter((p, index) => 
+
+  return newOrderProducts.filter((p, index) =>
     index !== foundIndex
-  )  
+  )
 }
 
 const reducer = (state = initialState, action) => {
@@ -50,38 +71,47 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         orderProducts: addNewProduct(
-          action.payload, 
+          action.payload,
           state.orderProducts
         )
       };
 
-    case types.REMOVE_FROM_CART:
+    case types.DELETE_FROM_CART:
       return {
         ...state,
         orderProducts: deleteProduct(
-          action.payload, 
+          action.payload,
+          state.orderProducts
+        )
+      };
+
+    case types.REMOVE_PRODUCT_FROM_CART:
+      return {
+        ...state,
+        orderProducts: removeProduct(
+          action.payload,
           state.orderProducts
         )
       };
 
     case types.SELECT_ADDRESS:
       return {
-        ...state, 
-        address:  action.payload, 
+        ...state,
+        address: action.payload,
       };
-    
+
     case types.SELECT_PAYMENT_TYPE:
       return {
-        ...state, 
-        invoiceType:  action.payload, 
+        ...state,
+        invoiceType: action.payload,
       };
-  
+
     case types.SELECT_CREDIT_CARD:
       return {
-        ...state, 
-        creditCard:  action.payload, 
+        ...state,
+        creditCard: action.payload,
       };
-      
+
     default:
       return state;
   }
