@@ -121,7 +121,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
           id: id
         },
         otherProps: {
-          title, price, brand, 
+          title, price, brand, id,
           categories, images, tags,
           mutation: mutation,
           grossAmount: price,

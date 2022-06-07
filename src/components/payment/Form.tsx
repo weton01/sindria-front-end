@@ -5,6 +5,7 @@ import { Formik } from "formik";
 import React from "react";
 import Cards from "react-credit-cards";
 import MaskedInputCustom from "@component/masked-input/MaskedInput";
+import FlexBox from "@component/FlexBox";
 
 const FormPayment = ({
   initialValues,
@@ -35,18 +36,22 @@ const FormPayment = ({
         return (
           <form onSubmit={handleSubmit}>
             <Grid container alignItems={"center"}>
-              <Grid item md={6} xs={12}>
-                <Cards
-                  cvc={values.cvc}
-                  expiry={values.expiry}
-                  focused={values.focus}
-                  name={values.name}
-                  number={values.number}
-                  /* preview={true}
-                  issuer="mastercard" */
-                  placeholders={{ name: "NOME COMPLETO" }}
-                  locale={{ valid: "válido até" }}
-                />
+              <Grid item md={6} xs={12} spacing={0} >
+                <FlexBox alignItems="center" justifyContent="flex-start" >
+                  <div>
+                    <Cards
+                      cvc={values.cvc}
+                      expiry={values.expiry}
+                      focused={values.focus}
+                      name={values.name}
+                      number={values.number}
+                      /* preview={true}
+                      issuer="mastercard" */
+                      placeholders={{ name: "NOME COMPLETO" }}
+                      locale={{ valid: "válido até" }}
+                    />
+                  </div>
+                </FlexBox>
               </Grid>
               <Grid item md={6} xs={12}>
                 <Grid container alignItems={"flex-start"} spacing={4}>

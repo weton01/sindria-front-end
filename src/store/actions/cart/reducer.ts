@@ -107,6 +107,7 @@ const reducer = (state = initialState, action) => {
       };
 
     case types.SELECT_CREDIT_CARD:
+      console.log(action.payload)
       return {
         ...state,
         creditCard: action.payload,

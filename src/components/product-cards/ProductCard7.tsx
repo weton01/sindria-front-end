@@ -79,7 +79,7 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
         minWidth="0px"
         width="100%"
       >
-        <Link href={`/product/${id}`}>
+        <Link href={`/product/${id? id: ''}`}>
           <a>
             <Typography
               className="title"

@@ -1,30 +1,85 @@
 import Box from "@component/Box";
+import { useSelector } from "react-redux";
 import React from "react";
 import Divider from "../Divider";
 import FlexBox from "../FlexBox";
 import Typography, { Span } from "../Typography";
+import { formatCurrency } from "@utils/formatCurrency";
 
 const CheckoutSummary2: React.FC = () => {
+  const cart = useSelector((selec: any) =>
+    selec.cart
+  );
+
+  const sort = (m, n) => {
+    if (m.type > n.type) {
+      return -1
+    }
+  }
+
+  const renderSize = (size) => {
+    return <Box
+      size={25}
+      width={25}
+      padding={"4px"}
+      bg="white"
+      display="flex"
+      borderRadius="5px"
+      justifyContent="center"
+      alignItems="center"
+      border="1px solid"
+      borderColor={"gray.400"}
+    >
+      {size}
+    </Box>
+  }
+
+  const renderColor = (color) => {
+    return <Box
+      width="100%"
+      height="100%"
+      backgroundColor={color}
+      borderRadius="50%"
+    />
+  }
+
+  const renderDefault = (defa) => {
+    return <Typography fontSize={12}>
+      {defa}
+    </Typography>
+  }
+
   return (
     <Box>
       <Typography color="secondary.900" fontWeight="700" mb="1.5rem">
-        Your order
+        Seu Pedido
       </Typography>
 
-      {cartList.map((item) => (
-        <FlexBox
-          justifyContent="space-between"
-          alignItems="center"
-          mb="1.5rem"
-          key={item.name}
-        >
-          <Typography>
-            <Span fontWeight="700" fontSize="14px">
-              {item.quantity}
-            </Span>{" "}
-            x {item.name}
-          </Typography>
-          <Typography>${item.price.toFixed(2)}</Typography>
+      {cart?.orderProducts?.map((item) => (
+        <FlexBox flexDirection="column" mb="1.5rem">
+          <FlexBox
+            justifyContent="space-between"
+            alignItems="center"
+
+            key={item?.mutation?.id}
+          >
+            <Typography>
+              <Span fontWeight="700" fontSize="14px">
+                {item?.quantity}
+              </Span>{" "}
+              x {item?.otherProps?.title}
+            </Typography>
+            <Typography>{formatCurrency(item?.netAmount)}</Typography>
+          </FlexBox>
+          <FlexBox gap={4} alignItems="center">
+            {item?.otherProps?.mutation?.variations?.sort(sort).map(v => <>
+              {v.type === "size" ? renderSize(v.size) : null}
+              {v.type === "color" ? renderColor(v.color) : null}
+              {v.type === "default" ? renderDefault(v.name) : null}
+            </>
+            )}
+          </FlexBox>
+
         </FlexBox>
       ))}
 
