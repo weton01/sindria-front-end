@@ -1,46 +1,102 @@
-import React, { Fragment, useState } from "react";
-import { Formik } from "formik";
+import React, { Fragment, useEffect, useState } from "react";
 import * as yup from "yup";
-import Typography from "../Typography";
+import Typography, { H6, Paragraph } from "../Typography";
 import Grid from "../grid/Grid";
 import TextField from "../text-field/TextField";
 import Button from "../buttons/Button";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { Card1 } from "../Card1";
 import Radio from "../radio/Radio";
 import FlexBox from "../FlexBox";
 import Divider from "../Divider";
-import Box from "../Box";
 import useWindowSize from "../../hooks/useWindowSize";
+import Avatar from "@component/avatar/Avatar";
+import Card from "@component/Card";
+import PaymentFormV2 from "@component/payment/Form";
+import { api } from "services/api";
+import { toast } from "react-nextjs-toast";
+import { useAppDispatch } from "@hook/hooks";
 
-const PaymentForm = () => {
-  const [paymentMethod, setPaymentMethod] = useState("credit-card");
+
+const PaymentForm = ({ creditCards }) => {
+  const router = useRouter()
+  const dispatch = useAppDispatch();
+
+  const [selectedCreditCard, setSelectedCreditCard] = useState({ id: '' })
+  const [paymentMethod, setPaymentMethod] = useState("credit");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setSelectedCreditCard(creditCards?.items[0])
+  }, [creditCards])
+
+  useEffect(() => {
+    dispatch({
+      type: "SELECT_CREDIT_CARD",
+      payload: selectedCreditCard
+    })
+  }, [selectedCreditCard])
+
+  useEffect(() => {
+    dispatch({
+      type: "SELECT_PAYMENT_TYPE",
+      payload: paymentMethod
+    })
+  }, [paymentMethod])
+
+  const returnPage = () => {
+    router.push('/cart/shipping')
+  }
+
+  const nextPage = () => {
+    router.push('/cart/checkout')
+  }
 
   const width = useWindowSize();
-  const router = useRouter();
   const isMobile = width < 769;
-
-  const handleFormSubmit = async (values) => {
-    console.log(values);
-    router.push("/payment");
-  };
 
   const handlePaymentMethodChange = ({ target: { name } }) => {
     setPaymentMethod(name);
+  };
+
+  const handleFormSubmit = async (values) => {
+    setLoading(true);
+    try {
+      delete values.focus;
+      const payload = {
+        ...values,
+        number: values.number.replace(/ /g, ''),
+        expirationDate: values.expiry
+      }
+      delete payload.expiry;
+      await api.post(`credit-card/v1/`, payload);
+      router.push("/cart/payment");
+      toast.notify("Cartão de crédito adicionado", {
+        title: "Sucesso!",
+        duration: 5,
+        type: "success",
+      });
+    } catch (err) {
+      toast.notify(err.response.data.message, {
+        title: "Erro!",
+        duration: 5,
+        type: "error",
+      });
+    }
+    setLoading(false);
   };
 
   return (
     <Fragment>
       <Card1 mb="2rem">
         <Radio
-          name="credit-card"
+          name="credit"
           mb="1.5rem"
           color="secondary"
-          checked={paymentMethod === "credit-card"}
+          checked={paymentMethod === "credit"}
           label={
             <Typography ml="6px" fontWeight="600" fontSize="18px">
-              Pay with credit card
+              Pagar com Cartão de Crédito
             </Typography>
           }
           onChange={handlePaymentMethodChange}
@@ -48,96 +104,88 @@ const PaymentForm = () => {
 
         <Divider mb="1.25rem" mx="-2rem" />
 
-        {paymentMethod === "credit-card" && (
-          <Formik
-            initialValues={initialValues}
-            validationSchema={checkoutSchema}
-            onSubmit={handleFormSubmit}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-            }) => (
-              <form onSubmit={handleSubmit}>
-                <Box mb="1.5rem">
-                  <Grid container horizontal_spacing={6} vertical_spacing={4}>
-                    <Grid item sm={6} xs={12}>
-                      <TextField
-                        name="card_no"
-                        label="Card Number"
-                        fullwidth
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.card_no || ""}
-                        errorText={touched.card_no && errors.card_no}
-                      />
-                    </Grid>
-                    <Grid item sm={6} xs={12}>
-                      <TextField
-                        name="exp_date"
-                        label="Exp Date"
-                        placeholder="MM/YY"
-                        fullwidth
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.exp_date || ""}
-                        errorText={touched.exp_date && errors.exp_date}
-                      />
-                    </Grid>
-                    <Grid item sm={6} xs={12}>
-                      <TextField
-                        name="name"
-                        label="Name on Card"
-                        fullwidth
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.name || ""}
-                        errorText={touched.name && errors.name}
-                      />
-                    </Grid>
-                    <Grid item sm={6} xs={12}>
-                      <TextField
-                        name="name"
-                        label="Name on Card"
-                        fullwidth
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.name || ""}
-                        errorText={touched.name && errors.name}
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
+        {paymentMethod === "credit" && (
+          <Card1 mb="1.5rem">
+            <FlexBox alignItems="center" mb="1.75rem">
+              <Avatar
+                bg="primary.main"
+                size={32}
+                color="primary.text"
+                mr="0.875rem"
+              >
+                1
+              </Avatar>
+              <Typography fontSize="20px">Detalhes do Envio</Typography>
+            </FlexBox>
 
-                <Button variant="outlined" color="primary" mb="30px">
-                  Submit
-                </Button>
 
-                <Divider mb="1.5rem" mx="-2rem" />
-              </form>
-            )}
-          </Formik>
+            <Typography mb="0.75rem">Cartão de Crédito para pagamento</Typography>
+            <Grid container spacing={6}>
+
+              {creditCards?.items?.map((item, ind) => (
+                <Grid item md={4} sm={6} xs={12} key={`addr-${ind}`}>
+                  <Card
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    bg="gray.100"
+                    p="1rem"
+                    boxShadow="none"
+                    border="1px solid"
+                    cursor="pointer"
+                    borderColor={
+                      item.id === selectedCreditCard?.id
+                        ? "primary.main"
+                        : "transparent"
+                    }
+                    onClick={() => {
+                      setSelectedCreditCard(item)
+                    }}
+                  >
+
+                    <H6 mb="0.25rem">{item.number}</H6>
+                    <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
+                      <Paragraph color="gray.700">
+                        {item.expirationDate}</Paragraph>
+                      <img
+                        width={45}
+                        height={35}
+                        src={`/assets/images/payment-methods/${item.type}.svg`}
+                        alt={item.type}
+                      />
+                    </FlexBox>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+            <Typography mb="0.75rem" mt="1.5rem">Adicionar Cartão de Crédito</Typography>
+            <Grid container spacing={6}>
+                <PaymentFormV2
+                  initialValues={initialValues}
+                  handleFormSubmit={handleFormSubmit}
+                  checkoutSchema={checkoutSchema}
+                  loading={loading}
+                />
+             </Grid>
+          </Card1>
         )}
 
         <Radio
-          name="paypal"
+          name="pix"
           mb="1.5rem"
           color="secondary"
-          checked={paymentMethod === "paypal"}
+          checked={paymentMethod === "pix"}
           label={
             <Typography ml="6px" fontWeight="600" fontSize="18px">
-              Pay with Paypal
+              Pagar com PIX
             </Typography>
           }
           onChange={handlePaymentMethodChange}
         />
         <Divider mb="1.5rem" mx="-2rem" />
 
-        {paymentMethod === "paypal" && (
+        {paymentMethod === "pix" && (
           <Fragment>
             <FlexBox alignItems="flex-end" mb="30px">
               <TextField
@@ -157,12 +205,12 @@ const PaymentForm = () => {
         )}
 
         <Radio
-          name="cod"
+          name="boleto"
           color="secondary"
-          checked={paymentMethod === "cod"}
+          checked={paymentMethod === "boleto"}
           label={
             <Typography ml="6px" fontWeight="600" fontSize="18px">
-              Cash On Delivery
+              Pagar com Boleto
             </Typography>
           }
           onChange={handlePaymentMethodChange}
@@ -171,18 +219,14 @@ const PaymentForm = () => {
 
       <Grid container spacing={7}>
         <Grid item sm={6} xs={12}>
-          <Link href="/checkout">
-            <Button variant="outlined" color="primary" type="button" fullwidth>
-              Back to checkout details
-            </Button>
-          </Link>
+          <Button onClick={returnPage} variant="outlined" color="primary" type="button" fullwidth>
+            Voltar para Entrega
+          </Button>
         </Grid>
         <Grid item sm={6} xs={12}>
-          <Link href="/orders">
-            <Button variant="contained" color="primary" type="submit" fullwidth>
-              Review
-            </Button>
-          </Link>
+          <Button onClick={nextPage} variant="contained" color="primary" type="submit" fullwidth>
+            Confirmar
+          </Button>
         </Grid>
       </Grid>
     </Fragment>
@@ -190,39 +234,18 @@ const PaymentForm = () => {
 };
 
 const initialValues = {
-  card_no: "",
+  number: "",
   name: "",
-  exp_date: "",
+  expiry: "",
   cvc: "",
-  shipping_zip: "",
-  shipping_country: "",
-  shipping_address1: "",
-  shipping_address2: "",
-
-  billing_name: "",
-  billing_email: "",
-  billing_contact: "",
-  billing_company: "",
-  billing_zip: "",
-  billing_country: "",
-  billing_address1: "",
-  billing_address2: "",
 };
 
 const checkoutSchema = yup.object().shape({
-  card_no: yup.string().required("required"),
-  name: yup.string().required("required"),
-  exp_date: yup.string().required("required"),
-  cvc: yup.string().required("required"),
-  // shipping_zip: yup.string().required("required"),
-  // shipping_country: yup.object().required("required"),
-  // shipping_address1: yup.string().required("required"),
-  // billing_name: yup.string().required("required"),
-  // billing_email: yup.string().required("required"),
-  // billing_contact: yup.string().required("required"),
-  // billing_zip: yup.string().required("required"),
-  // billing_country: yup.string().required("required"),
-  // billing_address1: yup.string().required("required"),
+  name: yup.string().required("nome requerido"),
+  number: yup.string().required("número requerido"),
+  expiry: yup.string().matches(/^(0[1-9]|1[0-2])\/?([0-9]{4})$/, "data inválida").required("data requerida"),
+  cvc: yup.string().required("cvc requerido"),
 });
+
 
 export default PaymentForm;

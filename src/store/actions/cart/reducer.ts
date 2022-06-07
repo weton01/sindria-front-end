@@ -112,6 +112,9 @@ const reducer = (state = initialState, action) => {
         creditCard: action.payload,
       };
 
+    case types.CLEAR_CART:
+      return initialState
+
     default:
       return state;
   }

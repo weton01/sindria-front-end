@@ -47,13 +47,14 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   mutations,
 }) => {
   const dispatch = useAppDispatch();
+  console.log(mutations)
 
-  const defaultSize = mutations[0]?.variations?.find((v) => v?.type === "size")
-  const defaultColor = mutations[0]?.variations?.find((v) => v?.type === "color")
-  const defaultVariation = mutations[0]?.variations?.find((v) => v?.type === "default")
+  const defaultSize = mutations.length > 0? mutations[0]?.variations?.find((v) => v?.type === "size") : {};
+  const defaultColor = mutations.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "color") : {};
+  const defaultVariation = mutations.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "default") : {};
 
   const pixPrice: number = price - (price * 0.01)
-  const boletoPrice: number = price - (price * 0.048)
+  const boletoPrice: number = price - (price * 0.048) 
   const creditPrice: number = price - (price * 0)
 
   const [viewimage, setViewImage] = useState(images[0]);
@@ -121,7 +122,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
           id: id
         },
         otherProps: {
-          title, price, brand, 
+          title, price, brand, id,
           categories, images, tags,
           mutation: mutation,
           grossAmount: price,
@@ -145,6 +146,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   }, [defaultSize, defaultColor, defaultVariation])
 
   useEffect(() => {
+    
     const size = selectedMutations[0]?.variations?.find((v) => v?.type === "size")
     const color = selectedMutations[0]?.variations?.find((v) => v?.type === "color")
     const type = selectedMutations[0]?.variations?.find((v) => v?.type === "default")

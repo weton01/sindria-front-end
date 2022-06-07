@@ -1,5 +1,6 @@
 import HoverBox from "@component/HoverBox";
 import LazyImage from "@component/LazyImage";
+import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
 import React from "react";
 import Card from "../Card";
@@ -34,6 +35,7 @@ const ProductCard8: React.FC<ProductCard8Props> = ({
               layout="responsive"
               objectFit="contain"
               objectPosition="center"
+              
             />
           </HoverBox>
           <SemiSpan
@@ -47,10 +49,10 @@ const ProductCard8: React.FC<ProductCard8Props> = ({
           </SemiSpan>
           <FlexBox alignItems="center">
             <H6 color="primary.main" mr="0.25rem">
-              ${price}
+              {formatCurrency(price - (price * 0.048))}
             </H6>
             <SemiSpan>
-              <del>$1600</del>
+              <del> {formatCurrency(price)}</del>
             </SemiSpan>
           </FlexBox>
         </a>

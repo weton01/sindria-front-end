@@ -2,366 +2,180 @@ import Avatar from "@component/avatar/Avatar";
 import Box from "@component/Box";
 import Card from "@component/Card";
 import FlexBox from "@component/FlexBox";
-import LazyImage from "@component/LazyImage";
-import TextField from "@component/text-field/TextField";
-import { format } from "date-fns";
-import { Formik } from "formik";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import * as yup from "yup";
+import React, { useState } from "react";
 import Button from "../buttons/Button";
 import { Card1 } from "../Card1";
 import Grid from "../grid/Grid";
-import Select from "../Select";
 import Typography, { H6, Paragraph } from "../Typography";
+import { useSelector } from "react-redux";
+import Icon from "@component/icon/Icon";
+import { fail, success} from "@component/notification/notifcate";
+import { PROD_URL } from "services/api";
+import axios from "axios";
+import { parseCookies } from "nookies";
+import { useAppDispatch } from "@hook/hooks";
+import { useRouter } from "next/router";
+
+const TranslatePaymentMethod = {
+  credit: "Crédito",
+  pix: "PIX",
+  boleto: "Boleto",
+}
+
+const clearCart = (cart) => {
+  const newCart = {...cart}
+  newCart.orderProducts = newCart.orderProducts.map(i => {
+    delete i.otherProps
+    return i
+  })
+
+  newCart.address = {id: newCart.address.id}
+  newCart.creditCard = {id: newCart.creditCard.id}
+
+  return newCart
+}
 
 const CheckoutForm2 = () => {
-  const [hasVoucher, setHasVoucher] = useState(false);
-  const [dateList, setDateList] = useState([]);
+
+  const [loading, setLoading] = useState(false)
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const handleFormSubmit = async (values) => {
-    console.log(values);
-    router.push("/payment");
-  };
+  const cart = useSelector((selec: any) =>
+    selec.cart
+  );
+  
+  const cookies = parseCookies()
 
-  const handleFieldValueChange = (value, fieldName, setFieldValue) => () => {
-    setFieldValue(fieldName, value);
-  };
+  const handleFormSubmit = async () => {
+    setLoading(true);
+    const newCart = clearCart(cart)
 
-  const toggleHasVoucher = () => {
-    setHasVoucher((has) => !has);
-  };
+    try {
+      await axios.post(`${PROD_URL}order/v1`, newCart, {
+        headers: {
+          'Authorization': `Bearer ${cookies['shop_token']}`
+        }
+      })
 
-  useEffect(() => {
-    let list = [];
-    let today = new Date();
-    let dateCount = today.getDate();
+      router.push("/");
 
-    list.push({
-      label: format(today, "dd MMMM"),
-      value: today,
-    });
+      dispatch({
+        type: "CLEAR_CART",
+        payload: {}
+      })
 
-    for (let i = 1; i < 10; i++) {
-      today.setDate(dateCount + i);
-      list.push({
-        label: format(today, "dd MMMM"),
-        value: today,
-      });
+      success('success')
+    } catch (err) {
+      fail(err?.response?.data?.message)
     }
-
-    setDateList(list);
-  }, []);
+    setLoading(false);
+  };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={checkoutSchema}
-      onSubmit={handleFormSubmit}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleChange,
-        handleSubmit,
-        setFieldValue,
-      }) => (
-        <form onSubmit={handleSubmit}>
-          <Card1 mb="1.5rem">
-            <FlexBox alignItems="center" mb="1.75rem">
-              <Avatar
-                bg="primary.main"
-                size={32}
-                color="primary.text"
-                mr="0.875rem"
-              >
-                1
-              </Avatar>
-              <Typography fontSize="20px">Delivery Details</Typography>
-            </FlexBox>
+    <Box>
+      <Card1 mb="1.5rem">
+        <FlexBox alignItems="center" mb="1.75rem">
+          <Avatar
+            bg="primary.main"
+            size={32}
+            color="primary.text"
+            mr="0.875rem"
+          >
+            1
+          </Avatar>
+          <Typography fontSize="20px">Detalhes de Entrega</Typography>
+        </FlexBox>
 
-            <Box mb="1.75rem">
-              <Grid container spacing={6}>
-                <Grid item sm={6} xs={12}>
-                  <Select
-                    label="Delivery Date"
-                    options={dateList}
-                    value={values.date || ""}
-                    onChange={(date) => {
-                      setFieldValue("date", date);
-                    }}
-                    errorText={touched.date && errors.date}
-                  />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <Select
-                    label="Delivery Time"
-                    options={timeList}
-                    value={values.time || ""}
-                    onChange={(time) => {
-                      setFieldValue("time", time);
-                    }}
-                    errorText={touched.time && errors.time}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
+        <Typography mb="0.75rem">Endereço de entrega</Typography>
+        <Card
+          bg="gray.100"
+          p="1rem"
+          boxShadow="none"
+          border="1px solid"
+          borderColor="transparent"
+        >
+          <H6 mb="0.25rem">CEP: {cart?.address?.cep}</H6>
+          <Paragraph color="gray.700">{cart?.address?.street}, {cart?.address?.number}, {cart?.address?.neighborhood}</Paragraph>
+        </Card>
+      </Card1>
 
-            <Typography mb="0.75rem">Delivery Address</Typography>
-            <Grid container spacing={6}>
-              {addressList.map((item, ind) => (
-                <Grid item md={4} sm={6} xs={12} key={ind}>
-                  <Card
-                    bg="gray.100"
-                    p="1rem"
-                    boxShadow="none"
-                    border="1px solid"
-                    cursor="pointer"
-                    borderColor={
-                      item.address === values.address
-                        ? "primary.main"
-                        : "transparent"
-                    }
-                    onClick={handleFieldValueChange(
-                      item.address,
-                      "address",
-                      setFieldValue
-                    )}
-                  >
-                    <H6 mb="0.25rem">{item.addressType}</H6>
-                    <Paragraph color="gray.700">{item.address}</Paragraph>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Card1>
+      <Card1 mb="1.5rem">
+        <FlexBox alignItems="center" mb="1.75rem">
+          <Avatar
+            bg="primary.main"
+            size={32}
+            color="primary.text"
+            mr="0.875rem"
+          >
+            2
+          </Avatar>
+          <Typography fontSize="20px">Informações de Pagamento</Typography>
+        </FlexBox>
 
-          <Card1 mb="1.5rem">
-            <FlexBox alignItems="center" mb="1.75rem">
-              <Avatar
-                bg="primary.main"
-                size={32}
-                color="primary.text"
-                mr="0.875rem"
-              >
-                3
-              </Avatar>
-              <Typography fontSize="20px">Personal Details</Typography>
-            </FlexBox>
-
-            <Typography mb="0.75rem">Contact Information</Typography>
-
-            <Grid container spacing={6}>
-              {contactList.map((item) => (
-                <Grid item md={4} sm={6} xs={12} key={item.contact}>
-                  <Card
-                    bg="gray.100"
-                    p="1rem"
-                    boxShadow="none"
-                    border="1px solid"
-                    cursor="pointer"
-                    borderColor={
-                      item.contact === values.contact
-                        ? "primary.main"
-                        : "transparent"
-                    }
-                    onClick={handleFieldValueChange(
-                      item.contact,
-                      "contact",
-                      setFieldValue
-                    )}
-                  >
-                    <H6 mb="0.25rem">{item.contactType}</H6>
-                    <Paragraph color="gray.700">{item.contact}</Paragraph>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Card1>
-
-          <Card1 mb="1.5rem">
-            <FlexBox alignItems="center" mb="1.75rem">
-              <Avatar
-                bg="primary.main"
-                size={32}
-                color="primary.text"
-                mr="0.875rem"
-              >
-                3
-              </Avatar>
-              <Typography fontSize="20px">Payment Details</Typography>
-            </FlexBox>
-
-            <Typography mb="0.75rem">Saved Payment Methods</Typography>
-            <Grid container spacing={6}>
-              {paymentMethodList.map((item) => (
-                <Grid item md={4} sm={6} xs={12} key={item.last4Digits}>
-                  <Card
-                    bg="gray.100"
-                    p="1rem"
-                    boxShadow="none"
-                    border="1px solid"
-                    cursor="pointer"
-                    borderColor={
-                      item.last4Digits === values.card
-                        ? "primary.main"
-                        : "transparent"
-                    }
-                    onClick={handleFieldValueChange(
-                      item.last4Digits,
-                      "card",
-                      setFieldValue
-                    )}
-                  >
-                    <Box
-                      height="24px"
-                      width="36px"
-                      position="relative"
-                      mb="0.5rem"
-                    >
-                      <LazyImage
-                        src={`/assets/images/payment-methods/${item.cardType}.svg`}
-                        layout="fill"
-                        objectFit="contain"
-                      />
-                    </Box>
-
-                    <Paragraph color="gray.700">
-                      **** **** **** {item.last4Digits}
-                    </Paragraph>
-                    <Paragraph color="gray.700">{item.name}</Paragraph>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-
-            <Paragraph
-              className="cursor-pointer"
-              color="primary.main"
-              mt="1.5rem"
-              lineHeight="1"
-              onClick={toggleHasVoucher}
+        <Typography mb="0.75rem">Método de Pagamento</Typography>
+        <Card
+          bg="gray.100"
+          p="1rem"
+          boxShadow="none"
+          border="1px solid"
+          borderColor="transparent"
+          mb="1rem"
+          display="flex"
+        >
+          <FlexBox alignItems="center" gap={4}>
+            <Icon
             >
-              I have a voucher.
-            </Paragraph>
+              {cart?.invoiceType}
+            </Icon>
+            <H6 ml="4px">{TranslatePaymentMethod[cart?.invoiceType]}</H6>
+          </FlexBox>
+        </Card>
+        {
+          cart?.invoiceType === 'credit' ? <>
+            <Typography mb="0.75rem">Cartão de crédito</Typography>
 
-            {hasVoucher && (
-              <FlexBox mt="1.5rem" maxWidth="400px">
-                <TextField
-                  name="voucher"
-                  placeholder="Enter voucher code here"
-                  fullwidth
-                  value={values.voucher || ""}
-                  onChange={handleChange}
+            <Card
+              bg="gray.100"
+              p="1rem"
+              boxShadow="none"
+              border="1px solid"
+              borderColor="transparent"
+            >
+              <H6 mb="0.25rem">{cart?.creditCard?.number}</H6>
+              <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
+                <Paragraph color="gray.700">
+                  {cart?.creditCard?.expirationDate}</Paragraph>
+                <img
+                  width={45}
+                  height={35}
+                  src={`/assets/images/payment-methods/${cart?.creditCard?.type}.svg`}
+                  alt={`${cart?.creditCard?.type}`}
                 />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="button"
-                  ml="1rem"
-                >
-                  Apply
-                </Button>
               </FlexBox>
-            )}
+            </Card>
+          </>
+            : null
+        }
 
-            <Button
-              variant="contained"
-              color="primary"
-              mt="1.5rem"
-              type="submit"
-              fullwidth
-            >
-              Place Order
-            </Button>
-          </Card1>
-        </form>
-      )}
-    </Formik>
+      </Card1>
+
+      <Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          mt="1.5rem"
+          type="submit"
+          fullwidth
+          loading={loading}
+          onClick={handleFormSubmit}
+        >
+          Fazer Pedido
+        </Button>
+      </Grid>
+    </Box >
+
   );
 };
-
-const addressList = [
-  {
-    addressType: "Home",
-    address: "435 Bristol Avenue, Abington MA 2351",
-  },
-  {
-    addressType: "Office",
-    address: "777 Brockton Avenue, Abington MA 2351",
-  },
-  {
-    addressType: "Office 2",
-    address: "777 Kazi Avenue, Abington MA 2351",
-  },
-];
-
-const contactList = [
-  {
-    contactType: "Primary",
-    contact: "+1-202-555-0119",
-  },
-  {
-    contactType: "Secondary",
-    contact: "+1-202-555-0222",
-  },
-];
-
-const paymentMethodList = [
-  {
-    cardType: "Amex",
-    last4Digits: "4765",
-    name: "Jaslynn Land",
-  },
-  {
-    cardType: "Mastercard",
-    last4Digits: "5432",
-    name: "Jaslynn Land",
-  },
-  {
-    cardType: "Visa",
-    last4Digits: "4543",
-    name: "Jaslynn Land",
-  },
-];
-
-const timeList = [
-  {
-    label: "9AM - 11AM",
-    value: "9AM - 11AM",
-  },
-  {
-    label: "11AM - 1PM",
-    value: "11AM - 1PM",
-  },
-  {
-    label: "3PM - 5PM",
-    value: "3PM - 5PM",
-  },
-  {
-    label: "5PM - 7PM",
-    value: "5PM - 7PM",
-  },
-];
-
-const initialValues = {
-  address: "",
-  contact: "",
-  card: "",
-  date: "",
-  time: "",
-  voucher: "",
-};
-
-const checkoutSchema = yup.object().shape({
-  address: yup.string().required("required"),
-  contact: yup.string().required("required"),
-  card: yup.string().required("required"),
-  date: yup.object().required("required"),
-  time: yup.object().required("required"),
-  voucher: yup.string(),
-});
 
 export default CheckoutForm2;

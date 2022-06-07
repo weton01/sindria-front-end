@@ -22,8 +22,6 @@ const Cart = () => {
   const products = useSelector((selec: any) =>
     selec?.cart?.orderProducts
   )
-
-  const cartList: CartItem[] = [];
   const [total, setTotal] = useState(0)
 
   useEffect(() => {
@@ -51,6 +49,7 @@ const Cart = () => {
             imgUrl={item?.otherProps?.images[0]}
             mutation={item?.otherProps?.mutation}
             item={item}
+            id={item?.otherProps?.id}
             />
           ))}
         </Grid>

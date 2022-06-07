@@ -19,7 +19,7 @@ const CheckoutNavLayout: React.FC = ({ children }) => {
         router.push("/cart");
         break;
       case 1:
-        router.push("/cart/checkout");
+        router.push("/cart/shipping");
         break;
       case 2:
         router.push("/cart/payment");
@@ -37,11 +37,14 @@ const CheckoutNavLayout: React.FC = ({ children }) => {
       case "/cart":
         setSelectedStep(1);
         break;
-      case "/checkout":
+      case "/cart/shipping":
         setSelectedStep(2);
         break;
-      case "/payment":
+      case "/cart/payment":
         setSelectedStep(3);
+        break;
+      case "/cart/checkout":
+        setSelectedStep(4);
         break;
       default:
         break;
