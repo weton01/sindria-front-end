@@ -12,7 +12,7 @@ export interface FrequentlyBoughtProps {
 const FrequentlyBought: React.FC<FrequentlyBoughtProps> = ({ data }) => {
   return (
     <>
-      {data.length > 0 ?
+      {data?.length > 0 ?
         <FrequentlyBoughtWrapper mb="3.75rem">
           <H3 mb="24px">Frequently Bought Together</H3>
           <FlexBox className="card-holder" flexWrap="wrap" m="-0.5rem">
@@ -26,7 +26,7 @@ const FrequentlyBought: React.FC<FrequentlyBoughtProps> = ({ data }) => {
                   flex="1 1 0"
                   id={item.id}
                   price={item.netAmount}
-                  imgUrl={item.images[0]}
+                  imgUrl={item?.freezeProduct?.product?.images[0]}
                   title={item.name}
                 />
                 {ind < data.length - 1 && (
@@ -62,11 +62,9 @@ const FrequentlyBought: React.FC<FrequentlyBoughtProps> = ({ data }) => {
 
               <FlexBox>
                 <Button variant="contained" color="primary" size="small" mr="1rem">
-                  Add to Cart
+                  Adicionar ao Carrinho
                 </Button>
-                <Button variant="outlined" color="primary" size="small">
-                  Add to List
-                </Button>
+           
               </FlexBox>
             </FlexBox>
           </FlexBox>

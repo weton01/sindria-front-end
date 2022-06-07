@@ -107,11 +107,13 @@ const reducer = (state = initialState, action) => {
       };
 
     case types.SELECT_CREDIT_CARD:
-      console.log(action.payload)
       return {
         ...state,
         creditCard: action.payload,
       };
+
+    case types.CLEAR_CART:
+      return initialState
 
     default:
       return state;

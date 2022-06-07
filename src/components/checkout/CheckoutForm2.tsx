@@ -9,10 +9,12 @@ import Grid from "../grid/Grid";
 import Typography, { H6, Paragraph } from "../Typography";
 import { useSelector } from "react-redux";
 import Icon from "@component/icon/Icon";
-import { success, fail} from "@component/notification/notifcate";
+import { fail, success} from "@component/notification/notifcate";
 import { PROD_URL } from "services/api";
 import axios from "axios";
 import { parseCookies } from "nookies";
+import { useAppDispatch } from "@hook/hooks";
+import { useRouter } from "next/router";
 
 const TranslatePaymentMethod = {
   credit: "Crédito",
@@ -34,24 +36,36 @@ const clearCart = (cart) => {
 }
 
 const CheckoutForm2 = () => {
+
   const [loading, setLoading] = useState(false)
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
   const cart = useSelector((selec: any) =>
     selec.cart
   );
+  
   const cookies = parseCookies()
 
   const handleFormSubmit = async () => {
     setLoading(true);
     const newCart = clearCart(cart)
-    console.log(newCart)
+
     try {
-      const { data } = await axios.post(`${PROD_URL}order/v1`, newCart, {
+      await axios.post(`${PROD_URL}order/v1`, newCart, {
         headers: {
           'Authorization': `Bearer ${cookies['shop_token']}`
         }
       })
 
-      success('sucesso! por favor, aguarde enquanto processamos seu pagamento')
+      router.push("/");
+
+      dispatch({
+        type: "CLEAR_CART",
+        payload: {}
+      })
+
+      success('success')
     } catch (err) {
       fail(err?.response?.data?.message)
     }
@@ -109,7 +123,7 @@ const CheckoutForm2 = () => {
           mb="1rem"
           display="flex"
         >
-          <FlexBox alignItems="center">
+          <FlexBox alignItems="center" gap={4}>
             <Icon
             >
               {cart?.invoiceType}

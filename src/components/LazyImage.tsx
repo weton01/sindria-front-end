@@ -17,7 +17,7 @@ interface LazyImageProps {
 }
 
 interface LazySpinn {
-  spinning: boolean
+  spinning?: boolean
 }
 
 const LazyImageStyle = styled(NextImage)<

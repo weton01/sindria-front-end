@@ -19,7 +19,8 @@ const ProductDetails = ({product, reviews, comments, bestSalersRelated, relatedP
   const handleOptionClick = (opt) => () => {
     setSelectedOption(opt);
   };
-
+  console.log('chegou aqui', relatedProducts);
+  
   return (
     <div>
       <ProductIntro 
