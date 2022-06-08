@@ -8,8 +8,8 @@ import { Card1 } from "../Card1";
 import Grid from "../grid/Grid";
 import Typography, { H6, Paragraph } from "../Typography";
 import { useSelector } from "react-redux";
-import Icon from "@component/icon/Icon";
-import { fail, success} from "@component/notification/notifcate";
+import Icon, { IconType } from "@component/icon/Icon";
+import { fail, success } from "@component/notification/notifcate";
 import { PROD_URL } from "services/api";
 import axios from "axios";
 import { parseCookies } from "nookies";
@@ -23,14 +23,14 @@ const TranslatePaymentMethod = {
 }
 
 const clearCart = (cart) => {
-  const newCart = {...cart}
+  const newCart = { ...cart }
   newCart.orderProducts = newCart.orderProducts.map(i => {
     delete i.otherProps
     return i
   })
 
-  newCart.address = {id: newCart.address.id}
-  newCart.creditCard = {id: newCart.creditCard.id}
+  newCart.address = { id: newCart.address.id }
+  newCart.creditCard = { id: newCart.creditCard.id }
 
   return newCart
 }
@@ -44,7 +44,7 @@ const CheckoutForm2 = () => {
   const cart = useSelector((selec: any) =>
     selec.cart
   );
-  
+
   const cookies = parseCookies()
 
   const handleFormSubmit = async () => {
@@ -146,12 +146,12 @@ const CheckoutForm2 = () => {
               <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
                 <Paragraph color="gray.700">
                   {cart?.creditCard?.expirationDate}</Paragraph>
-                <img
-                  width={45}
-                  height={35}
-                  src={`/assets/images/payment-methods/${cart?.creditCard?.type}.svg`}
-                  alt={`${cart?.creditCard?.type}`}
-                />
+                
+                <Icon
+                  typer={IconType["payment-card"]}
+                >
+                  {cart?.creditCard?.type}
+                </Icon>
               </FlexBox>
             </Card>
           </>

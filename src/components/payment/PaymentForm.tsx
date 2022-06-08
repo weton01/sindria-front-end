@@ -16,6 +16,7 @@ import PaymentFormV2 from "@component/payment/Form";
 import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
 import { useAppDispatch } from "@hook/hooks";
+import Icon, { IconType } from "@component/icon/Icon";
 
 
 const PaymentForm = ({ creditCards }) => {
@@ -147,13 +148,14 @@ const PaymentForm = ({ creditCards }) => {
                     <H6 mb="0.25rem">{item.number}</H6>
                     <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
                       <Paragraph color="gray.700">
-                        {item.expirationDate}</Paragraph>
-                      <img
-                        width={45}
-                        height={35}
-                        src={`/assets/images/payment-methods/${item.type}.svg`}
-                        alt={item.type}
-                      />
+                        {item.expirationDate}
+                      </Paragraph>
+
+                      <Icon
+                        typer={IconType["payment-card"]}
+                      >
+                        {item.type}
+                      </Icon>
                     </FlexBox>
                   </Card>
                 </Grid>
@@ -161,13 +163,13 @@ const PaymentForm = ({ creditCards }) => {
             </Grid>
             <Typography mb="0.75rem" mt="1.5rem">Adicionar Cartão de Crédito</Typography>
             <Grid container spacing={6}>
-                <PaymentFormV2
-                  initialValues={initialValues}
-                  handleFormSubmit={handleFormSubmit}
-                  checkoutSchema={checkoutSchema}
-                  loading={loading}
-                />
-             </Grid>
+              <PaymentFormV2
+                initialValues={initialValues}
+                handleFormSubmit={handleFormSubmit}
+                checkoutSchema={checkoutSchema}
+                loading={loading}
+              />
+            </Grid>
           </Card1>
         )}
 
