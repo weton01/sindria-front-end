@@ -35,7 +35,7 @@ const SaleNavbar: React.FC<SaleNavbarProps> = ({
           cursor="pointer"
           minWidth="100px"
           ml={ind === 0 ? "auto" : "unset"}
-          mr={ind === saleCategoryList.length - 1 ? "auto" : "unset"}
+          mr={ind === saleCategoryList?.length - 1 ? "auto" : "unset"}
           bg={ind === selected ? "primary.light" : "transparent"}
           key={ind}
           onClick={handleCategoryClick(ind)}

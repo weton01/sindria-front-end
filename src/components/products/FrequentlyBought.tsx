@@ -29,7 +29,7 @@ const FrequentlyBought: React.FC<FrequentlyBoughtProps> = ({ data }) => {
                   imgUrl={item?.freezeProduct?.product?.images[0]}
                   title={item.name}
                 />
-                {ind < data.length - 1 && (
+                {ind < data?.length - 1 && (
                   <FlexBox justifyContent="center" alignItems="center">
                     <H2 color="text.muted" mx="0.5rem">
                       +

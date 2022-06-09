@@ -120,7 +120,7 @@ const ProductVariation = (props) => {
               let percent = Math.round(
                 (progress.loaded * 100) / progress.total
               );
-              if (percent === 100 && files.length - 1 === index) {
+              if (percent === 100 && files?.length - 1 === index) {
                 setLoading(false);
               }
             },
@@ -150,7 +150,7 @@ const ProductVariation = (props) => {
 
     const index =
       values.id === undefined
-        ? product.variations.length - 1
+        ? product.variations?.length - 1
         : props?.product?.variations?.findIndex(
             (item) => item.id === values.id
           );
@@ -260,11 +260,11 @@ const ProductVariation = (props) => {
                       <Accordion
                         key={index}
                         isForm
-                        expanded={index === product.variations.length - 1}
+                        expanded={index === product.variations?.length - 1}
                       >
                         <AccordionHeader px="0px" py="6px">
                           <h1>
-                            {index === product.variations.length - 1
+                            {index === product.variations?.length - 1
                               ? "Nova variação"
                               : `Variação ${index + 1}`}
                           </h1>
@@ -272,7 +272,7 @@ const ProductVariation = (props) => {
                         <Grid container spacing={4}>
                           <Grid item xs={12}>
                             <TextField
-                              disabled={index !== product.variations.length - 1}
+                              disabled={index !== product.variations?.length - 1}
                               name={`name`}
                               label="Nome"
                               placeholder="Nome do produto"
@@ -288,10 +288,10 @@ const ProductVariation = (props) => {
                                 <div>
                                   <DropZone
                                     disabled={
-                                      index !== product.variations.length - 1
+                                      index !== product.variations?.length - 1
                                     }
                                     notEdit={
-                                      index !== product.variations.length - 1
+                                      index !== product.variations?.length - 1
                                     }
                                     imgs={values.image}
                                     removeImage={(index) => {
@@ -388,12 +388,12 @@ const ProductVariation = (props) => {
                               type="submit"
                               loading={values?.loading?.create}
                             >
-                              {index === product.variations.length - 1
+                              {index === product.variations?.length - 1
                                 ? "Criar"
                                 : "Alterar"}{" "}
                               variação
                             </Button>
-                            {index !== product.variations.length - 1 ? (
+                            {index !== product.variations?.length - 1 ? (
                               <Button
                                 mt="25px"
                                 variant="outlined"

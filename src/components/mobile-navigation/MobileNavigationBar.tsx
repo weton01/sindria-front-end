@@ -20,7 +20,7 @@ const MobileNavigationBar: React.FC = () => {
             </Icon>
             {item.title}
 
-            {item.title === "Cart" && !!cartList.length && (
+            {item.title === "Cart" && !!cartList?.length && (
               <Chip
                 bg="primary.main"
                 position="absolute"
@@ -30,7 +30,7 @@ const MobileNavigationBar: React.FC = () => {
                 top="4px"
                 left="calc(50% + 8px)"
               >
-                {cartList.length}
+                {cartList?.length}
               </Chip>
             )}
           </NavLink>

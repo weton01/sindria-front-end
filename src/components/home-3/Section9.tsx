@@ -18,7 +18,7 @@ const Section9: React.FC = () => {
 
   return (
     <CategorySectionCreator title="New Arrivals">
-      <Carousel totalSlides={productList.length} visibleSlides={visibleSlides}>
+      <Carousel totalSlides={productList?.length} visibleSlides={visibleSlides}>
         {productList.map((item, ind) => (
           <Box key={ind}>
             <ProductCard2 {...item} />

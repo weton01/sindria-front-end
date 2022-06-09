@@ -6,12 +6,35 @@ import Grid from "../grid/Grid";
 import Navbar from "../navbar/Navbar";
 import Stepper from "../stepper/Stepper";
 import AppLayout from "./AppLayout";
+import { useSelector } from "react-redux";
 
-const CheckoutNavLayout: React.FC = ({ children }) => {
+const CheckoutNavLayout: React.FC = ({children }) => {
   const [selectedStep, setSelectedStep] = useState(0);
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
 
   const router = useRouter();
   const { pathname } = router;
+
+  const stepperList = [
+    {
+      title: "Carrinho",
+      disabled: false,
+    },
+    {
+      title: "Entrega",
+      disabled: !user.isLogged,
+    },
+    {
+      title: "Pagamento",
+      disabled: !user.isLogged,
+    },
+    {
+      title: "Confirmação",
+      disabled: true,
+    },
+  ];
 
   const handleStepChange = (_step, ind) => {
     switch (ind) {
@@ -71,23 +94,6 @@ const CheckoutNavLayout: React.FC = ({ children }) => {
   );
 };
 
-const stepperList = [
-  {
-    title: "Carrinho",
-    disabled: false,
-  },
-  {
-    title: "Entrega",
-    disabled: false,
-  },
-  {
-    title: "Pagamento",
-    disabled: false,
-  },
-  {
-    title: "Confirmação",
-    disabled: true,
-  },
-];
+
 
 export default CheckoutNavLayout;

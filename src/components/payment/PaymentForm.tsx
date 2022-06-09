@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import * as yup from "yup";
-import Typography, { H6, Paragraph } from "../Typography";
+import Typography, { H3, H6, Paragraph } from "../Typography";
 import Grid from "../grid/Grid";
 import TextField from "../text-field/TextField";
 import Button from "../buttons/Button";
@@ -17,6 +17,9 @@ import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
 import { useAppDispatch } from "@hook/hooks";
 import Icon, { IconType } from "@component/icon/Icon";
+import Accordion from "@component/accordion/Accordion";
+import AccordionHeader from "@component/accordion/AccordionHeader";
+import Box from "@component/Box";
 
 
 const PaymentForm = ({ creditCards }) => {
@@ -89,6 +92,7 @@ const PaymentForm = ({ creditCards }) => {
 
   return (
     <Fragment>
+
       <Card1 mb="2rem">
         <Radio
           name="credit"
@@ -103,75 +107,75 @@ const PaymentForm = ({ creditCards }) => {
           onChange={handlePaymentMethodChange}
         />
 
-        <Divider mb="1.25rem" mx="-2rem" />
 
         {paymentMethod === "credit" && (
-          <Card1 mb="1.5rem">
-            <FlexBox alignItems="center" mb="1.75rem">
-              <Avatar
-                bg="primary.main"
-                size={32}
-                color="primary.text"
-                mr="0.875rem"
+          <>
+            <Box mb="1rem">
+              <Accordion
+                isForm
+                expanded={false}
               >
-                1
-              </Avatar>
-              <Typography fontSize="20px">Detalhes do Envio</Typography>
-            </FlexBox>
+                <AccordionHeader px="0px" py="6px">
+                  <H3 mb="0.75rem" >Novo Cartão de Crédito</H3>
+                </AccordionHeader>
+                <PaymentFormV2
+                  initialValues={initialValues}
+                  handleFormSubmit={handleFormSubmit}
+                  checkoutSchema={checkoutSchema}
+                  loading={loading}
+                />
+                <Divider mt="1rem"  />
 
+              </Accordion>
+            </Box>
 
-            <Typography mb="0.75rem">Cartão de Crédito para pagamento</Typography>
-            <Grid container spacing={6}>
+            <Typography mb="0.75rem" >Cartão de Crédito para pagamento</Typography>
+            <Box mb="1rem">
+              <Grid container spacing={6}>
+                {creditCards?.items?.map((item, ind) => (
+                  <Grid item md={4} sm={6} xs={12} key={`addr-${ind}`}>
+                    <Card
+                      display="flex"
+                      flexDirection="column"
+                      justifyContent="center"
+                      alignItems="flex-start"
+                      bg="gray.100"
+                      p="1rem"
+                      boxShadow="none"
+                      border="1px solid"
+                      cursor="pointer"
+                      borderColor={
+                        item.id === selectedCreditCard?.id
+                          ? "primary.main"
+                          : "transparent"
+                      }
+                      onClick={() => {
+                        setSelectedCreditCard(item)
+                      }}
+                    >
 
-              {creditCards?.items?.map((item, ind) => (
-                <Grid item md={4} sm={6} xs={12} key={`addr-${ind}`}>
-                  <Card
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="flex-start"
-                    bg="gray.100"
-                    p="1rem"
-                    boxShadow="none"
-                    border="1px solid"
-                    cursor="pointer"
-                    borderColor={
-                      item.id === selectedCreditCard?.id
-                        ? "primary.main"
-                        : "transparent"
-                    }
-                    onClick={() => {
-                      setSelectedCreditCard(item)
-                    }}
-                  >
+                      <H6 mb="0.25rem">{item.number}</H6>
+                      <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
+                        <Paragraph color="gray.700">
+                          {item.expirationDate}
+                        </Paragraph>
 
-                    <H6 mb="0.25rem">{item.number}</H6>
-                    <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
-                      <Paragraph color="gray.700">
-                        {item.expirationDate}
-                      </Paragraph>
+                        <Icon
+                          typer={IconType["payment-card"]}
+                        >
+                          {item.type}
+                        </Icon>
+                      </FlexBox>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
 
-                      <Icon
-                        typer={IconType["payment-card"]}
-                      >
-                        {item.type}
-                      </Icon>
-                    </FlexBox>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-            <Typography mb="0.75rem" mt="1.5rem">Adicionar Cartão de Crédito</Typography>
-            <Grid container spacing={6}>
-              <PaymentFormV2
-                initialValues={initialValues}
-                handleFormSubmit={handleFormSubmit}
-                checkoutSchema={checkoutSchema}
-                loading={loading}
-              />
-            </Grid>
-          </Card1>
+          </>
+
         )}
+        <Divider mb="1.25rem" mx="-2rem" />
 
         <Radio
           name="pix"

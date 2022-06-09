@@ -88,7 +88,7 @@ const ProductComment: React.FC<ProductCommentProps> = ({
 
       <Paragraph color="gray.700" mb="0.6rem">{comment}</Paragraph>
       {
-        !isReview && user?.id === productUser?.id && !(replyState.length > 0)?
+        !isReview && user?.id === productUser?.id && !(replyState?.length > 0)?
           <Button
             variant="outlined"
             size="small"

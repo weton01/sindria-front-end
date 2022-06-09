@@ -1,7 +1,7 @@
 import IconButton from "@component/buttons/IconButton";
 import Image from "@component/Image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Categories from "../categories/Categories";
 import Container from "../Container";
 import FlexBox from "../FlexBox";
@@ -25,7 +25,9 @@ const Header: React.FC<HeaderProps> = ({
   isFixed,
   className,
 }) => {
-  const cartList = [];
+  const [products, setProducts] = useState([])
+  const [productsQuantity, setProductsQuantity] = useState(0)
+
   const user = useAppSelector((state) => state?.user);
   const dispatch = useAppDispatch();
 
@@ -33,9 +35,29 @@ const Header: React.FC<HeaderProps> = ({
     dispatch(userLogout());
   };
 
-  const products = useSelector((selec: any) =>
-    selec?.cart?.orderProducts
+  const orderStores = useSelector((selec: any) =>
+    selec?.cart?.orderStores
   )
+
+  useEffect(() => {
+    let newProducts = [];
+
+    orderStores?.forEach(ost => {
+      newProducts = [...newProducts, ...ost.orderProducts]
+    })
+
+    setProducts(newProducts)
+  }, [orderStores, setProducts])
+
+  useEffect(() => {
+    let total: number = 0;
+
+    products.forEach(p => {
+      total += p.quantity
+    })
+
+    setProductsQuantity(total)
+  }, [products])
 
   return (
     <StyledHeader className={className}>
@@ -117,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({
                 <Icon size="20px">bag</Icon>
               </IconButton>
 
-              {!!products.length && (
+              {!!products?.length && (
                 <FlexBox
                   borderRadius="300px"
                   bg="error.main"
@@ -129,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({
                   mt="-9px"
                 >
                   <Tiny color="white" fontWeight="600">
-                    {products.length}
+                    {productsQuantity}
                   </Tiny>
                 </FlexBox>
               )}

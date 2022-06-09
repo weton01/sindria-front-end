@@ -27,7 +27,8 @@ export interface ProductIntroProps {
   salesQuantity: number;
   reviewsQuantity: number;
   rating: number;
-  mutations: any[]
+  mutations: any[],
+  otherProps: any
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -45,13 +46,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   reviewsQuantity,
   rating,
   mutations,
+  otherProps
 }) => {
   const dispatch = useAppDispatch();
-  console.log(mutations)
 
-  const defaultSize = mutations.length > 0? mutations[0]?.variations?.find((v) => v?.type === "size") : {};
-  const defaultColor = mutations.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "color") : {};
-  const defaultVariation = mutations.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "default") : {};
+  const defaultSize = mutations?.length > 0? mutations[0]?.variations?.find((v) => v?.type === "size") : {};
+  const defaultColor = mutations?.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "color") : {};
+  const defaultVariation = mutations?.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "default") : {};
 
   const pixPrice: number = price - (price * 0.01)
   const boletoPrice: number = price - (price * 0.048) 
@@ -106,7 +107,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
       const foundColor = item?.variations?.find(v => v.id === selectedColor?.id)
       const foundType = item?.variations?.find(v => v.id === selectedType?.id)
 
-      if (variations.length > 0)
+      if (variations?.length > 0)
         return foundSize && foundType
       else
         return foundColor && foundSize
@@ -122,9 +123,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
           id: id
         },
         otherProps: {
+          ...otherProps,
           title, price, brand, id,
           categories, images, tags,
-          mutation: mutation,
+          mutation: mutation, 
           grossAmount: price,
           netAmount: selectedPrice.creditPrice
         },
@@ -162,7 +164,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     const sizeToSum: number = (price * selectedSize?.netAmount)
     const grossPriceShirt: number = price - colorToSum - sizeToSum
     const grossPriceStore: number = typeToSum - sizeToSum
-    const definedPrice: number = variations.length > 0 ? grossPriceStore : grossPriceShirt
+    const definedPrice: number = variations?.length > 0 ? grossPriceStore : grossPriceShirt
 
     const pixPrice: number = definedPrice - (definedPrice * 0.01)
     const boletoPrice: number = definedPrice - (definedPrice * 0.048)
@@ -214,7 +216,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       border="1px solid"
                       key={ind}
                       ml={ind === 0 && "auto"}
-                      mr={ind === images.length - 1 ? "auto" : "10px"}
+                      mr={ind === images?.length - 1 ? "auto" : "10px"}
                       borderColor={
                         selectedImage === ind ? "primary.main" : "gray.400"
                       }
@@ -365,7 +367,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 <Box>
 
                   {
-                    colors.length > 0 ?
+                    colors?.length > 0 ?
                       <FlexBox
                         overflow="auto"
                         justifyContent="flex-start"
@@ -387,7 +389,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                               border="1px solid"
                               key={item?.id}
                               padding="3px"
-                              mr={ind === images.length - 1 ? "10px" : "10px"}
+                              mr={ind === images?.length - 1 ? "10px" : "10px"}
                               borderColor={
                                 selectedColor?.id === item?.id ? "primary.main" : "gray.400"
                               }
@@ -412,7 +414,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   }
 
                   {
-                    sizes.length > 0 ?
+                    sizes?.length > 0 ?
                       <FlexBox
                         overflow="auto"
                         justifyContent="flex-start"
@@ -420,7 +422,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         gap={8}
                       >
                         {sizes.map((item, ind) => {
-                          const foundVariation = variations.length === 0 ?
+                          const foundVariation = variations?.length === 0 ?
                             findShirtSizeProductExists(item) :
                             findOtherSizeProductExists(item)
                           return (
@@ -436,14 +438,14 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                               cursor={foundVariation ? "pointer" : "not-allowed"}
                               border="1px solid"
                               key={item?.id}
-                              mr={ind === images.length - 1 ? "10px" : "10px"}
+                              mr={ind === images?.length - 1 ? "10px" : "10px"}
                               borderColor={
                                 selectedSize?.id === item?.id ? "primary.main" : "gray.400"
                               }
                               onClick={() => {
                                 if (foundVariation) {
                                   setSelectedSize(item)
-                                  if (variations.length === 0)
+                                  if (variations?.length === 0)
                                     filterMutations(item)
                                 }
                               }}
@@ -483,7 +485,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                               cursor={foundVariation ? "pointer" : "not-allowed"}
                               border="1px solid"
                               key={item?.id}
-                              mr={ind === images.length - 1 ? "10px" : "10px"}
+                              mr={ind === images?.length - 1 ? "10px" : "10px"}
                               borderColor={
                                 selectedType?.id === item?.id ? "primary.main" : "gray.400"
                               }

@@ -58,7 +58,7 @@ const GrocerySearchBox: React.FC<GrocerySearchBoxProps> = () => {
         </Box>
       </SearchBoxStyle>
 
-      {!!resultList.length && (
+      {!!resultList?.length && (
         <Card
           position="absolute"
           top="100%"

@@ -40,13 +40,13 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav }) => {
         <FlexBox alignItems="center" m="0px 20px" height="74px">
           <Icon size="1.75rem">bag</Icon>
           <Typography fontWeight={600} fontSize="16px" ml="0.5rem">
-            {cartList.length} item
+            {cartList?.length} item
           </Typography>
         </FlexBox>
 
         <Divider />
 
-        {!!!cartList.length && (
+        {!!!cartList?.length && (
           <FlexBox
             flexDirection="column"
             alignItems="center"
@@ -146,7 +146,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav }) => {
         ))}
       </div>
 
-      {!!cartList.length && (
+      {!!cartList?.length && (
         <Fragment>
           <Link href="/checkout">
             <Button

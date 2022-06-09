@@ -26,7 +26,7 @@ const ShopList = () => {
         mt="32px"
       >
         <SemiSpan>Showing 1-9 of 300 Shops</SemiSpan>
-        <Pagination pageCount={shopList.length} />
+        <Pagination pageCount={shopList?.length} />
       </FlexBox>
     </div>
   );

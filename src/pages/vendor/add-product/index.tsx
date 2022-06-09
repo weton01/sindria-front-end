@@ -253,7 +253,7 @@ const AddProduct = (props) => {
                                           console.log('====================================');
                                         if (
                                           percent === 100 &&
-                                          files.length -
+                                          files?.length -
                                             1 ===
                                             index
                                         ) {

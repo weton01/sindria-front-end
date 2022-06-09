@@ -20,11 +20,11 @@ export function formatReal(value) {
 
     value = value.filter((item) => item !== " ");
 
-    if (value.length < 2) value = [...value, ...auxValueLast];
+    if (value?.length < 2) value = [...value, ...auxValueLast];
 
-    const valueAux = value.slice(value.length - 2, value.length);
+    const valueAux = value.slice(value?.length - 2, value?.length);
 
-    value = value.filter((item, index) => index < value.length - 2);
+    value = value.filter((item, index) => index < value?.length - 2);
 
     value.push(".");
     value = [...value, ...valueAux];

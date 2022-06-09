@@ -1,6 +1,6 @@
 import Box from "@component/Box";
 import { useSelector } from "react-redux";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Divider from "../Divider";
 import FlexBox from "../FlexBox";
 import Typography, { Span } from "../Typography";
@@ -9,29 +9,42 @@ import { formatCurrency } from "@utils/formatCurrency";
 const calculateCartSubTotal = (orderProducts): number => {
   let subTotal: number = 0;
   orderProducts?.forEach((item) => {
-    subTotal += item?.netAmount 
+    subTotal += item?.netAmount
   })
   return subTotal
 }
 
 
-const calculateDiscount = (cartP) => {
-  const subTotal: number = calculateCartSubTotal(cartP.orderProducts);
-  
-  if(cartP?.invoiceType === 'credit'){
+const calculateDiscount = (cartP, products) => {
+  const subTotal: number = calculateCartSubTotal(products);
+
+  if (cartP?.invoiceType === 'credit') {
     return subTotal * 0
   }
 
-  if(cartP?.invoiceType === 'pix'){
+  if (cartP?.invoiceType === 'pix') {
     return subTotal * 0.01
   }
 
-  if(cartP?.invoiceType === 'boleto'){
+  if (cartP?.invoiceType === 'boleto') {
     return subTotal * 0.048
   }
 }
 
+
+const calculateShippingPrice = (orderStores) => { 
+  let total: number = 0;
+
+  orderStores.forEach((i) => {
+    total += i?.shippingPrice | 0
+  })
+
+  return total
+}
+
 const CheckoutSummary2: React.FC = () => {
+  const [products, setProducts] = useState([])
+
   const cart = useSelector((selec: any) =>
     selec.cart
   );
@@ -41,6 +54,17 @@ const CheckoutSummary2: React.FC = () => {
       return -1
     }
   }
+
+  useEffect(() => {
+    let newProducts = [];
+
+    cart?.orderStores?.forEach(ost => {
+      newProducts = [...newProducts, ...ost.orderProducts]
+    })
+
+    setProducts(newProducts)
+  }, [cart, setProducts])
+
 
   const renderSize = (size) => {
     return <Box
@@ -74,8 +98,9 @@ const CheckoutSummary2: React.FC = () => {
     </Typography>
   }
 
-  const subTotal = calculateCartSubTotal(cart.orderProducts)
-  const discount = calculateDiscount(cart)
+  const subTotal = calculateCartSubTotal(products)
+  const discount = calculateDiscount(cart, products)
+  const shippingPrice = calculateShippingPrice(cart.orderStores)
 
   return (
     <Box>
@@ -83,7 +108,7 @@ const CheckoutSummary2: React.FC = () => {
         Seu Pedido
       </Typography>
 
-      {cart?.orderProducts?.map((item) => (
+      {products?.map((item) => (
         <FlexBox flexDirection="column" mb="1.5rem">
           <FlexBox
             justifyContent="space-between"
@@ -120,7 +145,7 @@ const CheckoutSummary2: React.FC = () => {
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="0.5rem">
         <Typography color="text.hint">Entrega:</Typography>
-        <Typography fontWeight="700">-</Typography>
+        <Typography fontWeight="700">{formatCurrency(shippingPrice)}</Typography>
       </FlexBox>
 
 
@@ -138,7 +163,7 @@ const CheckoutSummary2: React.FC = () => {
         mb="0.5rem"
       >
         <Typography>Total:</Typography>
-        <Typography fontWeight="700">{formatCurrency(subTotal - discount)}</Typography>
+        <Typography fontWeight="700">{formatCurrency(subTotal - discount + shippingPrice)}</Typography>
       </FlexBox>
     </Box>
   );

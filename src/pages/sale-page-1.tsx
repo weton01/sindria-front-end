@@ -40,7 +40,7 @@ const SalePage1 = () => {
   const renderProductCount = () => {
     let startNumber = page * productPerPage;
     let endNumber = (page + 1) * productPerPage;
-    let totalProduct = productDB.length;
+    let totalProduct = productDB?.length;
 
     if (endNumber > totalProduct) endNumber = totalProduct;
 
@@ -139,7 +139,7 @@ const SalePage1 = () => {
       >
         <SemiSpan>{renderProductCount()}</SemiSpan>
         <Pagination
-          pageCount={Math.ceil(productDB.length / productPerPage)}
+          pageCount={Math.ceil(productDB?.length / productPerPage)}
           onChange={handlePageChange}
         />
       </FlexBox>

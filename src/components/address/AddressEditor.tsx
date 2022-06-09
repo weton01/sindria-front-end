@@ -60,7 +60,7 @@ const AddressEditor = (props) => {
   const setNewCep = async (setValues, setFieldError, newCep) => {
     if (newCep !== undefined) {
       const cepFormated = newCep.replace(/-/g, "").replace(/_/g, "");
-      if (cepFormated.length > 7) {
+      if (cepFormated?.length > 7) {
         try {
           const response = await cep(newCep);
           setValues({ ...response });
@@ -215,7 +215,7 @@ const initialValues = {
 const checkoutSchema = yup.object().shape({
   cep: yup.string().required("cep requerido"),
   city: yup.string().required("cidade requerido"),
-  state: yup.string().required("estado requerido").length(2, "máximo 2 siglas"),
+  state: yup.string().required("estado requerido")?.length(2, "máximo 2 siglas"),
   street: yup.string().required("rua requerida"),
   neighborhood: yup.string().required("bairro requerida"),
   number: yup.number().typeError("somente número").required("número requerido"),

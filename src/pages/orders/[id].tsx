@@ -68,7 +68,7 @@ const OrderDetails = () => {
                   </Box>
                 )}
               </Box>
-              {ind < stepIconList.length - 1 && (
+              {ind < stepIconList?.length - 1 && (
                 <Box
                   flex={width < breakpoint ? "unset" : "1 1 0"}
                   height={width < breakpoint ? 50 : 4}

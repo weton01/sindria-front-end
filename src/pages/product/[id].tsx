@@ -19,7 +19,6 @@ const ProductDetails = ({product, reviews, comments, bestSalersRelated, relatedP
   const handleOptionClick = (opt) => () => {
     setSelectedOption(opt);
   };
-  console.log('chegou aqui', relatedProducts);
   
   return (
     <div>
@@ -31,6 +30,7 @@ const ProductDetails = ({product, reviews, comments, bestSalersRelated, relatedP
         variations={product?.variations?.filter(item => item.type === "default")}
         sizes={product?.variations?.filter(item=> item.type === "size")}
         colors={product?.variations?.filter(item=> item.type === "color")}
+        otherProps={product}
       />
       <FlexBox
         borderBottom="1px solid"

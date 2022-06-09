@@ -31,7 +31,7 @@ const GroceryHeader: React.FC<HeaderProps> = ({ className }) => {
         <Icon size="20px">bag</Icon>
       </IconButton>
 
-      {!!cartList.length && (
+      {!!cartList?.length && (
         <FlexBox
           borderRadius="300px"
           bg="error.main"
@@ -43,7 +43,7 @@ const GroceryHeader: React.FC<HeaderProps> = ({ className }) => {
           mt="-9px"
         >
           <Tiny color="white" fontWeight="600">
-            {cartList.length}
+            {cartList?.length}
           </Tiny>
         </FlexBox>
       )}

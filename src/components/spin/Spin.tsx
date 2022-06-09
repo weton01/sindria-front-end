@@ -5,13 +5,14 @@ import { StyledSpin, SpinnerStyle } from "./SpinStyles";
 type SpinProps = {
   loading: boolean;
   children: any;
+  size?: string;
 };
 
-const Spin: React.FC<SpinProps> = ({ loading, children }) => { 
+const Spin: React.FC<SpinProps> = ({size, loading, children }) => { 
   return (
     <StyledSpin>
       {loading ? (
-        <SpinnerStyle>
+        <SpinnerStyle size={size}>
           <div className="spin"></div>
         </SpinnerStyle>
       ) : null}

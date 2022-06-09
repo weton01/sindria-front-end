@@ -266,7 +266,7 @@ const EditProduct = (props) => {
                                         );
                                         if (
                                           percent === 100 &&
-                                          files.length - 1 === index
+                                          files?.length - 1 === index
                                         ) {
                                           setLoading(false);
                                         }

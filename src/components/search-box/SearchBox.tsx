@@ -98,7 +98,7 @@ const SearchBox: React.FC<SearchBoxProps> = () => {
         </Box> */}
       </StyledSearchBox>
 
-      {!!resultList.length && (
+      {!!resultList?.length && (
         <Card
           position="absolute"
           top="100%"

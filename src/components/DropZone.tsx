@@ -47,7 +47,7 @@ const DropZone: React.FC<DropZoneProps> = ({
       };
     }
 
-    if (file.name.length > maxLength) {
+    if (file.name?.length > maxLength) {
       setLoading(false);
       return {
         code: "name-too-large",
@@ -135,7 +135,7 @@ const DropZone: React.FC<DropZoneProps> = ({
         </aside>
       </Box>
       <Grid container spacing={4}>
-        {imgs.length > 0
+        {imgs?.length > 0
           ? imgs.map((item, index) => {
               return (
                 <Grid

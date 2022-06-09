@@ -24,7 +24,7 @@ const Section4: React.FC = () => {
     >
       <Box mt="-0.25rem" mb="-0.25rem">
         <Carousel
-          totalSlides={productList.length}
+          totalSlides={productList?.length}
           visibleSlides={visibleSlides}
         >
           {productList.map((item, ind) => (

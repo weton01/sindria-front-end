@@ -1,28 +1,31 @@
 import styled from "styled-components";
+import { string } from "yup/lib/locale";
 
-type StyledSpinProps = {
-  
-};
 
-export const StyledSpin = styled.div<StyledSpinProps>`
+
+export const StyledSpin = styled.div`
   position: relative;
   
 `;
 
-export const SpinnerStyle = styled.div`
+interface StyledSpinProps {
+  size?: string;
+};
+
+export const SpinnerStyle = styled.div<StyledSpinProps>`
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
-    opacity: 0.5;
+    opacity: 0.3;
     z-index: 5;
     background: #000;
     .spin{
         display: inline-block;
-        width: 85px;
-        height: 85px;
+        width: ${props => props.size || "85px"};
+        height: ${props => props.size || "85px"};
         border: 3px solid rgba(255, 255, 255, 0.6);
         border-radius: 50%;
         border-top-color: #636767;

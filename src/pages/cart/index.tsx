@@ -19,10 +19,12 @@ import countryList from "../../data/countryList";
 
 
 const Cart = () => {
-  const products = useSelector((selec: any) =>
-    selec?.cart?.orderProducts
-  )
+  const [products, setProducts] = useState([])
   const [total, setTotal] = useState(0)
+
+  const orderStores = useSelector((selec: any) =>
+  selec?.cart?.orderStores
+)
 
   useEffect(() => {
     let newTotal = 0
@@ -34,22 +36,33 @@ const Cart = () => {
     setTotal(newTotal)
   }, [products])
 
+
+  useEffect(() => {
+    let newProducts = [];
+
+    orderStores?.forEach(ost => {
+      newProducts = [...newProducts, ...ost.orderProducts]
+    })
+
+    setProducts(newProducts)
+  }, [orderStores, setProducts])
+
   return (
     <Fragment>
       <Grid container spacing={6}>
         <Grid item lg={8} md={8} xs={12}>
           {products.map((item, index) => (
             <ProductCard7
-            {...item?.otherProps} 
-            key={index} 
-            mb="1.5rem" 
-            qty={item.quantity}
-            price={item.netAmount}
-            name={item?.otherProps?.title}
-            imgUrl={item?.otherProps?.images[0]}
-            mutation={item?.otherProps?.mutation}
-            item={item}
-            id={item?.otherProps?.id}
+              {...item?.otherProps}
+              key={index}
+              mb="1.5rem"
+              qty={item.quantity}
+              price={item.netAmount}
+              name={item?.otherProps?.title}
+              imgUrl={item?.otherProps?.images[0]}
+              mutation={item?.otherProps?.mutation}
+              item={item}
+              id={item?.otherProps?.id}
             />
           ))}
         </Grid>
@@ -72,7 +85,7 @@ const Cart = () => {
 
             <FlexBox alignItems="center" mb="1rem">
               <Typography fontWeight="600" mr="10px">
-                Additional Comments
+                Comentários adicionais
               </Typography>
               <Box p="3px 10px" bg="primary.light" borderRadius="3px">
                 <Typography fontSize="12px" color="primary.main">
