@@ -4,14 +4,14 @@ import Radio from "@component/radio/Radio";
 import Typography, { H6 } from "@component/Typography";
 import { formatCurrency } from "@utils/formatCurrency";
 import { formatFloat } from "@utils/formatFloat";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAppDispatch } from "@hook/hooks";
 
 interface ShippingProps {
   values: any
 }
 
-const ShippingTypes = {
+export const ShippingTypes = {
   "04014": { icon: "truck", type: "Sedex" },
   "04510": { icon: "package-box", type: "Pac" },
 }
@@ -28,7 +28,7 @@ const Shipping: React.FC<ShippingProps> = ({
       type: "SET_SHIPPING",
       payload: {
         user: values.user,
-        price: formatFloat(it?.Valor)
+        price: it
       }
     })
   }

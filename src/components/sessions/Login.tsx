@@ -48,7 +48,7 @@ const Login: React.FC = () => {
         path: '/'
       })
       dispatch(userSignIn(data));
-      router.push("/");
+      router.back();
     } catch (error) {
       if(error?.response?.data?.active === false){  
         router.push(`/code-user/${error?.response?.data?.id}`);

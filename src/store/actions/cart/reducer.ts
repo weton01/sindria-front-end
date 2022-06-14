@@ -3,10 +3,29 @@ import { HYDRATE } from "next-redux-wrapper";
 
 const initialState = {
   invoiceType: "credit",
+  description: "",
   address: {},
   creditCard: {},
   orderStores: []
 };
+
+const setTotalAmountByStore = (orderStores) => {
+  let newStores = orderStores.map(ost => {
+    ost.totalAmount = ost.shippingPrice.Valor
+
+    ost.orderProducts.forEach(op => {
+      ost.totalAmount += op.otherProps.netAmount
+
+      op?.otherProps?.mutation?.variations?.forEach(v => {
+        ost.totalAmount += v.netAmount
+      })
+    })
+    return ost
+  })
+
+  return [...newStores]
+
+}
 
 const setStoreShippingPrice = (userId, price, orderStores) => {
   const newOrderStores = [...orderStores]
@@ -18,7 +37,7 @@ const setStoreShippingPrice = (userId, price, orderStores) => {
   if (index >= 0) {
     newOrderStores[index].shippingPrice = price
   }
- 
+
   return newOrderStores
 }
 
@@ -55,7 +74,7 @@ const newAddNewProduct = (item, orderStores) => {
   const newOrderStores = [...orderStores]
 
   const index = newOrderStores.findIndex(store =>
-    store.userId === item?.otherProps?.user?.id
+    store.userId === item?.otherProps?.user?.id,
   )
 
   if (index >= 0) {
@@ -65,6 +84,13 @@ const newAddNewProduct = (item, orderStores) => {
     )
   } else {
     newOrderStores.push({
+      shippingPrice: { Valor: 0.0 },
+      nVlAltura: 0,
+      nVlComprimento: 0,
+      nVlDiametro: 0,
+      nVlLargura: 0,
+      nVlPeso: 0,
+      totalAmount: 0,
       userId: item?.otherProps?.user?.id,
       orderProducts: addNewProduct(
         item,
@@ -158,7 +184,7 @@ const deleteProduct = (item, orderProducts) => {
     p.mutation.id === item.mutation.id
   )
 
-  return newOrderProducts.filter((p, index) =>
+  return newOrderProducts.filter((_p, index) =>
     index !== foundIndex
   )
 }
@@ -171,28 +197,50 @@ const reducer = (state = initialState, action) => {
     case types.ADD_TO_CART:
       return {
         ...state,
-        orderStores: recalculateShippingValues(newAddNewProduct(
-          action.payload,
-          state.orderStores
-        ))
+        orderStores: setTotalAmountByStore(
+          recalculateShippingValues(
+            newAddNewProduct(
+              action.payload,
+              state.orderStores
+            )
+          )
+        )
       };
 
     case types.DELETE_FROM_CART:
       return {
         ...state,
-        orderStores: recalculateShippingValues(newDeleteProduct(
-          action.payload,
-          state.orderStores
-        )),
+        orderStores: setTotalAmountByStore(
+          recalculateShippingValues(
+            newDeleteProduct(
+              action.payload,
+              state.orderStores
+            )
+          )
+        ),
       };
 
     case types.REMOVE_PRODUCT_FROM_CART:
       return {
         ...state,
-        orderStores: recalculateShippingValues(newRemoveProduct(
-          action.payload,
+        orderStores: setTotalAmountByStore(
+          recalculateShippingValues(
+            newRemoveProduct(
+              action.payload,
+              state.orderStores
+            )
+          )
+        ),
+      };
+
+    case types.SET_SHIPPING:
+      return {
+        ...state,
+        orderStores: setStoreShippingPrice(
+          action.payload.user,
+          action.payload.price,
           state.orderStores
-        )),
+        ),
       };
 
     case types.SELECT_ADDRESS:
@@ -213,14 +261,10 @@ const reducer = (state = initialState, action) => {
         creditCard: action.payload,
       };
 
-    case types.SET_SHIPPING:
+    case types.SET_DESCRIPTION:
       return {
         ...state,
-        orderStores: setStoreShippingPrice(
-          action.payload.user, 
-          action.payload.price, 
-          state.orderStores 
-        ) ,
+        description: action.payload,
       };
 
     case types.CLEAR_CART:

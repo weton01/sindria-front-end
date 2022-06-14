@@ -15,6 +15,7 @@ import { useAppSelector, useAppDispatch } from "hooks/hooks";
 import MenuItem from "@component/MenuItem";
 import Menu from "@component/Menu";
 import { useSelector } from "react-redux";
+import { destroyCookie } from "nookies";
 
 type HeaderProps = {
   isFixed?: boolean;
@@ -33,6 +34,10 @@ const Header: React.FC<HeaderProps> = ({
 
   const onClickLogout = () => {
     dispatch(userLogout());
+    destroyCookie(undefined, 'shop_token', {
+      maxAge: 60 * 60  * 7,
+      path: '/'
+    })
   };
 
   const orderStores = useSelector((selec: any) =>

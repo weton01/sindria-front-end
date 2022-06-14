@@ -1,6 +1,8 @@
-import { CartItem } from "@reducer/cartReducer";
+import Card from "@component/Card";
+import Icon from "@component/icon/Icon";
+import { useAppDispatch } from "@hook/hooks";
 import { formatCurrency } from "@utils/formatCurrency";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Box from "../../components/Box";
@@ -11,20 +13,39 @@ import FlexBox from "../../components/FlexBox";
 import Grid from "../../components/grid/Grid";
 import CheckoutNavLayout from "../../components/layout/CheckoutNavLayout";
 import ProductCard7 from "../../components/product-cards/ProductCard7";
-import Select from "../../components/Select";
-import TextField from "../../components/text-field/TextField";
 import TextArea from "../../components/textarea/TextArea";
 import Typography from "../../components/Typography";
-import countryList from "../../data/countryList";
 
 
 const Cart = () => {
-  const [products, setProducts] = useState([])
-  const [total, setTotal] = useState(0)
+  const router = useRouter()
+  const dispatch = useAppDispatch();
 
-  const orderStores = useSelector((selec: any) =>
-  selec?.cart?.orderStores
-)
+  const cart = useSelector((selec: any) =>
+    selec?.cart
+  )
+
+  const [products, setProducts] = useState([])
+  const [description, setDescription] = useState(cart?.description)
+  const [total, setTotal] = useState(0)
+  const [editing, setEditing] = useState(false)
+
+  const onChange = (e) => {
+    setDescription(e.target.value)
+  }
+
+  const nextPage = () => {
+    router.push('/cart/shipping')
+  }
+
+  const onClickAddDescription = () => {
+    dispatch({
+      type: "SET_DESCRIPTION",
+      payload: description
+    })
+
+    setEditing(false)
+  }
 
   useEffect(() => {
     let newTotal = 0
@@ -40,12 +61,12 @@ const Cart = () => {
   useEffect(() => {
     let newProducts = [];
 
-    orderStores?.forEach(ost => {
+    cart?.orderStores?.forEach(ost => {
       newProducts = [...newProducts, ...ost.orderProducts]
     })
 
     setProducts(newProducts)
-  }, [orderStores, setProducts])
+  }, [cart, setProducts])
 
   return (
     <Fragment>
@@ -83,70 +104,74 @@ const Cart = () => {
 
             <Divider mb="1rem" />
 
-            <FlexBox alignItems="center" mb="1rem">
-              <Typography fontWeight="600" mr="10px">
-                Comentários adicionais
-              </Typography>
-              <Box p="3px 10px" bg="primary.light" borderRadius="3px">
-                <Typography fontSize="12px" color="primary.main">
-                  Note
+            <FlexBox alignItems="center" mb="1rem" justifyContent="space-between">
+              <FlexBox>
+                <Typography fontWeight="600" mr="10px">
+                  Comentários adicionais
                 </Typography>
-              </Box>
+                <Box p="3px 10px" bg="primary.light" borderRadius="3px">
+                  <Typography fontSize="12px" color="primary.main">
+                    Nota
+                  </Typography>
+                </Box>
+              </FlexBox>
+              {
+                cart.description !== "" ?
+                  <Box cursor="pointer">
+                    <Icon size="20px" onClick={() => setEditing(!editing)}>
+                      {editing ? "close" : "edit"}
+                    </Icon>
+                  </Box>
+
+                  : null
+              }
             </FlexBox>
 
-            <TextArea rows={6} fullwidth mb="1rem" />
+            {
+              cart.description === "" || editing ?
+                <TextArea
+                  onChange={onChange}
+                  rows={6}
+                  fullwidth mb="1rem"
+                  value={description}
+                />
+                : (
+                  <Card
+                    bg="gray.100"
+                    p="1rem"
+                    boxShadow="none"
+                    border="1px solid"
+                    borderColor={"transparent"}
+                    height="150px"
+                  >
+                    <Typography>
+                      {cart.description}
+                    </Typography>
+                  </Card>
+                )
+            }
 
-            <Divider mb="1rem" />
+            {
+              cart.description === "" || editing ?
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  mt="1rem"
+                  mb="30px"
 
-            <TextField placeholder="Voucher" fullwidth />
+                  fullwidth
+                  onClick={onClickAddDescription}
+                >
+                  Adicionar Comentário
+                </Button>
 
-            <Button
-              variant="outlined"
-              color="primary"
-              mt="1rem"
-              mb="30px"
-              fullwidth
-            >
-              Apply Voucher
+                : null
+            }
+
+            <Divider mb="1rem" mt="1rem" />
+            <Button onClick={nextPage} variant="contained" color="primary" fullwidth>
+              Entrega
             </Button>
-
-            <Divider mb="1.5rem" />
-
-            <Typography fontWeight="600" mb="1rem">
-              Shipping Estimates
-            </Typography>
-
-            <Select
-              mb="1rem"
-              label="Country"
-              placeholder="Select Country"
-              options={countryList}
-              onChange={(e) => {
-                console.log(e);
-              }}
-            />
-
-            <Select
-              label="State"
-              placeholder="Select State"
-              options={stateList}
-              onChange={(e) => {
-                console.log(e);
-              }}
-            />
-
-            <Box mt="1rem">
-              <TextField label="Zip Code" placeholder="3100" fullwidth />
-            </Box>
-
-            <Button variant="outlined" color="primary" my="1rem" fullwidth>
-              Calculate Shipping
-            </Button>
-            <Link href="/checkout">
-              <Button variant="contained" color="primary" fullwidth>
-                Checkout Now
-              </Button>
-            </Link>
           </Card1>
         </Grid>
       </Grid>

@@ -111,7 +111,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       axios.get(`${PROD_URL}comment/v1/${id}?skip=0&take=3`),
       axios.get(`${PROD_URL}review/v1/${id}?skip=0&take=3`),
     ])
-
+     
     return {
       props: {
         product: single.data?.product,

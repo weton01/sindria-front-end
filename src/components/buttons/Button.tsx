@@ -23,6 +23,7 @@ interface ButtonProps {
   color?: colorOptions;
   variant?: "text" | "outlined" | "contained";
   fullwidth?: boolean;
+  disabled?: boolean;
 }
 
 const Button = styled.button<
@@ -159,6 +160,7 @@ Button.defaultProps = {
 const CustomButtom = ({
   loading = false,
   route = undefined,
+  disabled = false,
   onClick = () => null,
   ...props
 }) => {
@@ -166,7 +168,7 @@ const CustomButtom = ({
 
   return (
     <Button
-      disabled={loading}
+      disabled={loading || disabled}
       {...props}
       onClick={() => {
         if (route === undefined) onClick();

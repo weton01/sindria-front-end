@@ -15,6 +15,10 @@ import axios from "axios";
 import { parseCookies } from "nookies";
 import { useAppDispatch } from "@hook/hooks";
 import { useRouter } from "next/router";
+import { ShippingTypes } from "@component/shipping/shipping";
+import { formatFloat } from "@utils/formatFloat";
+import { formatCurrency } from "@utils/formatCurrency";
+import Divider from "@component/Divider";
 
 const TranslatePaymentMethod = {
   credit: "Crédito",
@@ -24,10 +28,26 @@ const TranslatePaymentMethod = {
 
 const clearCart = (cart) => {
   const newCart = { ...cart }
-  newCart.orderProducts = newCart.orderProducts.map(i => {
-    delete i.otherProps
-    return i
+  newCart.orderStores = newCart.orderStores.map(ost => {
+
+    ost.store = { id: ost.userId }
+    ost.description = cart.description
+    ost.shippingAmount = formatFloat(ost?.shippingPrice?.Valor)
+    ost.orderProducts = ost.orderProducts.map(item => {
+      delete item.otherProps
+      return item
+    })
+    delete ost.nVlAltura
+    delete ost.nVlComprimento
+    delete ost.nVlDiametro
+    delete ost.nVlLargura
+    delete ost.nVlPeso
+    delete ost.userId
+    delete ost.shippingPrice
+    return ost
   })
+
+  delete newCart.description
 
   newCart.address = { id: newCart.address.id }
   newCart.creditCard = { id: newCart.creditCard.id }
@@ -36,8 +56,8 @@ const clearCart = (cart) => {
 }
 
 const CheckoutForm2 = () => {
-
   const [loading, setLoading] = useState(false)
+
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -72,6 +92,7 @@ const CheckoutForm2 = () => {
     setLoading(false);
   };
 
+
   return (
     <Box>
       <Card1 mb="1.5rem">
@@ -88,6 +109,7 @@ const CheckoutForm2 = () => {
         </FlexBox>
 
         <Typography mb="0.75rem">Endereço de entrega</Typography>
+
         <Card
           bg="gray.100"
           p="1rem"
@@ -109,6 +131,66 @@ const CheckoutForm2 = () => {
             mr="0.875rem"
           >
             2
+          </Avatar>
+          <Typography fontSize="20px">Detalhes do Envio</Typography>
+        </FlexBox>
+
+        <Typography mb="0.75rem">Lojas e Preços</Typography>
+
+        {
+          cart?.orderStores?.map((item, index) => {
+            return (
+              <React.Fragment key={`fx-1-${index}`}
+              >
+                <FlexBox
+                  p={10}
+                  width="100%"
+                  backgroundColor="#F6F9FC"
+                  gap={12}
+                  justifyContent="center"
+                  flexDirection="column"
+                >
+                  <H6 >
+                    Produtos da Loja:  <Typography fontSize={13} fontWeight="normal">   {item?.userId} </Typography>
+                  </H6>
+                  <FlexBox alignItems="center" gap={12}>
+                    <FlexBox width="100%" alignItems="center" gap={10}>
+                      <Icon size="45px" color="secondary">
+                        {ShippingTypes[item?.shippingPrice?.Codigo]?.icon}
+                      </Icon>
+                      <Typography fontSize={13}>
+                        <strong>Tipo de Envio:</strong> {ShippingTypes[item?.shippingPrice?.Codigo]?.type}
+                      </Typography>
+                      <Typography fontSize={13}>
+                        <strong>Tempo de Entrega:</strong> {item?.shippingPrice?.PrazoEntrega} dias úteis
+                      </Typography>
+                      <Typography fontSize={13}>
+                        <strong>Preço:</strong> {formatCurrency(formatFloat(item.shippingPrice?.Valor))}
+                      </Typography>
+                    </FlexBox>
+
+                  </FlexBox>
+                </FlexBox>{
+                  index !== cart.orderStores.length - 1 ? (
+                    <Divider
+                      bg="gray.300" mb="0.5rem" />
+                  ) : null
+                }
+              </React.Fragment>
+            )
+          })
+        }
+      </Card1>
+
+      <Card1 mb="1.5rem">
+        <FlexBox alignItems="center" mb="1.75rem">
+          <Avatar
+            bg="primary.main"
+            size={32}
+            color="primary.text"
+            mr="0.875rem"
+          >
+            3
           </Avatar>
           <Typography fontSize="20px">Informações de Pagamento</Typography>
         </FlexBox>
@@ -146,7 +228,7 @@ const CheckoutForm2 = () => {
               <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
                 <Paragraph color="gray.700">
                   {cart?.creditCard?.expirationDate}</Paragraph>
-                
+
                 <Icon
                   typer={IconType["payment-card"]}
                 >

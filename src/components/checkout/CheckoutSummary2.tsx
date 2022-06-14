@@ -5,6 +5,7 @@ import Divider from "../Divider";
 import FlexBox from "../FlexBox";
 import Typography, { Span } from "../Typography";
 import { formatCurrency } from "@utils/formatCurrency";
+import { formatFloat } from "@utils/formatFloat";
 
 const calculateCartSubTotal = (orderProducts): number => {
   let subTotal: number = 0;
@@ -13,7 +14,6 @@ const calculateCartSubTotal = (orderProducts): number => {
   })
   return subTotal
 }
-
 
 const calculateDiscount = (cartP, products) => {
   const subTotal: number = calculateCartSubTotal(products);
@@ -31,12 +31,12 @@ const calculateDiscount = (cartP, products) => {
   }
 }
 
-
 const calculateShippingPrice = (orderStores) => { 
   let total: number = 0;
 
   orderStores.forEach((i) => {
-    total += i?.shippingPrice | 0
+    console.log(i?.shippingPrice?.Valor)
+    total += formatFloat(i?.shippingPrice?.Valor) | 0
   })
 
   return total
@@ -66,7 +66,7 @@ const CheckoutSummary2: React.FC = () => {
   }, [cart, setProducts])
 
 
-  const renderSize = (size) => {
+  const renderSize = (size, index) => {
     return <Box
       size={25}
       width={25}
@@ -78,22 +78,24 @@ const CheckoutSummary2: React.FC = () => {
       alignItems="center"
       border="1px solid"
       borderColor={"gray.400"}
+      key={`prdsize-smary-${index}`}
     >
       {size}
     </Box>
   }
 
-  const renderColor = (color) => {
+  const renderColor = (color, index) => {
     return <Box
-      width="100%"
-      height="100%"
+      width="20px"
+      height="20px"
       backgroundColor={color}
       borderRadius="50%"
+      key={`prdcolor-smary-${index}`}
     />
   }
 
-  const renderDefault = (defa) => {
-    return <Typography fontSize={12}>
+  const renderDefault = (defa, index) => {
+    return <Typography fontSize={12} key={`prdfault-smary-${index}`}>
       {defa}
     </Typography>
   }
@@ -108,8 +110,8 @@ const CheckoutSummary2: React.FC = () => {
         Seu Pedido
       </Typography>
 
-      {products?.map((item) => (
-        <FlexBox flexDirection="column" mb="1.5rem">
+      {products?.map((item, index) => (
+        <FlexBox flexDirection="column" mb="1.5rem" key={`prd-smary-${index}`}>
           <FlexBox
             justifyContent="space-between"
             alignItems="center"
@@ -126,9 +128,9 @@ const CheckoutSummary2: React.FC = () => {
           </FlexBox>
           <FlexBox gap={6} alignItems="center">
             {item?.otherProps?.mutation?.variations?.sort(sort).map(v => <>
-              {v.type === "size" ? renderSize(v.size) : null}
-              {v.type === "color" ? renderColor(v.color) : null}
-              {v.type === "default" ? renderDefault(v.name) : null}
+              {v.type === "size" ? renderSize(v.size, index) : null}
+              {v.type === "color" ? renderColor(v.color, index) : null}
+              {v.type === "default" ? renderDefault(v.name, index) : null}
             </>
             )}
           </FlexBox>
@@ -169,22 +171,5 @@ const CheckoutSummary2: React.FC = () => {
   );
 };
 
-const cartList = [
-  {
-    name: "iPhone 12",
-    quantity: 1,
-    price: 999,
-  },
-  {
-    name: "iPhone 12 pro",
-    quantity: 1,
-    price: 1199,
-  },
-  {
-    name: "iPhone 12 pro max",
-    quantity: 1,
-    price: 1299,
-  },
-];
 
 export default CheckoutSummary2;
