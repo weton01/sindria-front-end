@@ -8,10 +8,11 @@ import FlexBox from "../FlexBox";
 import Grid from "../grid/Grid";
 import Icon from "../icon/Icon";
 import Rating from "../rating/Rating";
-import { H1, H2, H6, SemiSpan, Small, Tiny } from "../Typography";
+import Typography, { H1, H2, H6, SemiSpan, Small, Tiny } from "../Typography";
 import Card from "@component/Card";
 import { formatCurrency } from "@utils/formatCurrency";
 import { useAppDispatch } from "@hook/hooks";
+import { PaymentFees } from "@utils/enums/paymentFees";
 
 export interface ProductIntroProps {
   title: string;
@@ -50,13 +51,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const defaultSize = mutations?.length > 0? mutations[0]?.variations?.find((v) => v?.type === "size") : {};
-  const defaultColor = mutations?.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "color") : {};
-  const defaultVariation = mutations?.length > 0?  mutations[0]?.variations?.find((v) => v?.type === "default") : {};
-
-  const pixPrice: number = price - (price * 0.01)
-  const boletoPrice: number = price - (price * 0.048) 
-  const creditPrice: number = price - (price * 0)
+  const defaultSize = mutations?.length > 0 ? mutations[0]?.variations?.find((v) => v?.type === "size") : {};
+  const defaultColor = mutations?.length > 0 ? mutations[0]?.variations?.find((v) => v?.type === "color") : {};
+  const defaultVariation = mutations?.length > 0 ? mutations[0]?.variations?.find((v) => v?.type === "default") : {};
 
   const [viewimage, setViewImage] = useState(images[0]);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -64,7 +61,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   const [selectedSize, setSelectedSize] = useState(defaultColor)
   const [selectedColor, setSelectedColor] = useState(defaultVariation)
   const [selectedMutations, setSelectedMutations] = useState(mutations)
-  const [selectedPrice, setSelectedPrice] = useState({ pixPrice, boletoPrice, creditPrice })
+  const [selectedPrice, setSelectedPrice] = useState(price)
 
   const findShirtColorProductExists = (iparam): boolean => {
     return selectedMutations.find(item => {
@@ -101,7 +98,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     setSelectedMutations([...selected])
   }
 
-  const addItemToCart = () => {
+  const findMutation = () => {
     const mutation = mutations.find(item => {
       const foundSize = item?.variations?.find(v => v.id === selectedSize?.id)
       const foundColor = item?.variations?.find(v => v.id === selectedColor?.id)
@@ -112,12 +109,23 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
       else
         return foundColor && foundSize
     })
+    return mutation
+  }
+
+  const getPrice = () => {
+    const mutation = findMutation();
+
+    return price + mutation?.feeTotal
+  }
+
+  const addItemToCart = () => {
+    const mutation = findMutation();
 
     dispatch({
       type: "ADD_TO_CART",
       payload: {
         quantity: 1,
-        netAmount: selectedPrice.creditPrice,
+        netAmount: getPrice(),
         grossAmount: price,
         product: {
           id: id
@@ -126,9 +134,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
           ...otherProps,
           title, price, brand, id,
           categories, images, tags,
-          mutation: mutation, 
+          mutation: mutation,
           grossAmount: price,
-          netAmount: selectedPrice.creditPrice
+          netAmount: getPrice()
         },
         mutation: {
           id: mutation.id
@@ -148,7 +156,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   }, [defaultSize, defaultColor, defaultVariation])
 
   useEffect(() => {
-    
     const size = selectedMutations[0]?.variations?.find((v) => v?.type === "size")
     const color = selectedMutations[0]?.variations?.find((v) => v?.type === "color")
     const type = selectedMutations[0]?.variations?.find((v) => v?.type === "default")
@@ -159,22 +166,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   }, [selectedMutations])
 
   useEffect(() => {
-    const typeToSum: number = selectedType?.netAmount
-    const colorToSum: number = (price * selectedColor?.netAmount)
-    const sizeToSum: number = (price * selectedSize?.netAmount)
-    const grossPriceShirt: number = price - colorToSum - sizeToSum
-    const grossPriceStore: number = typeToSum - sizeToSum
-    const definedPrice: number = variations?.length > 0 ? grossPriceStore : grossPriceShirt
+    const price = getPrice();
 
-    const pixPrice: number = definedPrice - (definedPrice * 0.01)
-    const boletoPrice: number = definedPrice - (definedPrice * 0.048)
-    const creditPrice: number = definedPrice - (definedPrice * 0)
-
-    setSelectedPrice({ pixPrice, boletoPrice, creditPrice })
+    setSelectedPrice(price)
   }, [selectedSize, selectedColor, selectedType])
 
   return (
-    <Box  >
+    <Box >
       <Grid container justifyContent="space-between" >
         <Grid item md={6} xs={24} alignItems="center" >
           <Card
@@ -193,7 +191,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   <LazyImage
                     src={viewimage}
                     alt={title}
-                    height="450px"
+                    height="400px"
                     width="auto"
                     loading="eager"
                     objectFit="contain"
@@ -310,60 +308,14 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     ))}
                   </FlexBox>
 
-
-                  <FlexBox
-                    mb="0.8rem"
-                    minHeight={70}
-                    bg="primary.main"
-                    borderRadius={4}
-                    padding="0 8px"
-                    width="100%"
-                    alignItems="center"
-                  >
-                    <FlexBox justifyContent="space-between" width="100%" flexWrap="wrap">
-
-                      <FlexBox flexDirection="column" gap={2} minWidth={125}>
-                        <SemiSpan color="white">
-                          Boleto
-                        </SemiSpan>
-                        <H2 color="white" lineHeight="1">
-                          {formatCurrency(selectedPrice.boletoPrice)}
-                        </H2>
-                        <Small color="white">
-                          4.8% de desconto
-                        </Small>
-                      </FlexBox>
-
-                      <FlexBox flexDirection="column" gap={2} minWidth={125}>
-                        <SemiSpan color="white">
-                          Pix
-                        </SemiSpan>
-                        <H2 color="white" lineHeight="1">
-                          {formatCurrency(selectedPrice.pixPrice)}
-                        </H2>
-                        <Small color="white">
-                          3.6% de desconto
-                        </Small>
-                      </FlexBox>
-
-                      <FlexBox gap={4}>
-                        <FlexBox flexDirection="column" gap={2} minWidth={125}>
-                          <SemiSpan color="white">
-                            Crédito
-                          </SemiSpan>
-                          <H2 color="white" lineHeight="1">
-                            {formatCurrency(selectedPrice.creditPrice)}
-                          </H2>
-                          <Small color="white">
-                            Sem desconto
-                          </Small>
-                        </FlexBox>
-                      </FlexBox>
-                    </FlexBox>
-
-                  </FlexBox>
+                  <H1 color="gray.900" lineHeight="1" mt="2rem">
+                    {formatCurrency(selectedPrice)}<Small >/ UN</Small>
+                  </H1>
 
                 </Box>
+
+
+
                 <Box>
 
                   {
@@ -521,7 +473,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       variant="outlined"
                       size="small"
                       color="primary"
-                      mb="16px"
+                      mb="12px"
                       height="46px"
                     >
                       <Icon size="20px" defaultcolor="currentColor" mr="8px" >
@@ -530,7 +482,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       1233
                     </Button>
                   </FlexBox>
+                  <FlexBox gap={4} >
 
+                  </FlexBox>
                   <FlexBox mb="16px" justifyContent="flex-start" alignItems="center">
                     <Icon size="40px">
                       shield
@@ -546,7 +500,21 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       </Tiny>
                     </FlexBox>
                   </FlexBox>
-
+                  <FlexBox mt={"1rem"} mb={"1rem"} justifyContent="center" flexDirection="column" gap={2} minWidth={125}>
+                    <Typography fontWeight={"600"} lineHeight={1} color="white">
+                      <FlexBox gap={12} alignItems="center">
+                        <FlexBox color="gray.900" gap={4} alignItems="center">
+                          <Icon size="18px">pix</Icon>Pix
+                        </FlexBox>
+                        <FlexBox color="gray.900" gap={4} alignItems="center">
+                          <Icon size="18px">credit</Icon>Crédito
+                        </FlexBox>
+                        <FlexBox color="gray.900" gap={4} alignItems="center">
+                          <Icon size="18px">boleto</Icon>Boleto
+                        </FlexBox>
+                      </FlexBox>
+                    </Typography>
+                  </FlexBox>
                   <FlexBox alignItems="center" mb="1rem">
                     <SemiSpan>Sold By:</SemiSpan>
                     <Link href="/shop/fdfdsa">

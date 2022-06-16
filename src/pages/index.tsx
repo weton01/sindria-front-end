@@ -57,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     props: {
       section2: [],
       section3: [],
-      section5: [],
+      section5: section5,
       section4: {
         reviews: [],
         brands: []

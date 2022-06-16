@@ -67,7 +67,6 @@ const ProductQuestion: React.FC<ProductQuestionProps> = ({productId, comments, u
           isReview={false}
           comment={item.description}
           date={item.created_at}
-          user={item.user}
           productUser={user}
           key={ind}
           reply={item.reply}

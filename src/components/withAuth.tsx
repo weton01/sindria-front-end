@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import ErrorNotFound from "./errors/not-found";
 
 const withAuth = (Component) => {
   const blackList = [

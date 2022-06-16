@@ -11,6 +11,7 @@ export interface ProductCard8Props {
   id: string;
   imgUrl: string;
   price: number;
+  fee: number;
   title: string;
   [key: string]: unknown;
 }
@@ -20,6 +21,7 @@ const ProductCard8: React.FC<ProductCard8Props> = ({
   imgUrl,
   price,
   title,
+  fee,
   ...props
 }) => {
   return (
@@ -49,7 +51,7 @@ const ProductCard8: React.FC<ProductCard8Props> = ({
           </SemiSpan>
           <FlexBox alignItems="center">
             <H6 color="primary.main" mr="0.25rem">
-              {formatCurrency(price - (price * 0.048))}
+              {formatCurrency(price - (price * fee))}
             </H6>
             <SemiSpan>
               <del> {formatCurrency(price)}</del>

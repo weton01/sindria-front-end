@@ -11,6 +11,7 @@ import * as yup from "yup";
 import TextArea from "@component/textarea/TextArea";
 import { api } from "services/api";
 import { toast } from "react-nextjs-toast";
+import { useSelector } from "react-redux";
 
 export interface ProductCommentProps {
   id: string;
@@ -19,7 +20,6 @@ export interface ProductCommentProps {
   date: string;
   comment: string;
   isReview?: boolean;
-  user: any;
   productUser?: any;
   reply?: object[];
 }
@@ -30,7 +30,6 @@ const ProductComment: React.FC<ProductCommentProps> = ({
   date,
   comment,
   isReview = true,
-  user,
   productUser,
   reply,
   id
@@ -42,7 +41,7 @@ const ProductComment: React.FC<ProductCommentProps> = ({
   const handleFormSubmit = async (values) => {
     setLoading(true);
     try {
-      await api.post(`comment/v1/reply/${id || undefined }`, values);
+      await api.post(`comment/v1/reply/${id || undefined}`, values);
       toast.notify(`Pergunta respondida com sucesso`, {
         title: "Sucesso!",
         duration: 5,
@@ -67,6 +66,9 @@ const ProductComment: React.FC<ProductCommentProps> = ({
       validationSchema: formSchema,
     });
 
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
 
   return (
     <Box mb="32px" maxWidth="600px">
@@ -88,8 +90,11 @@ const ProductComment: React.FC<ProductCommentProps> = ({
 
       <Paragraph color="gray.700" mb="0.6rem">{comment}</Paragraph>
       {
-        !isReview && user?.id === productUser?.id && !(replyState?.length > 0)?
-          <Button
+        (!isReview ) && 
+        (user?.isLogged) && 
+        (user?.user?.id === productUser?.id) && 
+        !(replyState?.length > 0) ?
+        <Button
             variant="outlined"
             size="small"
             color="primary"
@@ -102,37 +107,37 @@ const ProductComment: React.FC<ProductCommentProps> = ({
       }
 
       {
-        visible? <form onSubmit={handleSubmit}>
-        <Box mb="24px">
-          <FlexBox mb="12px">
-            <H5 color="gray.700" mr="6px">
-              Sua resposta
-            </H5>
-            <H5 color="error.main">*</H5>
-          </FlexBox>
+        visible ? <form onSubmit={handleSubmit}>
+          <Box mb="24px">
+            <FlexBox mb="12px">
+              <H5 color="gray.700" mr="6px">
+                Sua resposta
+              </H5>
+              <H5 color="error.main">*</H5>
+            </FlexBox>
 
-          <TextArea
-            name="description"
-            placeholder="Write a review here..."
-            fullwidth
-            rows={8}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={values.description || ""}
-            errorText={touched.description && errors.description}
-          />
-        </Box>
+            <TextArea
+              name="description"
+              placeholder="Write a review here..."
+              fullwidth
+              rows={8}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.description || ""}
+              errorText={touched.description && errors.description}
+            />
+          </Box>
 
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          type="submit"
-          loading={loading}
-        >
-          Enviar
-        </Button>
-      </form>: null}
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            type="submit"
+            loading={loading}
+          >
+            Enviar
+          </Button>
+        </form> : null}
     </Box>
   );
 };

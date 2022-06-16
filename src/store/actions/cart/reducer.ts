@@ -14,11 +14,8 @@ const setTotalAmountByStore = (orderStores) => {
     ost.totalAmount = ost.shippingPrice.Valor
 
     ost.orderProducts.forEach(op => {
-      ost.totalAmount += op.otherProps.netAmount
-
-      op?.otherProps?.mutation?.variations?.forEach(v => {
-        ost.totalAmount += v.netAmount
-      })
+      ost.totalAmount += op?.otherProps?.netAmount * op.quantity;
+      ost.totalAmount += op?.otherProps?.mutation.feeTotal * op.quantity
     })
     return ost
   })

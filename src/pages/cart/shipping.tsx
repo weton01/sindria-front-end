@@ -111,6 +111,8 @@ const Checkout = ({ address }) => {
     router.push('/cart/payment')
   }
 
+  console.log(shippings)
+
   return (
     <Container my="1.5rem">
       <Grid container spacing={6}>

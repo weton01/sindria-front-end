@@ -1,6 +1,7 @@
 import LazyImage from "@component/LazyImage";
 import { useAppContext } from "@context/app/AppContext";
 import { CartItem } from "@reducer/cartReducer";
+import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
 import React, { useCallback, useState } from "react";
 import { CSSProperties } from "styled-components";
@@ -25,6 +26,8 @@ export interface ProductCard1Props extends CardProps {
   off?: number;
   rating?: number;
   id?: string | number;
+  grossPrice?: number;
+  onClickAdd?: any;
   // className?: string;
   // style?: CSSProperties;
   // imgUrl: string;
@@ -45,6 +48,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   price,
   off,
   rating,
+  grossPrice,
+  onClickAdd,
   ...props
 }) => {
   const [open, setOpen] = useState(false);
@@ -81,15 +86,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         )}
 
         <FlexBox className="extra-icons">
-          <Icon
-            color="secondary"
-            variant="small"
-            mb="0.5rem"
-            onClick={toggleDialog}
-          >
-            eye-alt
-          </Icon>
-
           <Icon className="favorite-icon outlined-icon" variant="small">
             heart
           </Icon>
@@ -133,11 +129,11 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
             <FlexBox alignItems="center" mt="10px">
               <SemiSpan pr="0.5rem" fontWeight="600" color="primary.main">
-                R${(price - (price * off) / 100).toFixed(2)}
+                {formatCurrency(grossPrice)}
               </SemiSpan>
               {off && (
                 <SemiSpan color="text.muted" fontWeight="600">
-                  <del>{price?.toFixed(2)}</del>
+                  <del>{formatCurrency(price)}</del>
                 </SemiSpan>
               )}
             </FlexBox>
@@ -154,7 +150,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
               padding="8px 10px" 
               size="none"
               borderColor="primary.light"
-              onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}
+              onClick={onClickAdd}
             > 
             Adicionar
             </Button>
@@ -163,26 +159,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </FlexBox>
       </div>
 
-      <Modal open={open} onClose={toggleDialog}>
-        <Card p="1rem" position="relative">
-          <ProductIntro imgUrl={[imgUrl]} title={title} price={price} id={id} />
-          <Box
-            position="absolute"
-            top="0.75rem"
-            right="0.75rem"
-            cursor="pointer"
-          >
-            <Icon
-              className="close"
-              color="primary"
-              variant="small"
-              onClick={toggleDialog}
-            >
-              close
-            </Icon>
-          </Box>
-        </Card>
-      </Modal>
+     
     </StyledProductCard1>
   );
 };
