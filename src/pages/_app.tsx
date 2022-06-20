@@ -78,7 +78,7 @@ App.getInitialProps = async (appContext: any) => {
 
   const [categories]: any = await Promise.all([get(`category/v1/`)]);
 
-  const newData = categories.map((item) => {
+  const newData = categories?.map((item) => {
     const groupNames = item.subCategories.map((aux) => aux.groupName);
     const newCategories = [...new Set(groupNames)];
 

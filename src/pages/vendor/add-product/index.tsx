@@ -24,7 +24,7 @@ import axios from "axios";
 import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
 import { toast } from "react-nextjs-toast";
-import type { NextRequest } from 'next/server'
+import type { NextRequest } from "next/server";
 
 const AddProduct = (props) => {
   const { categories, tags, brands } = props;
@@ -35,7 +35,6 @@ const AddProduct = (props) => {
   const id = router?.query?.id;
   const { route } = router;
 
-  
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
@@ -55,7 +54,7 @@ const AddProduct = (props) => {
     }
   };
 
-  useEffect(() => {  
+  useEffect(() => {
     switch (route) {
       case `/vendor/add-product`:
         setSelectedStep(1);
@@ -92,7 +91,7 @@ const AddProduct = (props) => {
     let product;
     setLoading(true);
     if (edit) product = await patch(`product/v1/${id}`, payload);
-    else product = await post("product/v1", payload);  
+    else product = await post("product/v1", payload);
     setLoading(false);
     if (typeof product === "string") {
       toast.notify(product, {
@@ -170,13 +169,9 @@ const AddProduct = (props) => {
                     {({ meta }) => (
                       <div>
                         <DropZone
+                          setFieldValue={setFieldValue}
                           multiple={true}
                           imgs={values.images}
-                          removeImage={(index) => {
-                            const images = values.images;
-                            images.splice(index, 1);
-                            setFieldValue("images", images);
-                          }}
                           title="Arraste ou solte a imagem do produto aqui"
                           onChange={(files, setLoading) => {
                             files.forEach(async (file: File, index) => {
@@ -232,38 +227,21 @@ const AddProduct = (props) => {
                                   fd.append("Policy", url.put.fields["Policy"]);
 
                                   fd.append("file", myImage);
-                                  await axios.post(
-                                    url.put.url,
-                                    fd,
-                                    {
-                                      onUploadProgress: (
-                                        progress: ProgressEvent
-                                      ) => {
-                                        let percent =
-                                          Math.round(
-                                            (progress.loaded *
-                                              100) /
-                                              progress.total
-                                          );
-                                          console.log('====================================')
-                                          console.log(percent)
-                                          console.log('====================================')
-                                          console.log('====================================');
-                                          console.log(index);
-                                          console.log('====================================');
-                                        if (
-                                          percent === 100 &&
-                                          files?.length -
-                                            1 ===
-                                            index
-                                        ) {
-                                          console.log("aqui");
-                                          
-                                          setLoading(false);
-                                        }
-                                      },
-                                    }
-                                  );
+                                  await axios.post(url.put.url, fd, {
+                                    onUploadProgress: (
+                                      progress: ProgressEvent
+                                    ) => {
+                                      let percent = Math.round(
+                                        (progress.loaded * 100) / progress.total
+                                      );
+                                      if (
+                                        percent === 100 &&
+                                        files?.length - 1 === index
+                                      ) {
+                                        setLoading(false);
+                                      }
+                                    },
+                                  });
                                   const images = [...values.images];
 
                                   images.push(url.get);
@@ -437,9 +415,9 @@ const stepperList = [
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
-  console.log('====================================')
-  console.log(ctx.locale)
-  console.log('====================================')
+  console.log("====================================");
+  console.log(ctx.locale);
+  console.log("====================================");
   try {
     api.interceptors.request.use((config) => {
       config.headers["Authorization"] = `Bearer ${token}`;
