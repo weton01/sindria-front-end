@@ -12,7 +12,7 @@ import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import * as yup from "yup";
-import { api, patch, post } from "services/api";
+import { api, client_api } from "services/api";
 import { getSubCategory } from "services/category";
 import { getTags } from "services/tags";
 import { getUrlAssign } from "services/product";
@@ -23,8 +23,6 @@ import Box from "@component/Box";
 import axios from "axios";
 import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
-import { toast } from "react-nextjs-toast";
-import type { NextRequest } from "next/server";
 
 const AddProduct = (props) => {
   const { categories, tags, brands } = props;
@@ -88,25 +86,25 @@ const AddProduct = (props) => {
         id: item.value,
       })),
     };
-    let product;
+
     setLoading(true);
-    if (edit) product = await patch(`product/v1/${id}`, payload);
-    else product = await post("product/v1", payload);
+    if (edit)
+      await client_api.patch({
+        route: `product/v1/${id}`,
+        payload,
+        message: `Produto ${edit ? "alterado" : "adicionado"}`,
+        actionSuccess: (product) =>
+          router.push(`/vendor/add-product/variations/${product.id}`),
+      });
+    else
+      await client_api.post({
+        route: `product/v1/${id}`,
+        payload,
+        message: `Produto ${edit ? "alterado" : "adicionado"}`,
+        actionSuccess: (product) =>
+          router.push(`/vendor/add-product/variations/${product.id}`),
+      });
     setLoading(false);
-    if (typeof product === "string") {
-      toast.notify(product, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-    } else {
-      toast.notify(`Produto ${edit ? "alterado" : "adicionado"}`, {
-        title: "Sucesso!",
-        duration: 5,
-        type: "success",
-      });
-      router.push(`/vendor/add-product/variations/${product.id}`);
-    }
   };
 
   return (

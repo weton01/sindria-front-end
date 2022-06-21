@@ -10,9 +10,8 @@ import TextArea from "@component/textarea/TextArea";
 import { Field, Formik } from "formik";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
-import { parseCookies } from "nookies";
 import * as yup from "yup";
-import { api, patch, post } from "services/api";
+import { client_api } from "services/api";
 import { getSubCategory } from "services/category";
 import { getTags } from "services/tags";
 import { getProductById, getUrlAssign } from "services/product";
@@ -23,8 +22,9 @@ import Box from "@component/Box";
 import axios from "axios";
 import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
-import { toast } from "react-nextjs-toast";
 import Icon from "@component/icon/Icon";
+import { authRoute } from "middlewares/authRoute";
+import { server_api } from "services/server-api";
 
 const EditProduct = (props) => {
   const { categories, tags, brands, product } = props;
@@ -42,11 +42,11 @@ const EditProduct = (props) => {
     description: product.description,
     grossAmount: product.grossAmount,
     netAmount: product.netAmount,
-    images: product.images
+    images: product.images,
   };
 
   console.log(tags);
-  
+
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
@@ -88,7 +88,7 @@ const EditProduct = (props) => {
 
   const handleFormSubmit = async (values) => {
     const { categories, tags, brand, grossAmount, netAmount } = values;
-    const payload = { 
+    const payload = {
       brand: { id: brand.value },
       grossAmount: Number(grossAmount),
       netAmount: Number(netAmount),
@@ -100,25 +100,17 @@ const EditProduct = (props) => {
       })),
     };
     setLoading(true);
-    const product = await patch(`product/v1/${id}`, payload);
+    await client_api.patch({
+      route: `product/v1/${id}`,
+      payload,
+      message: "Produto alterado!",
+      actionSuccess: (product) =>
+        router.push(`/vendor/add-product/variations/${product.id}`),
+    });
 
-    if (typeof product === "string") {
-      toast.notify(product, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-    } else {
-      toast.notify(`Produto alterado`, {
-        title: "Sucesso!",
-        duration: 5,
-        type: "success",
-      });
-      router.push(`/vendor/add-product/variations/${product.id}`);
-    }
     setLoading(false);
   };
- 
+
   return (
     <div>
       <DashboardPageHeader
@@ -405,7 +397,7 @@ const EditProduct = (props) => {
     </div>
   );
 };
- 
+
 const checkoutSchema = yup.object().shape({
   name: yup.string().required("campo requerido"),
   description: yup.string().required("campo requerido"),
@@ -447,78 +439,79 @@ const stepperList = [
   },
 ];
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["shop_token"]: token } = parseCookies(ctx);
-  const { id } = ctx.query;
+export const getServerSideProps: GetServerSideProps = async (c) => {
+  return authRoute(c, async ({ token, id }: any) => {
+    try {
+      const data = await server_api.get({
+        route: "credit-card/v1",
+        params: { skip: 0, take: 10, orderBy: "DESC" },
+        token: token,
+      });
 
-  try {
-    api.interceptors.request.use((config) => {
-      config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
+      let [categories, tags, brands, product] = await Promise.all([
+        getSubCategory({token: token}),
+        getTags(),
+        getBrands(),
+        getProductById({id, token}),
+      ]);
 
-    let [categories, tags, brands, product] = await Promise.all([
-      getSubCategory(),
-      getTags(),
-      getBrands(),
-      getProductById(id),
-    ]);
+      const newCategories = categories?.items?.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      });
 
-    const newCategories = categories?.items?.map((item) => {
-      return {
-        label: item.name,
-        value: item.id,
+      const newTags = tags?.items?.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      });
+
+      const newBrands = brands?.items?.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      });
+
+      product.brand = {
+        label: product.brand.name,
+        value: product.brand.id,
       };
-    });
 
-    const newTags = tags?.items?.map((item) => {
+      product.categories = product?.categories?.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      });
+
+      product.tags = product?.tags?.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      });
+      
       return {
-        label: item.name,
-        value: item.id,
+        props: {
+          categories: newCategories,
+          tags: newTags,
+          brands: newBrands,
+          product,
+        },
       };
-    });
-
-    const newBrands = brands?.items?.map((item) => {
+    } catch {
       return {
-        label: item.name,
-        value: item.id,
+        redirect: {
+          permanent: false,
+          destination: "/404",
+        },
       };
-    });
-
-    product.brand = {
-      label: product.brand.name,
-      value: product.brand.id,
     }
-
-    product.categories = product?.categories?.map((item) => {
-      return {
-        label: item.name,
-        value: item.id,
-      };
-    }); 
-
-    product.tags = product?.tags?.map((item) => {
-      return {
-        label: item.name,
-        value: item.id,
-      };
-    }); 
-    
-    return {
-      props: {
-        categories: newCategories,
-        tags: newTags,
-        brands: newBrands,
-        product,
-      },
-    };
-  } catch (err) {
-    console.log("fail to verify tokens", err);
-  }
-
-  return {
-    props: {},
-  };
+  });
 };
 
 export default EditProduct;

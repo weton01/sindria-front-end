@@ -1,3 +1,3 @@
-import { get } from "./api";
+import { client_api, get } from "./api";
 
-export const getTags = async () => get(`tag/v1/`, { take: 10000, skip: 0 });
+export const getTags = async () => client_api.get(`tag/v1/`, { take: 10000, skip: 0 });
