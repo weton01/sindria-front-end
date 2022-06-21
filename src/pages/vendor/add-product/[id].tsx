@@ -12,7 +12,7 @@ import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import * as yup from "yup";
-import { api, patch, post } from "services/api";
+import { api, patch } from "services/api";
 import { getSubCategory } from "services/category";
 import { getTags } from "services/tags";
 import { getProductById, getUrlAssign } from "services/product";

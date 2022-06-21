@@ -24,7 +24,6 @@ import axios from "axios";
 import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
 import { toast } from "react-nextjs-toast";
-import type { NextRequest } from 'next/server'
 
 const AddProduct = (props) => {
   const { categories, tags, brands } = props;
@@ -35,7 +34,6 @@ const AddProduct = (props) => {
   const id = router?.query?.id;
   const { route } = router;
 
-  
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
@@ -55,7 +53,7 @@ const AddProduct = (props) => {
     }
   };
 
-  useEffect(() => {  
+  useEffect(() => {
     switch (route) {
       case `/vendor/add-product`:
         setSelectedStep(1);
@@ -75,6 +73,69 @@ const AddProduct = (props) => {
     }
   }, [route]);
 
+  const handelOnChangeImage = (
+    files = [],
+    setFieldError: any,
+    setFieldTouched: any,
+    setLoading: any,
+    setFieldValue: any,
+    values: any
+  ) => {
+    files.map(async (file: File, index) => {
+      const { url } = await getUrlAssign();
+      let fd = new FormData();
+      const blob: any = await processFile(file);
+      const image = new Image();
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+
+        if (image.naturalWidth > 480 || image.naturalHeight > 480) {
+          setFieldError("image", "limite da dimensão da imagem é 480*480");
+          setFieldTouched("image", true, false);
+          setLoading(false);
+          return;
+        }
+
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        canvas.toBlob(async (blob) => {
+          const myImage = new File([blob], file.name, {
+            type: blob.type,
+          });
+
+          fd.append("acl", "public-read");
+          fd.append("Content-Type", "image/webp");
+          fd.append("key", url.put.fields["key"]);
+          fd.append("bucket", url.put.fields["bucket"]);
+          fd.append("X-Amz-Algorithm", url.put.fields["X-Amz-Algorithm"]);
+          fd.append("X-Amz-Credential", url.put.fields["X-Amz-Credential"]);
+          fd.append("X-Amz-Date", url.put.fields["X-Amz-Date"]);
+          fd.append("X-Amz-Signature", url.put.fields["X-Amz-Signature"]);
+          fd.append("Policy", url.put.fields["Policy"]);
+          fd.append("file", myImage);
+
+          await axios.post(url.put.url, fd, {
+            onUploadProgress: (progress: ProgressEvent) => {
+              let percent = Math.round(
+                (progress.loaded * 100) / progress.total
+              );
+              if (percent === 100 && files.length - 1 === index) {
+                setLoading(false);
+              }
+            },
+          });
+
+          const images = [...values.images]; 
+          images.push(url.get);
+          setFieldValue("images", images);
+        }, "image/webp");
+      };
+      image.src = blob;
+    });
+  };
+
   const handleFormSubmit = async (values) => {
     const { categories, tags, brand, grossAmount, netAmount } = values;
     const payload = {
@@ -90,9 +151,12 @@ const AddProduct = (props) => {
       })),
     };
     let product;
+
     setLoading(true);
+
     if (edit) product = await patch(`product/v1/${id}`, payload);
-    else product = await post("product/v1", payload);  
+    else product = await post("product/v1", payload);
+
     setLoading(false);
     if (typeof product === "string") {
       toast.notify(product, {
@@ -179,99 +243,14 @@ const AddProduct = (props) => {
                           }}
                           title="Arraste ou solte a imagem do produto aqui"
                           onChange={(files, setLoading) => {
-                            files.forEach(async (file: File, index) => {
-                              const { url } = await getUrlAssign();
-                              let fd = new FormData();
-                              const blob: any = await processFile(file);
-                              const image = new Image();
-                              image.onload = () => {
-                                const canvas = document.createElement("canvas");
-                                canvas.width = image.naturalWidth;
-                                canvas.height = image.naturalHeight;
-                                console.log(image.naturalWidth);
-                                if (
-                                  image.naturalWidth > 480 ||
-                                  image.naturalHeight > 480
-                                ) {
-                                  setFieldError(
-                                    "images",
-                                    "limite da dimensão da imagem é 480*480"
-                                  );
-                                  setFieldTouched("images", true, false);
-                                  setLoading(false);
-                                  return;
-                                }
-                                canvas.getContext("2d").drawImage(image, 0, 0);
-                                canvas.toBlob(async (blob) => {
-                                  const myImage = new File([blob], file.name, {
-                                    type: blob.type,
-                                  });
-                                  fd.append("acl", "public-read");
-                                  fd.append("Content-Type", "image/webp");
-
-                                  fd.append("key", url.put.fields["key"]);
-                                  fd.append("bucket", url.put.fields["bucket"]);
-                                  fd.append(
-                                    "X-Amz-Algorithm",
-                                    url.put.fields["X-Amz-Algorithm"]
-                                  );
-                                  fd.append(
-                                    "X-Amz-Credential",
-                                    url.put.fields["X-Amz-Credential"]
-                                  );
-                                  fd.append(
-                                    "X-Amz-Date",
-                                    url.put.fields["X-Amz-Date"]
-                                  );
-
-                                  fd.append(
-                                    "X-Amz-Signature",
-                                    url.put.fields["X-Amz-Signature"]
-                                  );
-
-                                  fd.append("Policy", url.put.fields["Policy"]);
-
-                                  fd.append("file", myImage);
-                                  await axios.post(
-                                    url.put.url,
-                                    fd,
-                                    {
-                                      onUploadProgress: (
-                                        progress: ProgressEvent
-                                      ) => {
-                                        let percent =
-                                          Math.round(
-                                            (progress.loaded *
-                                              100) /
-                                              progress.total
-                                          );
-                                          console.log('====================================')
-                                          console.log(percent)
-                                          console.log('====================================')
-                                          console.log('====================================');
-                                          console.log(index);
-                                          console.log('====================================');
-                                        if (
-                                          percent === 100 &&
-                                          files.length -
-                                            1 ===
-                                            index
-                                        ) {
-                                          console.log("aqui");
-                                          
-                                          setLoading(false);
-                                        }
-                                      },
-                                    }
-                                  );
-                                  const images = [...values.images];
-
-                                  images.push(url.get);
-                                  setFieldValue("images", images);
-                                }, "image/webp");
-                              };
-                              image.src = blob;
-                            });
+                            handelOnChangeImage(
+                              files,
+                              setFieldError,
+                              setFieldTouched,
+                              setLoading,
+                              setFieldValue,
+                              values
+                            );
                           }}
                         />
                         {meta.touched && meta.error && (
@@ -388,6 +367,8 @@ const initialValues = {
   name: "",
   grossAmount: "",
   netAmount: "",
+  width: "",
+  heigth: "",
   tags: [],
   categories: [],
   images: [],
@@ -396,7 +377,9 @@ const initialValues = {
 
 const checkoutSchema = yup.object().shape({
   name: yup.string().required("campo requerido"),
-  description: yup.string().required("campo requerido"),
+  description: yup.string().required("campo requerido"), 
+  width: yup.number().required("campo requerido"),
+  height: yup.number().required("campo requerido"),
   grossAmount: yup.number().required("campo requerido"),
   netAmount: yup.number().required("campo requerido"),
   images: yup
@@ -436,10 +419,7 @@ const stepperList = [
 ];
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["shop_token"]: token } = parseCookies(ctx);
-  console.log('====================================')
-  console.log(ctx.locale)
-  console.log('====================================')
+  const { ["shop_token"]: token } = parseCookies(ctx); 
   try {
     api.interceptors.request.use((config) => {
       config.headers["Authorization"] = `Bearer ${token}`;
