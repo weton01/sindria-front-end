@@ -20,7 +20,7 @@ const OrderDetails = () => {
   const handleFormSubmit = async (values) => {
     console.log(values);
   };
- 
+
   return (
     <div>
       <DashboardPageHeader
@@ -78,6 +78,7 @@ const OrderDetails = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <DropZone
+                    setFieldValue={setFieldValue}
                     onChange={(files) => {
                       console.log(files);
                     }}

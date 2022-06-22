@@ -5,14 +5,14 @@ import NextApp from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import "react-credit-cards/es/styles-compiled.css";
 import { ToastContainer } from "react-nextjs-toast";
-import { Provider, useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 import "reactjs-popup/dist/index.css";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import { get } from "services/api";
+import { getCategory } from "services/category";
 import { ThemeProvider } from "styled-components";
 import { AppProvider } from "../contexts/app/AppContext";
 import { useStore } from "../store";
@@ -74,40 +74,15 @@ const App: NextPage = ({ Component, pageProps }: any) => {
 };
 
 App.getInitialProps = async (appContext: any) => {
-  const appProps = await NextApp.getInitialProps(appContext);
-
-  const [categories]: any = await Promise.all([get(`category/v1/`)]);
-
-  const newData = categories?.map((item) => {
-    const groupNames = item.subCategories.map((aux) => aux.groupName);
-    const newCategories = [...new Set(groupNames)];
-
-    return {
-      icon: item.image,
-      title: item.name,
-      href: `/${item.name}`,
-      menuComponent: "MegaMenu1",
-      menuData: {
-        categories: newCategories.map((aux) => ({
-          title: aux,
-          subCategories: item.subCategories
-            .filter((subs) => subs.groupName === aux)
-            .map((subs) => ({
-              title: subs.name,
-              href: `/${item.name}/${subs.name}`,
-            })),
-          href: "/",
-        })),
-      },
-    };
-  });
+  const appProps = await NextApp.getInitialProps(appContext); 
+  const [categories]: any = await Promise.all([getCategory()]);  
 
   return {
     ...appProps,
     pageProps: {
       categories: {
-        formated: newData,
-        clean: categories,
+        formated: categories.formated,
+        clean: categories.clean,
       },
     },
   };

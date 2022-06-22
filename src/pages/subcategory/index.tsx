@@ -135,7 +135,7 @@ const Subcategory = (props) => {
               pageCount={data?.count / ITEMS_PER_PAGE.MAX}
               onChange={(data: any) => {
                 router.push(
-                  `/payment-methods?skip=${data * ITEMS_PER_PAGE.MAX}`
+                  `/subcategory?skip=${data * ITEMS_PER_PAGE.MAX}`
                 );
               }}
             />

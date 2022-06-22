@@ -1,15 +1,15 @@
-import { client_api } from "./api";
+import { request } from "./api";
 
 export const postVariation = async ({
   id,
   payload,
   actionSuccess = () => null,
 }) =>
-  client_api.post({
+  request.post({
     route: `inventory/v1/variation/default/${id}`,
     payload,
     message: `Variação criada!!`,
-    actionSuccess = () => null,
+    actionSuccess,
   });
 
 export const patchVariation = async ({
@@ -17,16 +17,16 @@ export const patchVariation = async ({
   payload,
   actionSuccess = () => null,
 }) =>
-  client_api.post({
+  request.post({
     route: `inventory/v1/variation/default/${id}`,
     payload,
     message: `Variação editada!`,
-    actionSuccess = () => null,
+    actionSuccess,
   });
 
 export const removeVariation = async ({ id, actionSuccess = () => null }) =>
-  client_api.remove({
+  request.remove({
     route: `inventory/v1/${id}`,
     message: `Variação removida!`,
-    actionSuccess = () => null,
+    actionSuccess,
   });

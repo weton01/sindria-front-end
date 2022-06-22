@@ -12,7 +12,7 @@ import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import * as yup from "yup";
-import { api, client_api } from "services/api";
+import { api, request } from "services/api";
 import { getSubCategory } from "services/category";
 import { getTags } from "services/tags";
 import { getUrlAssign } from "services/product";
@@ -89,7 +89,7 @@ const AddProduct = (props) => {
 
     setLoading(true);
     if (edit)
-      await client_api.patch({
+      await request.patch({
         route: `product/v1/${id}`,
         payload,
         message: `Produto ${edit ? "alterado" : "adicionado"}`,
@@ -97,7 +97,7 @@ const AddProduct = (props) => {
           router.push(`/vendor/add-product/variations/${product.id}`),
       });
     else
-      await client_api.post({
+      await request.post({
         route: `product/v1/${id}`,
         payload,
         message: `Produto ${edit ? "alterado" : "adicionado"}`,
@@ -413,19 +413,11 @@ const stepperList = [
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
-  console.log("====================================");
-  console.log(ctx.locale);
-  console.log("====================================");
   try {
-    api.interceptors.request.use((config) => {
-      config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
-
     const [categories, tags, brands] = await Promise.all([
-      getSubCategory(),
+      getSubCategory({ token }),
       getTags(),
-      getBrands(),
+      getBrands({ token }),
     ]);
 
     const newCategories = categories?.items?.map((item) => {

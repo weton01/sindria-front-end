@@ -11,7 +11,6 @@ import { Field, Formik } from "formik";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 import * as yup from "yup";
-import { client_api } from "services/api";
 import { getSubCategory } from "services/category";
 import { getTags } from "services/tags";
 import { getProductById, getUrlAssign } from "services/product";
@@ -24,7 +23,7 @@ import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
 import Icon from "@component/icon/Icon";
 import { authRoute } from "middlewares/authRoute";
-import { server_api } from "services/server-api";
+import { request } from "services/api";
 
 const EditProduct = (props) => {
   const { categories, tags, brands, product } = props;
@@ -100,7 +99,7 @@ const EditProduct = (props) => {
       })),
     };
     setLoading(true);
-    await client_api.patch({
+    await request.patch({
       route: `product/v1/${id}`,
       payload,
       message: "Produto alterado!",
@@ -175,11 +174,7 @@ const EditProduct = (props) => {
                           <DropZone
                             multiple={true}
                             imgs={values.images}
-                            removeImage={(index) => {
-                              const images = values.images;
-                              images.splice(index, 1);
-                              setFieldValue("images", images);
-                            }}
+                            setFieldValue={setFieldValue}
                             title="Arraste ou solte a imagem do produto aqui"
                             onChange={(files, setLoading) => {
                               files.forEach(async (file: File, index) => {
@@ -442,17 +437,11 @@ const stepperList = [
 export const getServerSideProps: GetServerSideProps = async (c) => {
   return authRoute(c, async ({ token, id }: any) => {
     try {
-      const data = await server_api.get({
-        route: "credit-card/v1",
-        params: { skip: 0, take: 10, orderBy: "DESC" },
-        token: token,
-      });
-
       let [categories, tags, brands, product] = await Promise.all([
-        getSubCategory({token: token}),
+        getSubCategory({ token }),
         getTags(),
-        getBrands(),
-        getProductById({id, token}),
+        getBrands({ token }),
+        getProductById({ id, token }),
       ]);
 
       const newCategories = categories?.items?.map((item) => {
@@ -494,7 +483,7 @@ export const getServerSideProps: GetServerSideProps = async (c) => {
           value: item.id,
         };
       });
-      
+
       return {
         props: {
           categories: newCategories,

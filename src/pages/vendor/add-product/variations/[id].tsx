@@ -134,7 +134,7 @@ const ProductVariation = (props) => {
     });
   };
 
-  const handleFormSubmit = async (values) => { 
+  const handleFormSubmit = async (values) => {
     const { netAmount, weight, height, width, image, name } = values;
     let newVariations = [...product.variations];
 
@@ -276,7 +276,8 @@ const ProductVariation = (props) => {
                                     notEdit={
                                       index !== product.variations?.length - 1
                                     }
-                                    imgs={values.image} 
+                                    setFieldValue={setFieldValue}
+                                    imgs={values.image}
                                     title="Arraste ou solte a imagem do produto aqui"
                                     onChange={(files, setLoading) => {
                                       handleOnChangeImage(
@@ -455,16 +456,13 @@ const stepperList = [
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
   const { id } = ctx.query;
-  try {
-    api.interceptors.request.use((config) => {
-      config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
 
-    const [product] = await Promise.all([getProductById(id)]);
+  try {
+    const [product] = await Promise.all([getProductById({ id, token })]);
 
     if ("name" in product) {
       product.variations.push(initialValues);
+      
       return {
         props: { product },
       };

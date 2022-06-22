@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "store";
 import { toast } from "react-nextjs-toast";
 
-export const client_api = {};
+export const request = {};
 export const PROD_URL =
   "https://92yiuy5790.execute-api.us-east-1.amazonaws.com/production/";
 export const api = axios.create({
@@ -10,6 +10,8 @@ export const api = axios.create({
 });
 
 if (typeof window !== "undefined") {
+  // Request Client Side //
+
   const Config = (config) => {
     const token = localStorage.getItem("shop_token");
     const end_date = new Date(localStorage.getItem("shop_end_date"));
@@ -24,7 +26,7 @@ if (typeof window !== "undefined") {
 
   api.interceptors.request.use(Config);
 
-  client_api.post = async ({
+  request.post = async ({
     route,
     payload,
     message = "Criado com sucesso!",
@@ -58,7 +60,7 @@ if (typeof window !== "undefined") {
     }
   };
 
-  client_api.patch = async ({
+  request.patch = async ({
     route,
     payload,
     message = "Alterado com sucesso!",
@@ -92,7 +94,7 @@ if (typeof window !== "undefined") {
     }
   };
 
-  client_api.put = async ({
+  request.put = async ({
     route,
     payload,
     config = {},
@@ -127,7 +129,7 @@ if (typeof window !== "undefined") {
     }
   };
 
-  client_api.get = async ({ route, params = {} }) => {
+  request.get = async ({ route, params = {}, token="", headers = {} }) => {
     try {
       const { data } = await api.get(route, {
         params: params,
@@ -149,7 +151,7 @@ if (typeof window !== "undefined") {
     }
   };
 
-  client_api.remove = async ({
+  request.remove = async ({
     route,
     message = "Deletado com sucesso!",
     actionSuccess = (params) => null,
@@ -178,6 +180,27 @@ if (typeof window !== "undefined") {
 
       actionError();
       return error;
+    }
+  };
+} else {
+  // Request Server Side //
+
+  request.get = async ({
+    route,
+    params = {},
+    token = undefined,
+    headers = {},
+  }) => {
+    try {
+      if (token) headers["Authorization"] = token;
+
+      const { data } = await axios.get(`${PROD_URL}${route}`, {
+        params,
+        headers: headers,
+      });
+      return data;
+    } catch (err) {
+      return err?.response;
     }
   };
 }

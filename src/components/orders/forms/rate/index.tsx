@@ -13,7 +13,7 @@ import Typography from "@component/Typography";
 import Icon from "@component/icon/Icon";
 import TextArea from "@component/textarea/TextArea";
 import Button from "@component/buttons/Button";
-import { client_api } from "services/api";
+import { request } from "services/api";
 import { useRouter } from "next/router";
 
 export default function RateForm({ id }) {
@@ -22,7 +22,7 @@ export default function RateForm({ id }) {
 
   const handleFormSubmit = async (values) => {  
     setLoading(true);
-    await client_api.post({
+    await request.post({
       route: `review/v1/${id}`,
       payload: values,
       message: `Obrigado por dar seu feedback!`,

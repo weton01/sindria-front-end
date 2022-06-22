@@ -13,14 +13,11 @@ import Section15 from "@component/home-4/Section2";
 import Container from "../components/Container";
 
 import { GetServerSideProps } from "next";
-import { get } from "services/api";
 import { useSelector } from "react-redux";
+import { getProduct, getProductSuperStore } from "services/product";
 
-
-const IndexPage = ({ section2, section3, section4, section5, }) => {
-  const categories = useSelector((selec: any) =>
-    selec?.category?.items?.clean
-  );
+const IndexPage = ({ section2, section3, section4, section5 }) => {
+  const categories = useSelector((selec: any) => selec?.category?.items?.clean);
 
   return (
     <main>
@@ -35,23 +32,25 @@ const IndexPage = ({ section2, section3, section4, section5, }) => {
           <Section15 />
         </Box>
       </Container>
-      <Section10 data={categories}/>
+      <Section10 data={categories} />
       <Section13 />
       <Section12 />
     </main>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const [section5, rest] = await Promise.all([
-    get('product/v1', {
-      skip: 0,
-      take: 6,
-      orderBy: `created_at=DESC`,
-      select: `name,netAmount,grossAmount,id,images`
+export const getServerSideProps: GetServerSideProps = async () => {
+  const [section5] = await Promise.all([
+    getProduct({
+      params: {
+        skip: 0,
+        take: 6,
+        orderBy: `created_at=DESC`,
+        select: `name,netAmount,grossAmount,id,images`,
+      },
     }),
-    get('product/v1/home/superstore'),
-  ])
+    getProductSuperStore(),
+  ]);
 
   return {
     props: {
@@ -60,11 +59,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       section5: section5,
       section4: {
         reviews: [],
-        brands: []
+        brands: [],
       },
-    }
-  }
-}
+    },
+  };
+};
 
 IndexPage.layout = AppLayout;
 

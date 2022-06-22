@@ -1,11 +1,10 @@
-import { client_api } from "./api";
-import { server_api } from "./server-api";
+import { request } from "./api";
 
 export const getUrlAssign = async () =>
-  client_api.get({ route: `product/v1/s3/assign-url` });
+  request.get({ route: `product/v1/s3/assign-url` });
 
 export const getProductById = async ({ id, token }) => {
-  return server_api
+  return request
     .get({ route: `product/v1/creation/${id}`, token })
     .then((value) => {
       return {
@@ -16,10 +15,14 @@ export const getProductById = async ({ id, token }) => {
             loading: { create: false, delete: false },
             image: [item.image],
           })) || [],
-      }; 
+      };
     });
 };
 
-export const getProduct = async ({ params, token }) => {
-  return server_api.get({ route: `product/v1/`, params, token });
+export const getProduct = async ({ params }) => {
+  return request.get({ route: "product/v1", params });
+};
+
+export const getProductSuperStore = async () => {
+  return request.get({ route: "product/v1/home/superstore" });
 };
