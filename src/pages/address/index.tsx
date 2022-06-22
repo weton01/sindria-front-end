@@ -21,7 +21,7 @@ import { api } from "services/api";
 const AddressList = (props) => {
   const { data } = props;
   const router = useRouter();
-  const { skip = 0 } = router.query;
+  const { skip = 0 }: any = router.query;
 
   const deleteAddress = async (id) => {
     toast.notify("Removendo endereço", {

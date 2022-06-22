@@ -1,10 +1,32 @@
-import { patch, post, remove } from "./api";
+import { request } from "./api";
 
-export const postVariation = async (id, payload) =>
-  post(`inventory/v1/variation/default/${id}`, payload);
+export const postVariation = async ({
+  id,
+  payload,
+  actionSuccess = () => null,
+}) =>
+  request.post({
+    route: `inventory/v1/variation/default/${id}`,
+    payload,
+    message: `Variação criada!!`,
+    actionSuccess,
+  });
 
-export const patchVariation = async (id, payload) =>
-  patch(`inventory/v1/variation/default/${id}`, payload);
+export const patchVariation = async ({
+  id,
+  payload,
+  actionSuccess = () => null,
+}) =>
+  request.post({
+    route: `inventory/v1/variation/default/${id}`,
+    payload,
+    message: `Variação editada!`,
+    actionSuccess,
+  });
 
-export const removeVariation = async (id) =>
-  remove(`inventory/v1/${id}`);
+export const removeVariation = async ({ id, actionSuccess = () => null }) =>
+  request.remove({
+    route: `inventory/v1/${id}`,
+    message: `Variação removida!`,
+    actionSuccess,
+  });

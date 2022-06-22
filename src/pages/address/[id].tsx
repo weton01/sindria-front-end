@@ -6,15 +6,14 @@ import React from "react";
 import { api } from "services/api";
 
 const AddressUpdater = (props) => {
-  return <AddressEditor {...props}/>;
+  return <AddressEditor {...props} />;
 };
 
 AddressUpdater.layout = DashboardLayout;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
-  const {id} = ctx.query;
-  
+  const { id } = ctx.query;
 
   try {
     api.interceptors.request.use((config) => {
@@ -22,8 +21,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       return config;
     });
 
-    const { data } = await api.get(`address/v1/${id}`); 
-    
+    const { data } = await api.get(`address/v1/${id}`);
+
     return {
       props: { data: data },
     };

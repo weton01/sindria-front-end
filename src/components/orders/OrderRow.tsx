@@ -1,3 +1,9 @@
+import {
+  paymentStatus,
+  colorsStatus,
+  paymentMethod,
+} from "@utils/convert/status";
+import { formatCurrency } from "@utils/formatCurrency";
 import { format } from "date-fns";
 import Link from "next/link";
 import React from "react";
@@ -11,48 +17,40 @@ import Typography, { H5, Small } from "../Typography";
 
 export interface OrderRowProps {
   item: {
-    orderNo: any;
-    status: string;
-    href: string;
-    purchaseDate: string | Date;
-    price: number;
+    id: string;
+    paymentStatus: string;
+    created_at: string | Date;
+    totalValue: number;
+    invoiceType: string;
   };
 }
 
 const OrderRow: React.FC<OrderRowProps> = ({ item }) => {
-  const getColor = (status) => {
-    switch (status) {
-      case "Pending":
-        return "secondary";
-      case "Processing":
-        return "secondary";
-      case "Delivered":
-        return "success";
-      case "Cancelled":
-        return "error";
-      default:
-        return "";
-    }
-  };
-
   return (
-    <Link href={item.href}>
-      <TableRow as="a" href={item.href} my="1rem" padding="6px 18px">
-        <H5 m="6px" textAlign="left">
-          {item.orderNo}
-        </H5>
+    <Link href={"orders/" + item.id}>
+      <TableRow as="a" href={"orders/" + item.id} my="1rem" padding="6px 18px">
+        <Typography m="6px" textAlign="left">
+          {format(new Date(item.created_at), "dd/MM/yyyy HH:MM")}
+        </Typography>
         <Box m="6px">
-          <Chip p="0.25rem 1rem" bg={`${getColor(item.status)}.light`}>
-            <Small color={`${getColor(item.status)}.main`}>{item.status}</Small>
+          <Chip
+            p="0.25rem 1rem"
+            bg={`${colorsStatus[item.paymentStatus]}.light`}
+          >
+            <Small color={`${colorsStatus[item.paymentStatus]}.main`}>
+              {paymentStatus[item.paymentStatus]}
+            </Small>
           </Chip>
         </Box>
-        <Typography className="flex-grow pre" m="6px" textAlign="left">
-          {format(new Date(item.purchaseDate), "MMM dd, yyyy")}
+        <Typography m="6px" textAlign="left" display={"flex"}>
+          <Icon size="24px" defaultcolor="auto" marginRight={2}>
+            {paymentMethod[item.invoiceType].icon}
+          </Icon>
+          {paymentMethod[item.invoiceType].name}
         </Typography>
         <Typography m="6px" textAlign="left">
-          ${item.price.toFixed(2)}
+          {formatCurrency(item.totalValue)}
         </Typography>
-
         <Hidden flex="0 0 0 !important" down={769}>
           <Typography textAlign="center" color="text.muted">
             <IconButton size="small">
