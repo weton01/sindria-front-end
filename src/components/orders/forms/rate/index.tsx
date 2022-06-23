@@ -47,9 +47,7 @@ export default function RateForm({ id }) {
         setFieldTouched,
         setFieldValue,
         setFieldError,
-      }) => {
-        console.log(values);
-
+      }) => { 
         return (
           <form onSubmit={handleSubmit}>
             <Box padding={16}>

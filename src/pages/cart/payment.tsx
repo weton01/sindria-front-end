@@ -5,7 +5,7 @@ import CheckoutNavLayout from "../../components/layout/CheckoutNavLayout";
 import PaymentForm from "@component/payment/PaymentForm";
 import CheckoutSummary2 from "@component/checkout/CheckoutSummary2";
 import { authRoute } from "middlewares/authRoute";
-import { server_api } from "services/server-api";
+import { request } from "services/api";
 
 const Payment = ({ creditCards }) => {
   return (
@@ -25,7 +25,7 @@ Payment.layout = CheckoutNavLayout;
 export const getServerSideProps: GetServerSideProps = async (c) => {
   return authRoute(c, async ({ token }: any) => {
     try {
-      const data = await server_api.get({
+      const data = await request.get({
         route: "credit-card/v1",
         params: { skip: 0, take: 10, orderBy: "DESC" },
         token: token,
