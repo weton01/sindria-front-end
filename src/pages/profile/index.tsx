@@ -148,7 +148,7 @@ const Profile = () => {
             <FlexBox flexDirection="column" alignItems={"center"}>
               <Small letterSpacing="0.2em" mb={3}>
                 <Icon color="primary" size="40px" defaultcolor="auto">
-                  Coupon
+                  coupon
                 </Icon>
               </Small>
               <Typography fontSize={16} color="secondary.dark" fontWeight={500}>
