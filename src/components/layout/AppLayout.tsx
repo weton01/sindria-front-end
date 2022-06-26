@@ -3,41 +3,19 @@ import Header from "@component/header/Header";
 import MobileNavigationBar from "@component/mobile-navigation/MobileNavigationBar";
 import Sticky from "@component/sticky/Sticky";
 import Head from "next/head";
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React from "react";
 import StyledAppLayout from "./AppLayoutStyle";
-
-type Categories = {
-  clean: any[],
-  formated: any[]
-}
 
 type Props = {
   title?: string;
-  categories?: Categories;
   navbar?: React.ReactChild;
 };
 
 const AppLayout: React.FC<Props> = ({
   children,
   navbar,
-  categories,
   title = "React Next.js Ecommerce Template",
 }) => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch({
-      type: "SET_CATEGORY",
-      payload: categories? categories : {
-        items: {
-          formated: [],
-          clean: []
-        }
-      },
-    });
-  }, [categories]);
-
   return (
     <StyledAppLayout>
       <Head>
