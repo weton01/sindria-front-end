@@ -14,11 +14,13 @@ const Modal: React.FC<ModalProps> = ({ children, open, onClose }) => {
     e.stopPropagation();
   };
 
-  const handleBackdropClick = () => {
+  const handleBackdropClick = () => { 
     if (onClose) onClose();
+    document.querySelector("body").style.overflow = "visible";
   };
 
   if (globalThis.document && open) {
+    document.querySelector("body").style.overflow = "hidden";
     let modal = document.querySelector("#modal-root");
 
     if (!modal) {

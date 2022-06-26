@@ -1,18 +1,14 @@
 import LazyImage from "@component/LazyImage";
-import { useAppContext } from "@context/app/AppContext";
-import { CartItem } from "@reducer/cartReducer";
 import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { CSSProperties } from "styled-components";
 import Box from "../Box";
 import Button from "../buttons/Button";
-import Card, { CardProps } from "../Card";
+import { CardProps } from "../Card";
 import { Chip } from "../Chip";
 import FlexBox from "../FlexBox";
 import Icon from "../icon/Icon";
-import Modal from "../modal/Modal";
-import ProductIntro from "../products/ProductIntro";
 import Rating from "../rating/Rating";
 import { H3, SemiSpan } from "../Typography";
 import { StyledProductCard1 } from "./ProductCardStyle";
@@ -52,21 +48,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   onClickAdd,
   ...props
 }) => {
-  const [open, setOpen] = useState(false);
- 
-  const cartItem: CartItem = {id: 0, name: "", qty: 1, price: 5};
-
-  const toggleDialog = useCallback(() => {
-    setOpen((open) => !open);
-  }, []);
-
-  const handleCartAmountChange = useCallback(
-    (amount) => () => {
-       
-    },
-    []
-  );
-
   return (
     <StyledProductCard1 {...props}>
       <div className="image-holder">
@@ -142,24 +123,21 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
           <FlexBox
             flexDirection="column-reverse"
             alignItems="center"
-            justifyContent={"flex-start"} 
-          > 
+            justifyContent={"flex-start"}
+          >
             <Button
               variant="contained"
               color="primary"
-              padding="8px 10px" 
+              padding="8px 10px"
               size="none"
               borderColor="primary.light"
               onClick={onClickAdd}
-            > 
-            Adicionar
+            >
+              Adicionar
             </Button>
- 
           </FlexBox>
         </FlexBox>
       </div>
-
-     
     </StyledProductCard1>
   );
 };

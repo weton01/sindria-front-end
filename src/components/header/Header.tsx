@@ -1,7 +1,7 @@
 import IconButton from "@component/buttons/IconButton";
 import Image from "@component/Image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Categories from "../categories/Categories";
 import Container from "../Container";
 import FlexBox from "../FlexBox";
@@ -18,6 +18,9 @@ import { useSelector } from "react-redux";
 import { destroyCookie } from "nookies";
 import { colors } from "@utils/themeColors";
 import Divider from "@component/Divider";
+import Modal from "@component/modal/Modal";
+import FormFeedback from "./FormFeedback";
+import Box from "@component/Box";
 
 type HeaderProps = {
   isFixed?: boolean;
@@ -27,18 +30,10 @@ type HeaderProps = {
 const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
   const [products, setProducts] = useState([]);
   const [productsQuantity, setProductsQuantity] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
 
   const user = useAppSelector((state) => state?.user);
   const dispatch = useAppDispatch();
-
-  const onClickLogout = () => {
-    dispatch(userLogout());
-    destroyCookie(undefined, "shop_token", {
-      maxAge: 60 * 60 * 7,
-      path: "/",
-    });
-  };
-
   const orderStores = useSelector((selec: any) => selec?.cart?.orderStores);
 
   useEffect(() => {
@@ -61,8 +56,28 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
     setProductsQuantity(total);
   }, [products]);
 
+  const onClickLogout = () => {
+    dispatch(userLogout());
+    destroyCookie(undefined, "shop_token", {
+      maxAge: 60 * 60 * 7,
+      path: "/",
+    });
+  };
+
+  const onCloseModal = () => {
+    setOpenModal(false);
+    document.querySelector("body").style.overflow = "visible";
+  };
+
   return (
     <StyledHeader className={className}>
+      <Modal open={openModal} onClose={onCloseModal}>
+        <Box>
+          <Fragment>
+            <FormFeedback onCloseModal={onCloseModal}></FormFeedback>
+          </Fragment>
+        </Box>
+      </Modal>
       <Container
         display="flex"
         alignItems="center"
@@ -176,7 +191,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
                   </FlexBox>
                 </MenuItem>
               </Link>
-              <MenuItem key={"feedback"}>
+              <MenuItem key={"feedback"} onClick={() => setOpenModal(true)}>
                 <FlexBox gap={16} alignItems={"center"} width="100%">
                   <IconButton bg="gray.200" p="8px">
                     <Icon variant="small" size="16px">
