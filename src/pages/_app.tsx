@@ -1,4 +1,5 @@
 import ErrorBoundary from "@component/ErrorBoundary";
+import DispatchInitialProps from "@component/DispatchInitialProps";
 import withAuth from "@component/withAuth";
 import { NextPage } from "next";
 import NextApp from "next/app";
@@ -59,12 +60,14 @@ const App: NextPage = ({ Component, pageProps }: any) => {
         <Provider store={store}>
           <PersistGate persistor={persistor} loading={<div>Loading</div>}>
             <ErrorBoundary>
-              <Layout categories={pageProps.categories}>
-                <div style={{ position: "absolute", zIndex: 99999 }}>
-                  <ToastContainer align={"right"} position={"bottom"} />
-                </div>
-                <Component {...pageProps} />
-              </Layout>{" "}
+              <DispatchInitialProps categories={pageProps.categories}>
+                <Layout>
+                  <div style={{ position: "absolute", zIndex: 99999 }}>
+                    <ToastContainer align={"right"} position={"bottom"} />
+                  </div>
+                  <Component {...pageProps} />
+                </Layout>{" "}
+              </DispatchInitialProps>
             </ErrorBoundary>
           </PersistGate>
         </Provider>
@@ -74,8 +77,8 @@ const App: NextPage = ({ Component, pageProps }: any) => {
 };
 
 App.getInitialProps = async (appContext: any) => {
-  const appProps = await NextApp.getInitialProps(appContext); 
-  const [categories]: any = await Promise.all([getCategory()]);  
+  const appProps = await NextApp.getInitialProps(appContext);
+  const [categories] = await Promise.all([getCategory()]);
 
   return {
     ...appProps,
