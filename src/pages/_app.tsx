@@ -20,6 +20,9 @@ import { useStore } from "../store";
 import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
 import "./_app.css";
+import FlexBox from "@component/FlexBox";
+import Spinner from "@component/Spinner";
+import Loading from "@component/loading/Loading";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -58,7 +61,7 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       <GlobalStyles />
       <AppProvider>
         <Provider store={store}>
-          <PersistGate persistor={persistor} loading={<div>Loading</div>}>
+          <PersistGate persistor={persistor} loading={<Loading/>}>
             <ErrorBoundary>
               <DispatchInitialProps categories={pageProps.categories}>
                 <Layout>
