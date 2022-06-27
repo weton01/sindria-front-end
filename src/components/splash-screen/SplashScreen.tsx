@@ -1,5 +1,6 @@
 import FlexBox from "@component/FlexBox";
-import { H1 } from "@component/Typography";
+import { H1 } from "@component/Typography";  
+import { colors } from "@utils/themeColors";
 import MovingText from "react-moving-text";
 
 const SplashScreen = () => (
@@ -8,7 +9,7 @@ const SplashScreen = () => (
     height={"100vh"}
     alignItems="center"
     justifyContent="center"
-    flexDirection={"column"}
+    flexDirection={"column"} 
   >
     <MovingText
       type="bounce"
@@ -22,8 +23,9 @@ const SplashScreen = () => (
       <H1
         borderTop={"3px solid"}
         borderBottom="3px solid"
-        borderColor="primary"
+        borderColor="secondary"
         borderRadius={3}
+        color={colors.primary.main}
       >
         SINDRIA
       </H1>
