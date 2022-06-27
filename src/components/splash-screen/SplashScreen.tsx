@@ -2,7 +2,7 @@ import FlexBox from "@component/FlexBox";
 import { H1 } from "@component/Typography";
 import MovingText from "react-moving-text";
 
-const Loading = () => (
+const SplashScreen = () => (
   <FlexBox
     width={"100vw"}
     height={"100vh"}
@@ -31,4 +31,4 @@ const Loading = () => (
   </FlexBox>
 );
 
-export default Loading;
+export default SplashScreen;
