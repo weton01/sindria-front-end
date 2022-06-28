@@ -13,7 +13,7 @@ export const InputMask = styled(MaskedInput)<
     systemCss({
       padding: "8px 12px",
       height: "40px",
-      fontSize: "inherit",
+      fontSize: "0.875rem",
       color: "body.text",
       borderRadius: 5,
       border: "1px solid",

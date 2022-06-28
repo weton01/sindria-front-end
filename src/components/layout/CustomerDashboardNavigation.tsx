@@ -61,9 +61,9 @@ const linkList = [
         count: 19,
       },
       {
-        href: "/support-tickets",
-        title: "Tickets de suporte",
-        iconName: "customer-service",
+        href: "/store",
+        title: "Sua Loja",
+        iconName: "home",
         count: 1,
       },
     ],

@@ -14,12 +14,73 @@ import LazyImage from "./LazyImage";
 import Spinner from "./Spinner";
 import Typography, { H5, Small } from "./Typography";
 
+export const handleOnChangeImage = (
+  files = [],
+  setFieldError: any,
+  setFieldTouched: any,
+  setLoading: any,
+  setFieldValue: any
+) => {
+  files.map(async (file: File, index) => {
+    const { url } = await getUrlAssign();
+    let fd = new FormData();
+    const blob: any = await processFile(file);
+    const image = new Image();
+
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+
+      if (image.naturalWidth > 480 || image.naturalHeight > 480) {
+        setFieldError("image", "limite da dimensão da imagem é 480*480");
+        setFieldTouched("image", true, false);
+        setLoading(false);
+        return;
+      }
+
+      canvas.getContext("2d").drawImage(image, 0, 0);
+      canvas.toBlob(async (blob) => {
+        const myImage = new File([blob], file.name, {
+          type: blob.type,
+        });
+
+        fd.append("acl", "public-read");
+        fd.append("Content-Type", "image/webp");
+        fd.append("key", url.put.fields["key"]);
+        fd.append("bucket", url.put.fields["bucket"]);
+        fd.append("X-Amz-Algorithm", url.put.fields["X-Amz-Algorithm"]);
+        fd.append("X-Amz-Credential", url.put.fields["X-Amz-Credential"]);
+        fd.append("X-Amz-Date", url.put.fields["X-Amz-Date"]);
+        fd.append("X-Amz-Signature", url.put.fields["X-Amz-Signature"]);
+        fd.append("Policy", url.put.fields["Policy"]);
+        fd.append("file", myImage);
+
+        await axios.post(url.put.url, fd, {
+          onUploadProgress: (progress: ProgressEvent) => {
+            let percent = Math.round(
+              (progress.loaded * 100) / progress.total
+            );
+            if (percent === 100 && files?.length - 1 === index) {
+              setLoading(false);
+            }
+          },
+        });
+
+        const image = [url.get];
+        setFieldValue("image", image);
+      }, "image/webp");
+    };
+    image.src = blob;
+  });
+};
+
 export interface DropZoneProps {
   onChange?: (files: [], setLoading: any) => void;
   setFieldValue: any;
   title?: string;
   multiple?: boolean;
-  imgs?: any[];
+  imgs?: any[]; 
   disabled?: boolean;
   notEdit?: boolean;
 }
@@ -214,6 +275,7 @@ const DropZone: React.FC<DropZoneProps> = ({
       <FlexBox display="flex" gap={16} flexWrap={"wrap"}>
         {imgs?.length > 0
           ? imgs.map((item, index) => {
+ 
               return (
                 <Box
                   display={"flex"}
