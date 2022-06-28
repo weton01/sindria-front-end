@@ -45,7 +45,7 @@ const Subcategory = (props) => {
       });
     }
   };
- 
+
   const editSubcategory = (id) => {
     router.push(`subcategory/${id}`);
   };
@@ -76,7 +76,7 @@ const Subcategory = (props) => {
                 <H5 className="pre" m="6px">
                   {item.name}
                 </H5>
-              </FlexBox> 
+              </FlexBox>
               <Typography className="pre" textAlign="right" color="text.muted">
                 <IconButton
                   size="small"
@@ -134,9 +134,7 @@ const Subcategory = (props) => {
               initialPage={Math.trunc(skip / ITEMS_PER_PAGE.MAX)}
               pageCount={data?.count / ITEMS_PER_PAGE.MAX}
               onChange={(data: any) => {
-                router.push(
-                  `/payment-methods?skip=${data * ITEMS_PER_PAGE.MAX}`
-                );
+                router.push(`/subcategory?skip=${data * ITEMS_PER_PAGE.MAX}`);
               }}
             />
           </FlexBox>

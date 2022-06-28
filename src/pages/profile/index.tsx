@@ -1,9 +1,13 @@
 import Avatar from "@component/avatar/Avatar";
 import Box from "@component/Box";
 import Button from "@component/buttons/Button";
+import IconButton from "@component/buttons/IconButton";
 import Card from "@component/Card";
+import { Chip } from "@component/Chip";
+import Divider from "@component/Divider";
 import FlexBox from "@component/FlexBox";
 import Grid from "@component/grid/Grid";
+import Icon from "@component/icon/Icon";
 import DashboardLayout from "@component/layout/CustomerDashboardLayout";
 import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import TableRow from "@component/TableRow";
@@ -17,11 +21,11 @@ const Profile = () => {
     <div>
       <DashboardPageHeader
         iconName="user_filled"
-        title="My Profile"
+        title="Meu perfil"
         button={
           <Link href="/profile/edit">
             <Button color="primary" bg="primary.light" px="2rem">
-              Edit Profile
+              Editar perfil
             </Button>
           </Link>
         }
@@ -39,24 +43,21 @@ const Profile = () => {
                   alignItems="center"
                 >
                   <div>
-                    <H5 my="0px">Ralph Edwards</H5>
+                    <H5 my="0px">Luciano Hulk</H5>
                     <FlexBox alignItems="center">
                       <Typography fontSize="14px" color="text.hint">
-                        Balance:
+                        Créditos:
                       </Typography>
                       <Typography ml="4px" fontSize="14px" color="primary.main">
-                        $500
+                        R$900,33
                       </Typography>
                     </FlexBox>
                   </div>
-
-                  <Typography
-                    ontSize="14px"
-                    color="text.hint"
-                    letterSpacing="0.2em"
-                  >
-                    SILVER USER
-                  </Typography>
+                  <Chip p="0.25rem 1rem" bg={`secondary.light`}>
+                    <Small color={`text.main`} letterSpacing="0.2em">
+                      PRATA
+                    </Small>
+                  </Chip>
                 </FlexBox>
               </Box>
             </FlexBox>
@@ -87,18 +88,18 @@ const Profile = () => {
         </Grid>
       </Box>
 
-      <TableRow p="0.75rem 1.5rem">
+      <TableRow p="0.75rem 1.5rem" mb={"30px"}>
         <FlexBox flexDirection="column" p="0.5rem">
           <Small color="text.muted" mb="4px" textAlign="left">
-            First Name
+            Nome
           </Small>
           <span>Ralph</span>
         </FlexBox>
         <FlexBox flexDirection="column" p="0.5rem">
           <Small color="text.muted" mb="4px" textAlign="left">
-            Last Name
+            CPF/RG
           </Small>
-          <span>Edwards</span>
+          <span>50501459-2</span>
         </FlexBox>
         <FlexBox flexDirection="column" p="0.5rem">
           <Small color="text.muted" mb="4px" textAlign="left">
@@ -108,19 +109,145 @@ const Profile = () => {
         </FlexBox>
         <FlexBox flexDirection="column" p="0.5rem">
           <Small color="text.muted" mb="4px" textAlign="left">
-            Phone
+            Celular
           </Small>
-          <span>+1983649392983</span>
+          <span>+19999379949</span>
         </FlexBox>
         <FlexBox flexDirection="column" p="0.5rem">
           <Small color="text.muted" mb="4px">
-            Birth date
+            Data de nascimento
           </Small>
           <span className="pre">
             {format(new Date(1996 / 11 / 16), "dd MMM, yyyy")}
           </span>
         </FlexBox>
       </TableRow>
+
+      <FlexBox as={Card} p="24px 24px" flexDirection={"column"}>
+        <FlexBox
+          width={"100%"}
+          alignItems="center"
+          justifyContent="space-between"
+          gap={32}
+          p={"0px 24px"}
+        >
+          <IconButton size="small" variant="contained" type="button" p="2rem">
+            <FlexBox flexDirection="column" alignItems={"center"}>
+              <Small letterSpacing="0.2em" mb={3}>
+                <Icon color="primary" size="40px" defaultcolor="auto">
+                  heart
+                </Icon>
+              </Small>
+              <Typography fontSize={16} color="secondary.dark" fontWeight={500}>
+                Favoritos
+              </Typography>
+            </FlexBox>
+          </IconButton>
+
+          <IconButton size="small" variant="contained" type="button" p="2rem">
+            <FlexBox flexDirection="column" alignItems={"center"}>
+              <Small letterSpacing="0.2em" mb={3}>
+                <Icon color="primary" size="40px" defaultcolor="auto">
+                  coupon
+                </Icon>
+              </Small>
+              <Typography fontSize={16} color="secondary.dark" fontWeight={500}>
+                Cupons
+              </Typography>
+            </FlexBox>
+          </IconButton>
+
+          <IconButton size="small" variant="contained" type="button" p="2rem">
+            <FlexBox flexDirection="column" alignItems={"center"}>
+              <Small letterSpacing="0.2em" mb={3}>
+                <Icon color="primary" size="40px" defaultcolor="auto">
+                  clock-circular-outline
+                </Icon>
+              </Small>
+              <Typography fontSize={16} color="secondary.dark" fontWeight={500}>
+                Visualizados
+              </Typography>
+            </FlexBox>
+          </IconButton>
+
+          <IconButton size="small" variant="contained" type="button" p="2rem">
+            <FlexBox flexDirection="column" alignItems={"center"}>
+              <Small letterSpacing="0.2em" mb={3}>
+                <Icon color="primary" size="40px" defaultcolor="auto">
+                  comment
+                </Icon>
+              </Small>
+              <Typography fontSize={16} color="secondary.dark" fontWeight={500}>
+                Comentários
+              </Typography>
+            </FlexBox>
+          </IconButton>
+        </FlexBox>
+        <Link href={"23"}>
+          <Small style={{ cursor: "pointer" }}>
+            <Divider
+              backgroundColor={"gray.300"}
+              marginTop={24}
+              marginBottom={3}
+            />
+            <FlexBox
+              gap={16}
+              alignItems="center"
+              justifyContent={"space-between"}
+            >
+              <FlexBox gap={16} alignItems="center">
+                <Small letterSpacing="0.2em">
+                  <Icon color="primary" size="24px" defaultcolor="auto">
+                    refund
+                  </Icon>
+                </Small>
+                <Typography
+                  fontSize={16}
+                  color="secondary.dark"
+                  fontWeight={500}
+                >
+                  Reembolso e devoluções
+                </Typography>
+              </FlexBox>
+              <Icon size="24px" defaultcolor="auto">
+                arrow-right
+              </Icon>
+            </FlexBox>
+          </Small>
+        </Link>
+        <Link href={"232"}>
+          <Small style={{ cursor: "pointer" }}>
+            <Divider
+              backgroundColor={"gray.300"}
+              marginTop={3}
+              marginBottom={3}
+            />
+            <FlexBox
+              gap={16}
+              alignItems="center"
+              justifyContent={"space-between"}
+            >
+              <FlexBox gap={16} alignItems="center">
+                <Small letterSpacing="0.2em">
+                  <Icon color="primary" size="24px" defaultcolor="auto">
+                    bag_filled
+                  </Icon>
+                </Small>
+                <Typography
+                  fontSize={16}
+                  color="secondary.dark"
+                  fontWeight={500}
+                >
+                  Minha loja
+                </Typography>
+              </FlexBox>{" "}
+              <Icon size="24px" defaultcolor="auto">
+                arrow-right
+              </Icon>
+            </FlexBox>
+          </Small>
+        </Link>
+      </FlexBox>
     </div>
   );
 };
@@ -128,19 +255,19 @@ const Profile = () => {
 const infoList = [
   {
     title: "16",
-    subtitle: "All Orders",
+    subtitle: "Todos pedidos",
   },
   {
     title: "02",
-    subtitle: "Awaiting Payments",
+    subtitle: "Aguardando pagamentos",
   },
   {
     title: "00",
-    subtitle: "Awaiting Shipment",
+    subtitle: "À espera de envio",
   },
   {
     title: "01",
-    subtitle: "Awaiting Delivery",
+    subtitle: "Aguardando entrega",
   },
 ];
 

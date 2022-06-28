@@ -7,6 +7,7 @@ import Box from "./Box";
 import Button from "./buttons/Button";
 import IconButton from "./buttons/IconButton";
 import Divider from "./Divider";
+import FlexBox from "./FlexBox";
 import Grid from "./grid/Grid";
 import Icon from "./icon/Icon";
 import LazyImage from "./LazyImage";
@@ -76,28 +77,92 @@ export const handleOnChangeImage = (
 
 export interface DropZoneProps {
   onChange?: (files: [], setLoading: any) => void;
-  removeImage?: (index: number) => void;
+  setFieldValue: any;
   title?: string;
   multiple?: boolean;
-  imgs?: [];
+  imgs?: any[]; 
   disabled?: boolean;
   notEdit?: boolean;
 }
 
+export const handleOnChangeImage = (
+  files = [],
+  setFieldError: any,
+  setFieldTouched: any,
+  setLoading: any,
+  setFieldValue: any,
+  values: any,
+  multiple: boolean = false
+) => {
+  files.map(async (file: File, index) => {
+    const { url } = await getUrlAssign();
+    let fd = new FormData();
+    const blob: any = await processFile(file);
+    const image = new Image();
+
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+
+      if (image.naturalWidth > 480 || image.naturalHeight > 480) {
+        setFieldError("image", "limite da dimensão da imagem é 480*480");
+        setFieldTouched("image", true, false);
+        setLoading(false);
+        return;
+      }
+      canvas.getContext("2d").drawImage(image, 0, 0);
+      canvas.toBlob(async (blob) => {
+        const myImage = new File([blob], file.name, {
+          type: blob.type,
+        });
+
+        fd.append("acl", "public-read");
+        fd.append("Content-Type", "image/webp");
+        fd.append("key", url.put.fields["key"]);
+        fd.append("bucket", url.put.fields["bucket"]);
+        fd.append("X-Amz-Algorithm", url.put.fields["X-Amz-Algorithm"]);
+        fd.append("X-Amz-Credential", url.put.fields["X-Amz-Credential"]);
+        fd.append("X-Amz-Date", url.put.fields["X-Amz-Date"]);
+        fd.append("X-Amz-Signature", url.put.fields["X-Amz-Signature"]);
+        fd.append("Policy", url.put.fields["Policy"]);
+        fd.append("file", myImage);
+
+        await axios.post(url.put.url, fd, {
+          onUploadProgress: (progress: ProgressEvent) => {
+            let percent = Math.round((progress.loaded * 100) / progress.total);
+            if (percent === 100 && files?.length - 1 === index) {
+              setLoading(false);
+            }
+          },
+        });
+
+        console.log("aquiii", values);
+
+        const images = [...values.image];
+
+        images.push(url.get);
+        setFieldValue("image", images);
+      }, "image/webp");
+    };
+    image.src = blob;
+  });
+};
+
 const DropZone: React.FC<DropZoneProps> = ({
   onChange,
-  removeImage,
+  setFieldValue,
   multiple,
   title,
   imgs,
   disabled,
-  notEdit
+  notEdit,
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const onDrop = useCallback(async (acceptedFiles) => {
+  const onDrop = (acceptedFiles) => {
     if (onChange) onChange(acceptedFiles, setLoading);
-  }, []);
+  };
 
   const validatorFile = (file: File) => {
     const maxLength = 20;
@@ -144,6 +209,14 @@ const DropZone: React.FC<DropZoneProps> = ({
     </li>
   ));
 
+  const removeImage = (index) => {
+    const image = [...imgs];
+    image.splice(index, 1);
+    console.log(image);
+
+    setFieldValue("image", image);
+  };
+
   return (
     <>
       <Box
@@ -155,6 +228,7 @@ const DropZone: React.FC<DropZoneProps> = ({
         border="1px dashed"
         borderColor="gray.400"
         borderRadius="10px"
+        padding={16}
         marginBottom={16}
         bg={isDragActive && "gray.200"}
         transition="all 250ms ease-in-out"
@@ -198,64 +272,61 @@ const DropZone: React.FC<DropZoneProps> = ({
           <ul className="error-input">{fileRejectionItems}</ul>
         </aside>
       </Box>
-      <Grid container spacing={4}>
+      <FlexBox display="flex" gap={16} flexWrap={"wrap"}>
         {imgs?.length > 0
           ? imgs.map((item, index) => {
-            return (
-              <Grid
-                item
-                xl={2}
-                xs={2}
-                style={{
-                  display: "flex",
-                  flexFlow: "column",
-                  alignItems: "flex-end",
-                  gap: 4,
-                }}
-              >
-                {notEdit ? null : (
-                  <IconButton
-                    size="small"
-                    variant="contained"
-                    type="button"
-                    bg="gray.400"
-                    p="0.15rem"
-                    mr="0.15rem"
-                    color={"gray.700"}
-                    marginRight="-8px"
-                  >
-                    <Icon
-                      variant="small"
-                      defaultcolor="currentColor"
-                      onClick={() => removeImage(index)}
-                    >
-                      x
-                    </Icon>
-                  </IconButton>
-                )}
-
+ 
+              return (
                 <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="center"
-                  alignItems="center"
-                  minHeight="120px"
-                  minWidth={"120px"}
-                  border="1px dashed"
-                  borderColor="gray.500"
-                  borderRadius="10px"
-                  marginBottom={16}
-                  bg={isDragActive && "gray.200"}
-                  transition="all 250ms ease-in-out"
-                  style={{ outline: "none" }}
+                  display={"flex"}
+                  flexDirection={"column"}
+                  alignItems="flex-end"
+                  gap={4}
+                  key={index}
                 >
-                  <LazyImage src={item} width="100px" height="100px" />
+                  {notEdit ? null : (
+                    <IconButton
+                      size="small"
+                      variant="contained"
+                      type="button"
+                      bg="gray.400"
+                      p="0.15rem"
+                      mr="0.15rem"
+                      color={"gray.700"}
+                      marginRight="-4px"
+                    >
+                      <Icon
+                        variant="small"
+                        defaultcolor="currentColor"
+                        onClick={() => removeImage(index)}
+                      >
+                        x
+                      </Icon>
+                    </IconButton>
+                  )}
+
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight="120px"
+                    minWidth={"120px"}
+                    border="1px dashed"
+                    borderColor="gray.500"
+                    borderRadius="10px"
+                    marginBottom={16}
+                    bg={isDragActive && "gray.200"}
+                    transition="all 250ms ease-in-out"
+                    style={{ outline: "none" }}
+                  >
+                    <LazyImage src={item} width="100px" height="100px" />
+                  </Box>
                 </Box>
-              </Grid>
-            );
-          })
+              );
+            })
           : null}
-      </Grid>
+      </FlexBox>
     </>
   );
 };
@@ -265,6 +336,6 @@ DropZone.defaultProps = {
   imgs: [],
   multiple: false,
   notEdit: false,
-  disabled: false
+  disabled: false,
 };
 export default DropZone;

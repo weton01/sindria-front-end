@@ -1,18 +1,19 @@
 import ErrorBoundary from "@component/ErrorBoundary";
+import DispatchInitialProps from "@component/DispatchInitialProps";
 import withAuth from "@component/withAuth";
 import { NextPage } from "next";
 import NextApp from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import "react-credit-cards/es/styles-compiled.css";
 import { ToastContainer } from "react-nextjs-toast";
-import { Provider, useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 import "reactjs-popup/dist/index.css";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import { get } from "services/api";
+import { getCategory } from "services/category";
 import { ThemeProvider } from "styled-components";
 import { AppProvider } from "../contexts/app/AppContext";
 import { useStore } from "../store";
@@ -20,6 +21,7 @@ import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
 import "react-datepicker/dist/react-datepicker.css";
 import "./_app.css";
+import SplashScreen from "@component/splash-screen/SplashScreen";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -30,10 +32,17 @@ NProgress.configure({ showSpinner: false });
 
 const App: NextPage = ({ Component, pageProps }: any) => {
   const store = useStore(pageProps.initialReduxState);
+  const [lifted, setLifted] = useState(false);
   const persistor = persistStore(store, {}, function () {
     persistor.persist();
   });
   let Layout = Component.layout || Fragment;
+
+  const onBeforeLift = () => {
+    setTimeout(() => { 
+      setLifted(true);
+    }, 3000);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -58,15 +67,21 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       <GlobalStyles />
       <AppProvider>
         <Provider store={store}>
-          <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-            <ErrorBoundary>
-              <Layout categories={pageProps.categories}>
-                <div style={{ position: "absolute", zIndex: 99999 }}>
-                  <ToastContainer align={"right"} position={"bottom"} />
-                </div>
-                <Component {...pageProps} />
-              </Layout>{" "}
-            </ErrorBoundary>
+          <PersistGate persistor={persistor} onBeforeLift={onBeforeLift}>
+            {!lifted ? (
+              <SplashScreen />
+            ) : (
+              <ErrorBoundary>
+                <DispatchInitialProps categories={pageProps.categories}>
+                  <Layout>
+                    <div style={{ position: "absolute", zIndex: 99999 }}>
+                      <ToastContainer align={"right"} position={"bottom"} />
+                    </div>
+                    <Component {...pageProps} />
+                  </Layout>{" "}
+                </DispatchInitialProps>
+              </ErrorBoundary>
+            )}
           </PersistGate>
         </Provider>
       </AppProvider>
@@ -76,39 +91,14 @@ const App: NextPage = ({ Component, pageProps }: any) => {
 
 App.getInitialProps = async (appContext: any) => {
   const appProps = await NextApp.getInitialProps(appContext);
-
-  const [categories]: any = await Promise.all([get(`category/v1/`)]);
-
-  const newData = categories.map((item) => {
-    const groupNames = item.subCategories.map((aux) => aux.groupName);
-    const newCategories = [...new Set(groupNames)];
-
-    return {
-      icon: item.image,
-      title: item.name,
-      href: `/${item.name}`,
-      menuComponent: "MegaMenu1",
-      menuData: {
-        categories: newCategories.map((aux) => ({
-          title: aux,
-          subCategories: item.subCategories
-            .filter((subs) => subs.groupName === aux)
-            .map((subs) => ({
-              title: subs.name,
-              href: `/${item.name}/${subs.name}`,
-            })),
-          href: "/",
-        })),
-      },
-    };
-  });
+  const [categories] = await Promise.all([getCategory()]);
 
   return {
     ...appProps,
     pageProps: {
       categories: {
-        formated: newData,
-        clean: categories,
+        formated: categories.formated,
+        clean: categories.clean,
       },
     },
   };
