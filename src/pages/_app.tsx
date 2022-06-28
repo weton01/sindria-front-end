@@ -18,6 +18,7 @@ import { AppProvider } from "../contexts/app/AppContext";
 import { useStore } from "../store";
 import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
+import "react-datepicker/dist/react-datepicker.css";
 import "./_app.css";
 
 //Binding events.

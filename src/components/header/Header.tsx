@@ -16,6 +16,7 @@ import MenuItem from "@component/MenuItem";
 import Menu from "@component/Menu";
 import { useSelector } from "react-redux";
 import { destroyCookie } from "nookies";
+import { useRouter } from "next/router";
 
 type HeaderProps = {
   isFixed?: boolean;
@@ -31,11 +32,12 @@ const Header: React.FC<HeaderProps> = ({
 
   const user = useAppSelector((state) => state?.user);
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const onClickLogout = () => {
     dispatch(userLogout());
     destroyCookie(undefined, 'shop_token', {
-      maxAge: 60 * 60  * 7,
+      maxAge: 60 * 60 * 7,
       path: '/'
     })
   };
@@ -108,6 +110,12 @@ const Header: React.FC<HeaderProps> = ({
               }
             >
               <MenuItem key={"profile"}>Perfil</MenuItem>
+              <MenuItem
+                key={"profile"}
+                onClick={() => router.push('store/create')}
+              >
+                {user.user.isStore ? "Minha loja" : "Criar Minha Loja"}
+              </MenuItem>
               <MenuItem key={"logout"} onClick={onClickLogout}>
                 Sair
               </MenuItem>
