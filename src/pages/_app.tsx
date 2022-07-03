@@ -7,10 +7,8 @@ import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
 import React, { Fragment, useState } from "react";
-import "react-credit-cards/es/styles-compiled.css";
 import { ToastContainer } from "react-nextjs-toast";
 import { Provider } from "react-redux";
-import "reactjs-popup/dist/index.css";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { getCategory } from "services/category";
@@ -19,8 +17,12 @@ import { AppProvider } from "../contexts/app/AppContext";
 import { useStore } from "../store";
 import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
-import "./_app.css";
 import SplashScreen from "@component/splash-screen/SplashScreen";
+
+//Css
+import "reactjs-popup/dist/index.css";
+import "react-credit-cards/es/styles-compiled.css";
+import "./_app.css";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -66,21 +68,21 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       <GlobalStyles />
       <AppProvider>
         <Provider store={store}>
-          <PersistGate
-            persistor={persistor}
-            onBeforeLift={onBeforeLift}
-            loading={<SplashScreen />}
-          >
-            <ErrorBoundary>
-              <DispatchInitialProps categories={pageProps.categories}>
-                <Layout>
-                  <div style={{ position: "absolute", zIndex: 99999 }}>
-                    <ToastContainer align={"right"} position={"bottom"} />
-                  </div>
-                  <Component {...pageProps} />
-                </Layout>{" "}
-              </DispatchInitialProps>
-            </ErrorBoundary>
+          <PersistGate persistor={persistor} onBeforeLift={onBeforeLift}>
+            {!lifted ? (
+              <SplashScreen />
+            ) : (
+              <ErrorBoundary>
+                <DispatchInitialProps categories={pageProps.categories}>
+                  <Layout>
+                    <div style={{ position: "absolute", zIndex: 99999 }}>
+                      <ToastContainer align={"right"} position={"bottom"} />
+                    </div>
+                    <Component {...pageProps} />
+                  </Layout>{" "}
+                </DispatchInitialProps>
+              </ErrorBoundary>
+            )}
           </PersistGate>
         </Provider>
       </AppProvider>
