@@ -16,7 +16,6 @@ import MenuItem from "@component/MenuItem";
 import Menu from "@component/Menu";
 import { useSelector } from "react-redux";
 import { destroyCookie } from "nookies";
-
 import { colors } from "@utils/themeColors";
 import Divider from "@component/Divider";
 import Modal from "@component/modal/Modal";
@@ -35,22 +34,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
 
   const user = useAppSelector((state) => state?.user);
   const dispatch = useAppDispatch();
-  const router = useRouter();
-
-  const onClickLogout = () => {
-    dispatch(userLogout());
-    destroyCookie(undefined, 'shop_token', {
-      maxAge: 60 * 60 * 7,
-      path: '/'
-    })
-  };
-
-  const orderStores = useSelector((selec: any) =>
-    selec?.cart?.orderStores
-  )
-
   const orderStores = useSelector((selec: any) => selec?.cart?.orderStores);
-
 
   useEffect(() => {
     let newProducts = [];
@@ -135,7 +119,6 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
                 </FlexBox>
               }
             >
- 
               <Link href={"/profile"}>
                 <MenuItem key={"profile"} style={{ width: 332 }}>
                   <FlexBox gap={16} alignItems={"center"} width="100%">
