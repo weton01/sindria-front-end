@@ -38,7 +38,7 @@ const App: NextPage = ({ Component, pageProps }: any) => {
   let Layout = Component.layout || Fragment;
 
   const onBeforeLift = () => {
-    setTimeout(() => { 
+    setTimeout(() => {
       setLifted(true);
     }, 3000);
   };
@@ -66,21 +66,21 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       <GlobalStyles />
       <AppProvider>
         <Provider store={store}>
-          <PersistGate persistor={persistor} onBeforeLift={onBeforeLift}>
-            {!lifted ? (
-              <SplashScreen />
-            ) : (
-              <ErrorBoundary>
-                <DispatchInitialProps categories={pageProps.categories}>
-                  <Layout>
-                    <div style={{ position: "absolute", zIndex: 99999 }}>
-                      <ToastContainer align={"right"} position={"bottom"} />
-                    </div>
-                    <Component {...pageProps} />
-                  </Layout>{" "}
-                </DispatchInitialProps>
-              </ErrorBoundary>
-            )}
+          <PersistGate
+            persistor={persistor}
+            onBeforeLift={onBeforeLift}
+            loading={<SplashScreen />}
+          >
+            <ErrorBoundary>
+              <DispatchInitialProps categories={pageProps.categories}>
+                <Layout>
+                  <div style={{ position: "absolute", zIndex: 99999 }}>
+                    <ToastContainer align={"right"} position={"bottom"} />
+                  </div>
+                  <Component {...pageProps} />
+                </Layout>{" "}
+              </DispatchInitialProps>
+            </ErrorBoundary>
           </PersistGate>
         </Provider>
       </AppProvider>
