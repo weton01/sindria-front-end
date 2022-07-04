@@ -129,7 +129,7 @@ if (typeof window !== "undefined") {
     }
   };
 
-  request.get = async ({ route, params = {}, token="", headers = {} }) => {
+  request.get = async ({ route, params = {}, token = "", headers = {} }) => {
     try {
       const { data } = await api.get(route, {
         params: params,
@@ -192,7 +192,8 @@ if (typeof window !== "undefined") {
     headers = {},
   }) => {
     try {
-      if (token) headers["Authorization"] = token;
+      if (token) headers["Authorization"] = "Bearer " + token;
+      console.log(headers);
 
       const { data } = await axios.get(`${PROD_URL}${route}`, {
         params,
