@@ -19,7 +19,7 @@ export interface DropZoneProps {
   setFieldValue: any;
   title?: string;
   multiple?: boolean;
-  imgs?: any[]; 
+  imgs?: any[];
   disabled?: boolean;
   notEdit?: boolean;
 }
@@ -210,7 +210,6 @@ const DropZone: React.FC<DropZoneProps> = ({
       <FlexBox display="flex" gap={16} flexWrap={"wrap"}>
         {imgs?.length > 0
           ? imgs.map((item, index) => {
- 
               return (
                 <Box
                   display={"flex"}

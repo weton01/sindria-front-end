@@ -29,7 +29,6 @@
     "react": "^16.14.0",
     "react-chartjs-2": "^2.11.1",
     "react-credit-cards": "^0.8.3",
-    "react-datepicker": "^4.8.0",
     "react-dom": "^16.14.0",
     "react-dropzone": "^11.2.4",
     "react-maskedinput": "^4.0.1",
@@ -49,7 +48,6 @@
     "styled-components": "^5.2.1",
     "styled-system": "^5.1.5",
     "swr": "0.1.18",
-    "uuidv4": "^6.2.13",
     "yup": "^0.32.8"
   },
   "devDependencies": {
