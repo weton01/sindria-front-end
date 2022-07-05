@@ -11,14 +11,14 @@ export const SyledTextField = styled.input<
   (props) =>
     systemCss({
       padding: "8px 12px",
-      height: "40px",
-      fontSize: "inherit",
+      height: props.height ? props.height : '40px',
+      fontSize: props.fontSize ? props.fontSize : "inherit",
       color: "body.text",
       borderRadius: 5,
       border: "1px solid",
       borderColor: "text.disabled",
       borderTopLeftRadius: props.addonBefore ? 0 : 5,
-      borderBottomLeftRadius: props.addonBefore ? 0 : 5, 
+      borderBottomLeftRadius: props.addonBefore ? 0 : 5,
       borderTopRightRadius: props.addonAfter ? 0 : 5,
       borderBottomRightRadius: props.addonAfter ? 0 : 5,
       width: props.fullwidth ? "100%" : "inherit",

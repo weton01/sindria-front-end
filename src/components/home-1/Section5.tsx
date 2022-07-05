@@ -12,7 +12,6 @@ export interface Section5Props {
 }
 
 const Section5: React.FC<Section5Props> = ({ data }: Section5Props) => {
-  console.log(data)
   return (
     <CategorySectionCreator
       iconName="new-product-1"

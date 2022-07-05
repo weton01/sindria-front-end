@@ -1,156 +1,258 @@
-import React from "react";
-import Accordion from "../accordion/Accordion";
-import AccordionHeader from "../accordion/AccordionHeader";
-import Avatar from "../avatar/Avatar";
+import Box from "@component/Box";
+import { formatCurrency } from "@utils/formatCurrency";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import Card from "../Card";
 import CheckBox from "../CheckBox";
 import Divider from "../Divider";
 import FlexBox from "../FlexBox";
-import Rating from "../rating/Rating";
-import TextField from "../text-field/TextField";
-import { H5, H6, Paragraph, SemiSpan } from "../Typography";
+import TextField, { MaskInput } from "../text-field/TextField";
+import Typography, { H5, H6, Paragraph, SemiSpan, Small } from "../Typography";
+import Button from "@component/buttons/Button";
+import { useSelector } from "react-redux";
+import Accordion from "@component/accordion/Accordion";
+import AccordionHeader from "@component/accordion/AccordionHeader";
 
-const ProductFilterCard = () => {
+export interface FilterProps {
+  filter: any
+}
+
+const fncAddChecked = (item) => {
+  item.checked = true
+  return item
+}
+
+const ProductFilterCard: React.FC<FilterProps> = ({ filter }) => {
+  const { brands, sizes, tags, } = filter;
+  const router = useRouter()
+
+  const categories = useSelector((selec: any) =>
+    selec?.category?.items?.clean
+  );
+
+  const foundCategory = categories.find((c, index) => {
+
+    if (c.id === filter.categories[0].c_id) {
+      c.subCategories = c.subCategories.slice(0, 4)
+      return true
+    }
+    const foundSubCategory = c.subCategories.find(
+      c2 => c2.id === filter.categories[0].c_id
+    )
+
+    if (foundSubCategory) {
+      c.subCategories = c.subCategories.slice(0, 4)
+      return true
+    }
+    return false
+  })
+  
+  const [minValue, setMinValue] = useState(parseFloat(filter.minMax[0].minAmount))
+  const [maxValue, setMaxValue] = useState(parseFloat(filter.minMax[0].maxAmount))
+
+  const routerPush = (query) => (
+    router.push({
+      path: '/',
+      query: query
+    })
+  )
+
+  const fncRenderBrands = (item => (
+    <Box
+      color="text.muted"
+      lineHeight="24px"
+      fontSize={13}
+      cursor="pointer"
+      onClick={() => {
+        const newBrand = brands.find(br => {
+          return br.v_id === item.v_id
+        })
+        routerPush({
+          ...router.query,
+          take: 10,
+          skip: 0,
+          'p.brand': newBrand.b_id
+        })
+      }}
+    >
+      {item.b_name} ({item.b_qtd})
+    </Box>
+  ))
+
+  const fncRenderSizes = (item => (
+    <Box
+      color="text.muted"
+      lineHeight="24px"
+      fontSize={13}
+      cursor="pointer"
+      key={item.v_id}
+      onClick={() => {
+        const newSize = sizes.find(br => {
+          return br.v_id === item.v_id
+        })
+        routerPush({
+          ...router.query,
+          take: 10,
+          skip: 0,
+          'p.size': newSize.v_id,
+        })
+      }}
+    >
+      {item.v_size}  ({item.v_qtd})
+    </Box>
+  ))
+
+  const fncRenderTags = (item => (
+    <Box
+      color="text.muted"
+      lineHeight="24px"
+      fontSize={13}
+      cursor="pointer"
+      key={item.t_id}
+      onClick={() => {
+        const newTag = brands.find(br => {
+          return br.t_id === item.t_id
+        })
+        routerPush({
+          ...router.query,
+          take: 10,
+          skip: 0,
+          'p.tag': newTag.t_id,
+        })
+      }}
+    >
+      {item.t_name} ({item.t_qtd})
+    </Box>
+  ))
+
+
   return (
     <Card p="18px 27px" elevation={5}>
-      <H6 mb="10px">Categories</H6>
-
-      {categroyList.map((item) =>
-        item.subCategories ? (
-          <Accordion key={item.title} expanded>
-            <AccordionHeader
-              px="0px"
-              py="6px"
-              color="text.muted"
-              // justifyContent="flex-start"
-            >
-              <SemiSpan className="cursor-pointer" mr="9px">
-                {item.title}
-              </SemiSpan>
-            </AccordionHeader>
-            {item.subCategories.map((name) => (
-              <Paragraph
-                className="cursor-pointer"
-                fontSize="14px"
-                color="text.muted"
-                pl="22px"
+      <H6 mb="10px">Categorias</H6>
+      {
+        filter.categories.map((item, index) => {
+          return index === 0 ? (
+            <Accordion key={foundCategory.name} expanded>
+              <AccordionHeader
+                px="0px"
                 py="6px"
-                key={name}
+                color="text.muted"
+              // justifyContent="flex-start"
               >
-                {name}
-              </Paragraph>
-            ))}
-          </Accordion>
-        ) : (
-          <Paragraph
-            className="cursor-pointer"
-            fontSize="14px"
-            color="text.muted"
-            py="6px"
-            key={item.title}
-          >
-            {item.title}
-          </Paragraph>
-        )
-      )}
-
+                <SemiSpan className="cursor-pointer" mr="9px">
+                  {foundCategory.name}
+                </SemiSpan>
+              </AccordionHeader>
+              {foundCategory.subCategories.map((item2) => (
+                <Paragraph
+                  className="cursor-pointer"
+                  fontSize="14px"
+                  color="text.muted"
+                  pl="22px"
+                  py="6px"
+                  key={item.name}
+                >
+                  {item2.name}
+                </Paragraph>
+              ))}
+            </Accordion>
+          ) : (
+            <Paragraph
+              className="cursor-pointer"
+              fontSize="14px"
+              color="text.muted"
+              py="6px"
+              key={item.name}
+            >
+              {item.name}
+            </Paragraph>
+          )
+        })
+      }
       <Divider mt="18px" mb="24px" />
 
-      <H6 mb="16px">Price Range</H6>
-      <FlexBox justifyContent="space-between" alignItems="center">
-        <TextField placeholder="0" type="number" fullwidth />
+      <H6 mb="16px">Preços</H6>
+      <Small color="text.muted">
+        Valor Mínimo: {formatCurrency(parseFloat(filter.minMax[0].minAmount))}
+      </Small  >
+      <br></br>
+      <Small color="text.muted">
+        Valor Maximo: {formatCurrency(parseFloat(filter.minMax[0].maxAmount))}
+      </Small>
+
+      <FlexBox mt="8px" justifyContent="space-between" alignItems="center">
+        <TextField
+          fontSize={10}
+          value={minValue}
+          mask={MaskInput.money}
+          height={32}
+          placeholder="0"
+          fullwidth
+          onChange={(e) => {
+            setMinValue(parseFloat(e.target.value))
+          }}
+        />
         <H5 color="text.muted" px="0.5rem">
           -
         </H5>
-        <TextField placeholder="250" type="number" fullwidth />
+        <TextField
+          fontSize={10}
+          value={maxValue}
+          mask={MaskInput.money}
+          height={32}
+          placeholder="250"
+          fullwidth
+          onChange={(e) => {
+            setMaxValue(parseFloat(e.currentTarget.value))
+          }}
+
+        />
+        <Button
+          width={50}
+          size={'smallest'}
+          variant="contained"
+          color="primary"
+          ml={"4px"}
+          onClick={() => {
+            routerPush({
+              ...router.query,
+              take: 10,
+              skip: 0,
+              'p.minAmount': minValue,
+              'p.maxAmount': maxValue
+            })
+          }}
+        >
+          Filtrar
+        </Button>
       </FlexBox>
-
       <Divider my="24px" />
 
-      <H6 mb="16px">Brands</H6>
-      {brandList.map((item) => (
-        <CheckBox
-          key={item}
-          name={item}
-          value={item}
-          color="secondary"
-          label={<SemiSpan color="inherit">{item}</SemiSpan>}
-          my="10px"
-          onChange={(e) => {
-            console.log(e.target.value, e.target.checked);
-          }}
-        />
-      ))}
+      {
+        brands.length > 0 ? <>
+          <H6 mb="12px">Marcas</H6>
+          {brands.map(fncAddChecked).map(fncRenderBrands)}
+          <Divider my="24px" />
+        </> : null
+      }
 
-      <Divider my="24px" />
+      {
+        sizes?.length > 0 ? <>
+          <H6 mb="12px">Tamanhos</H6>
+          {sizes.map(fncAddChecked).map(fncRenderSizes)}
+          <Divider my="24px" />
+        </> : null
+      }
 
-      {otherOptions.map((item) => (
-        <CheckBox
-          key={item}
-          name={item}
-          value={item}
-          color="secondary"
-          label={<SemiSpan color="inherit">{item}</SemiSpan>}
-          my="10px"
-          onChange={(e) => {
-            console.log(e.target.value, e.target.checked);
-          }}
-        />
-      ))}
-
-      <Divider my="24px" />
-
-      <H6 mb="16px">Ratings</H6>
-      {[5, 4, 3, 2, 1].map((item) => (
-        <CheckBox
-          key={item}
-          value={item}
-          color="secondary"
-          label={<Rating value={item} outof={5} color="warn" />}
-          my="10px"
-          onChange={(e) => {
-            console.log(e.target.value, e.target.checked);
-          }}
-        />
-      ))}
-
-      <Divider my="24px" />
-
-      <H6 mb="16px">Colors</H6>
-      <FlexBox mb="1rem">
-        {colorList.map((item) => (
-          <Avatar bg={item} size={25} mr="10px" style={{ cursor: "pointer" }} />
-        ))}
-      </FlexBox>
+      {
+        tags ? <>
+          <H6 mb="12px">Etiquetas</H6>
+          {tags.map(fncAddChecked).map(fncRenderTags)}
+        </> : null
+      }
     </Card>
   );
 };
 
-const categroyList = [
-  {
-    title: "Bath Preparations",
-    subCategories: ["Bubble Bath", "Bath Capsules", "Others"],
-  },
-  {
-    title: "Eye Makeup Preparations",
-  },
-  {
-    title: "Fragrance",
-  },
-  {
-    title: "Hair Preparations",
-  },
-];
-
-const brandList = ["Maccs", "Karts", "Baars", "Bukks", "Luasis"];
-const otherOptions = ["On Sale", "In Stock", "Featured"];
-const colorList = [
-  "#1C1C1C",
-  "#FF7A7A",
-  "#FFC672",
-  "#84FFB5",
-  "#70F6FF",
-  "#6B7AFF",
-];
 
 export default ProductFilterCard;
