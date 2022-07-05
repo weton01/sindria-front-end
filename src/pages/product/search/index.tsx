@@ -14,12 +14,24 @@ import Sidenav from "@component/sidenav/Sidenav";
 import { H5, Paragraph } from "@component/Typography";
 import React, { useCallback, useState } from "react";
 import useWindowSize from "../../../hooks/useWindowSize";
+import { useRouter } from 'next/router'
+import { GetServerSideProps } from "next";
+import axios from "axios";
+import { PROD_URL } from "services/api";
 
-const ProductSearchResult = () => {
+const ProductSearchResult = ({ query }) => {
+  const router = useRouter()
+
   const [view, setView] = useState("grid");
   const width = useWindowSize();
   const isTablet = width < 1025;
 
+  const routerPush = (query) => (
+    router.push({
+      path: '/',
+      query: query
+    })
+  )
   const toggleView = useCallback(
     (v) => () => {
       setView(v);
@@ -39,23 +51,32 @@ const ProductSearchResult = () => {
         as={Card}
       >
         <div>
-          <H5>Searching for “ mobile phone ”</H5>
-          <Paragraph color="text.muted">48 results found</Paragraph>
+          <H5>Buscando por “ {router?.query?.findBy} ”</H5>
+          <Paragraph color="text.muted">{query?.count} Produtos Encontrados</Paragraph>
         </div>
         <FlexBox alignItems="center" flexWrap="wrap">
           <Paragraph color="text.muted" mr="1rem">
-            Short by:
+            Ordenar por:
           </Paragraph>
           <Box flex="1 1 0" mr="1.75rem" minWidth="150px">
             <Select
-              placeholder="Short by"
+              placeholder="Ordenar Por"
               defaultValue={sortOptions[0]}
               options={sortOptions}
+              onChange={(e: any) => {
+                console.log(e)
+                routerPush({
+                  ...router.query,
+                  take: 10,
+                  skip: 0,
+                  orderBy: e?.value
+                })
+              }}
             />
           </Box>
 
           <Paragraph color="text.muted" mr="0.5rem">
-            View:
+            Visualizar:
           </Paragraph>
           <IconButton size="small" onClick={toggleView("grid")}>
             <Icon
@@ -86,7 +107,7 @@ const ProductSearchResult = () => {
                 </IconButton>
               }
             >
-              <ProductFilterCard />
+              <ProductFilterCard filter={query?.filter} />
             </Sidenav>
           )}
         </FlexBox>
@@ -94,11 +115,24 @@ const ProductSearchResult = () => {
 
       <Grid container spacing={6}>
         <Hidden as={Grid} item lg={3} xs={12} down={1024}>
-          <ProductFilterCard />
+          <ProductFilterCard filter={query?.filter} />
         </Hidden>
 
         <Grid item lg={9} xs={12}>
-          {view === "grid" ? <ProductCard1List /> : <ProductCard9List />}
+          {view === "grid" ?
+            <ProductCard1List
+              items={query.items}
+              count={query.count}
+              skip={router?.query?.skip}
+              take={router?.query?.take}
+            /> :
+            <ProductCard9List
+              items={query.items}
+              count={query.count}
+              skip={router?.query?.skip}
+              take={router?.query?.take}
+            />
+          }
         </Grid>
       </Grid>
     </Box>
@@ -106,12 +140,46 @@ const ProductSearchResult = () => {
 };
 
 const sortOptions = [
-  { label: "Relevance", value: "Relevance" },
-  { label: "Date", value: "Date" },
-  { label: "Price Low to High", value: "Price Low to High" },
-  { label: "Price High to Low", value: "Price High to Low" },
+  { label: "Relevância", value: "rating=DESC" },
+  { label: "Novo", value: "created_at=DESC" },
+  { label: "Antigo", value: "created_at=ASC" },
+  { label: "Maior Preço", value: "netAmount=DESC" },
+  { label: "Menor Preço", value: "netAmount=ASC" },
 ];
 
 ProductSearchResult.layout = NavbarLayout;
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { skip, take, orderBy } = ctx.query;
+  const query = ctx.resolvedUrl.split("?")[1].split("&").slice(3).join('&')
+
+  try {
+    const { data } = await axios.get(
+      `${PROD_URL}product/v1`,
+      { params: { skip, take, orderBy, where: query } }
+    );
+
+    return {
+      props: {
+        query: data ? data : {
+          filter: {
+            brands: [],
+            sizes: [],
+            tags: []
+          },
+          count: 0,
+          items: []
+        },
+      },
+    };
+  } catch (err) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/404",
+      },
+    };
+  }
+};
 
 export default ProductSearchResult;

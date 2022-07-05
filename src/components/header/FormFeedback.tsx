@@ -16,10 +16,7 @@ export interface FormFeedbackProps {
 }
 
 const FormFeedback: React.FC<FormFeedbackProps> = ({ onCloseModal }) => {
-  const handleFormSubmit = (values) => {
-    console.log("====================================");
-    console.log(values);
-    console.log("====================================");
+  const handleFormSubmit = (values) => { 
   };
 
   return (

@@ -21,6 +21,7 @@ import Divider from "@component/Divider";
 import Modal from "@component/modal/Modal";
 import FormFeedback from "./FormFeedback";
 import Box from "@component/Box";
+import { useRouter } from "next/router";
 
 type HeaderProps = {
   isFixed?: boolean;
@@ -34,7 +35,11 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
 
   const user = useAppSelector((state) => state?.user);
   const dispatch = useAppDispatch();
-  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores);
+  const router = useRouter();
+ 
+  const orderStores = useSelector((selec: any) =>
+    selec?.cart?.orderStores
+  ) 
 
   useEffect(() => {
     let newProducts = [];

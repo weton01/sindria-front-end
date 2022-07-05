@@ -76,8 +76,6 @@ export const handleOnChangeImage = (
           },
         });
 
-        console.log("aquiii", values);
-
         const images = [...values.image];
 
         images.push(url.get);
@@ -140,7 +138,6 @@ const DropZone: React.FC<DropZoneProps> = ({
     <li key={file.path}>
       {file.path}
       <ul>
-        {console.log(errors)}
         {errors.map((e) => (
           <li key={e.code}>{e.message}</li>
         ))}
@@ -151,7 +148,6 @@ const DropZone: React.FC<DropZoneProps> = ({
   const removeImage = (index) => {
     const image = [...imgs];
     image.splice(index, 1);
-    console.log(image);
 
     setFieldValue("image", image);
   };

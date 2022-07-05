@@ -28,7 +28,6 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     <StyledCategoryDropdown open={open} position={position}>
       {categories?.map((item) => {
         let MegaMenu = megaMenu[item.menuComponent];
-
         return (
           <CategoryMenuItem
             title={item.title}

@@ -6,22 +6,22 @@ export const getCategory = async () =>
       formated: categories?.map((item) => {
         const groupNames = item.subCategories.map((aux) => aux.groupName);
         const newCategories = [...new Set(groupNames)];
-  
+
         return {
           icon: item.image,
           title: item.name,
-          href: `/${item.name}`,
+          href: `/product/search?skip=0&take=10&findBy=${item.name}&p.category=${item.id}&orderBy=netAmount=DESC  `,
           menuComponent: "MegaMenu1",
           menuData: {
-            categories: newCategories.map((aux) => ({
+            categories: newCategories.map((aux: any) => ({
               title: aux,
               subCategories: item.subCategories
                 .filter((subs) => subs.groupName === aux)
                 .map((subs) => ({
                   title: subs.name,
-                  href: `/${item.name}/${subs.name}`,
+                  href: `/product/search?skip=0&take=10&findBy=${subs.name}&p.category=${subs.id}&orderBy=netAmount=DESC`,
                 })),
-              href: "/",
+              href: `/product/search?skip=0&take=10&findBy=${item.name}&p.category=${item.id}&orderBy=netAmount=DESC`,
             })),
           },
         };
