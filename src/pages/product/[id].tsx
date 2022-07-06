@@ -24,8 +24,8 @@ const ProductDetails = ({product, reviews, comments, bestSalersRelated, relatedP
     <div>
       <ProductIntro 
         {...product}
-        title ={ product.name } 
-        price={product.netAmount}
+        title ={ product.name  } 
+        price={product.netAmount  }
         mutations={product?.mutations.filter(item => item.stock > 0)}
         variations={product?.variations?.filter(item => item.type === "default")}
         sizes={product?.variations?.filter(item=> item.type === "size")}

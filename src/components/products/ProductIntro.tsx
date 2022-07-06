@@ -201,7 +201,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 <FlexBox
                   overflow="auto"
                 >
-                  {images.map((url, ind) => (
+                  {images?.map((url, ind) => (
                     <Box
                       size={100}
                       width={100}
@@ -251,7 +251,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         <Box>
                           <Rating color="warn" value={rating} outof={5} />
                         </Box>
-                        {rating.toFixed(1)}
+                        {rating?.toFixed(1)}
                       </FlexBox>
                       <FlexBox alignItems="center" gap={4}>
                         ({reviewsQuantity})
@@ -267,14 +267,14 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   </FlexBox>
 
                   <FlexBox alignItems="center" mb="0.7rem" gap={4}>
-                    <H6 >{brand.name}</H6>
+                    <H6 >{brand?.name}</H6>
                     <Icon size="20px" defaultcolor="currentColor">
-                      {brand.image}
+                      {brand?.image}
                     </Icon>
                   </FlexBox>
 
                   <FlexBox justifyContent="flex-start" alignItems="center" mb="0.8rem" gap={4}>
-                    {tags.map(item => (
+                    {tags?.map(item => (
                       <Box
                         key={item?.id}
                         backgroundColor="rgb(239, 239, 239)"
@@ -283,7 +283,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         borderRadius={2}
                         color="#000000d9"
                       >
-                        {item.name}
+                        {item?.name}
                       </Box>
                     ))}
                   </FlexBox>
@@ -300,9 +300,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       >
                         <FlexBox justifyContent="flex-start" alignItems="center" gap={4}>
                           <Icon size="20px" defaultcolor="currentColor">
-                            {item.image}
+                            {item?.image}
                           </Icon>
-                          {item.name}
+                          {item?.name}
                         </FlexBox>
                       </Box>
                     ))}
