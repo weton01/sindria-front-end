@@ -19,7 +19,7 @@ import {
 } from "styled-system";
 
 interface ButtonProps {
-  size?: "small" | "medium" | "large" | "none";
+  size?: "smallest" | "small" | "medium" | "large" | "none";
   color?: colorOptions;
   variant?: "text" | "outlined" | "contained";
   fullwidth?: boolean;
@@ -28,16 +28,16 @@ interface ButtonProps {
 
 const Button = styled.button<
   ColorProps &
-    BackgroundProps &
-    BorderProps &
-    SpaceProps &
-    ButtonProps &
-    LayoutProps
+  BackgroundProps &
+  BorderProps &
+  SpaceProps &
+  ButtonProps &
+  LayoutProps
 >(
-  ({ color, fullwidth }) =>
+  ({ color, fullwidth, width }) =>
     systemCss({
       display: "flex",
-      width: fullwidth ? "100%" : "unset",
+      width: fullwidth ? "100%" : width ? width : "unset"  ,
       justifyContent: "center",
       alignItems: "center",
       outline: "none",
@@ -147,6 +147,10 @@ const Button = styled.button<
         height: "40px",
         fontSize: 14,
       },
+      smallest: {
+        height: "32px",
+        fontSize: 12,
+      },
     },
   }),
   compose(color, layout, space, border, shadow)
@@ -161,14 +165,16 @@ const CustomButtom = ({
   loading = false,
   route = undefined,
   disabled = false,
+  width = null,
   onClick = () => null,
   ...props
 }) => {
   const router = useRouter();
-
+  console.log(width)
   return (
     <Button
       disabled={loading || disabled}
+      width={width}
       {...props}
       onClick={() => {
         if (route === undefined) onClick();

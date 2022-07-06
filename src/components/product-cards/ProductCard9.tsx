@@ -99,7 +99,7 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
               src={imgUrl}
               alt={title}
               width="100%"
-              borderRadius="0.5rem"
+              borderRadius="0.5rem 0px 0px 0.5rem"
             />
           </Box>
         </Grid>
@@ -246,27 +246,7 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
           </FlexBox>
         </Hidden>
       </Grid>
-
-      <Modal open={open} onClose={toggleDialog}>
-        <Card p="1rem" position="relative">
-          <ProductIntro imgUrl={[imgUrl]} title={title} price={price} />
-          <Box
-            position="absolute"
-            top="0.75rem"
-            right="0.75rem"
-            cursor="pointer"
-          >
-            <Icon
-              className="close"
-              color="primary"
-              variant="small"
-              onClick={toggleDialog}
-            >
-              close
-            </Icon>
-          </Box>
-        </Card>
-      </Modal>
+ 
     </StyledProductCard9>
   );
 };
