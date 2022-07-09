@@ -8,9 +8,10 @@ type Categories = {
 
 type Props = {
   categories?: Categories;
+  matches: any[]
 };
 
-const DispatchInitialProps: React.FC<Props> = ({ categories, children }) => {
+const DispatchInitialProps: React.FC<Props> = ({ categories, children, matches }) => {
   const dispatch = useDispatch();
 
   dispatch({
@@ -24,6 +25,11 @@ const DispatchInitialProps: React.FC<Props> = ({ categories, children }) => {
           },
         },
   });
+
+  dispatch({
+    type: "SET_INITIAL_MATCH",
+    payload: matches
+  })
 
   return <>{children}</>;
 };

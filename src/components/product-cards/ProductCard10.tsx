@@ -1,15 +1,15 @@
 import LazyImage from "@component/LazyImage";
+import axios from "axios";
 import Link from "next/link";
 import React, { Fragment, useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { PROD_URL } from "services/api";
 import { CSSProperties } from "styled-components";
 import Box from "../Box";
 import Button from "../buttons/Button";
-import Card from "../Card";
 import { Chip } from "../Chip";
 import FlexBox from "../FlexBox";
 import Icon from "../icon/Icon";
-import Modal from "../modal/Modal";
-import ProductIntro from "../products/ProductIntro";
 import { H3, SemiSpan } from "../Typography";
 import { StyledProductCard1 } from "./ProductCardStyle";
 
@@ -20,6 +20,7 @@ export interface ProductCard10Props {
   title?: string;
   price?: number;
   off?: number;
+  id?: string;
   rating?: number;
   subcategories?: Array<{
     title: string;
@@ -45,10 +46,37 @@ const ProductCard10: React.FC<ProductCard10Props> = ({
   off,
   subcategories,
   rating,
+  id,
   ...props
 }) => {
   const [cartAmount, setCartAmount] = useState(0);
   const [open, setOpen] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
+
+  const favorites = useSelector((selec: any) =>
+    selec?.favorites?.matches
+  );
+
+  const foundProduct = favorites.find(item => item.id === id)
+ 
+  const onMatch = () => {
+    axios.post(`${PROD_URL}product/v1/${id}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    dispatch({
+      type: "MATCH_PRODUCT",
+      payload: id
+    });
+
+  }
 
   const toggleDialog = useCallback(() => {
     setOpen((open) => !open);
@@ -91,12 +119,21 @@ const ProductCard10: React.FC<ProductCard10Props> = ({
             eye-alt
           </Icon>
 
-          <Icon className="favorite-icon outlined-icon" variant="small">
-            heart
-          </Icon>
-          {/* <Icon className="favorite-icon" color="primary" variant="small">
-              heart-filled
-            </Icon> */}
+
+          {
+            user.isLogged ? (
+              <FlexBox className="extra-icons">
+                <Icon
+                  onClick={onMatch}
+                  color={foundProduct ? 'primary' : 'secondary'}
+                  className={`favorite-icon`}
+                  variant="small"
+                >
+                  {foundProduct ? 'heart-filled' : 'heart'}
+                </Icon>
+              </FlexBox>
+            ) : null
+          }
         </FlexBox>
 
         <Link href="/product/34324321">
@@ -183,27 +220,6 @@ const ProductCard10: React.FC<ProductCard10Props> = ({
           </FlexBox>
         </FlexBox>
       </div>
-
-      <Modal open={open} onClose={toggleDialog}>
-        <Card p="1rem" position="relative">
-          <ProductIntro imgUrl={[imgUrl]} title={title} price={price} />
-          <Box
-            position="absolute"
-            top="0.75rem"
-            right="0.75rem"
-            cursor="pointer"
-          >
-            <Icon
-              className="close"
-              color="primary"
-              variant="small"
-              onClick={toggleDialog}
-            >
-              close
-            </Icon>
-          </Box>
-        </Card>
-      </Modal>
     </StyledProductCard1>
   );
 };

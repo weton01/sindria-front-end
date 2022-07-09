@@ -1,7 +1,9 @@
 import LazyImage from "@component/LazyImage";
 import { formatCurrency } from "@utils/formatCurrency";
+import axios from "axios";
 import Link from "next/link";
 import React from "react";
+import { PROD_URL } from "services/api";
 import { CSSProperties } from "styled-components";
 import Box from "../Box";
 import Button from "../buttons/Button";
@@ -12,6 +14,7 @@ import Icon from "../icon/Icon";
 import Rating from "../rating/Rating";
 import { H3, SemiSpan } from "../Typography";
 import { StyledProductCard1 } from "./ProductCardStyle";
+import { useDispatch, useSelector } from "react-redux";
 
 export interface ProductCard1Props extends CardProps {
   className?: string;
@@ -48,6 +51,32 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   onClickAdd,
   ...props
 }) => {
+  const dispatch = useDispatch();
+
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
+
+  const favorites = useSelector((selec: any) =>
+    selec?.favorites?.matches
+  );
+
+  const foundProduct = favorites.find(item => item.id === id)
+ 
+  const onMatch = () => {
+    axios.post(`${PROD_URL}product/v1/${id}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    dispatch({
+      type: "MATCH_PRODUCT",
+      payload: id
+    });
+
+  }
+
   return (
     <StyledProductCard1 {...props}>
       <div className="image-holder">
@@ -66,14 +95,23 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
           </Chip>
         )}
 
-        <FlexBox className="extra-icons">
-          <Icon className="favorite-icon outlined-icon" variant="small">
-            heart
-          </Icon>
-          {/* <Icon className="favorite-icon" color="primary" variant="small">
-              heart-filled
-            </Icon> */}
-        </FlexBox>
+        {
+          user.isLogged ? (
+            <FlexBox className="extra-icons">
+              <Icon 
+                onClick={onMatch} 
+                color={foundProduct? 'primary': 'secondary'} 
+                className={`favorite-icon`} 
+                variant="small"
+              >
+                {foundProduct ? 'heart-filled' : 'heart'}
+              </Icon>
+              {/* <Icon className="favorite-icon" color="primary" variant="small">
+                heart-filled
+              </Icon> */}
+            </FlexBox>
+          ) : null
+        }
 
         <Link href={`/product/${id}`}>
           <a>
@@ -120,22 +158,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             </FlexBox>
           </Box>
 
-          <FlexBox
-            flexDirection="column-reverse"
-            alignItems="center"
-            justifyContent={"flex-start"}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              padding="8px 10px"
-              size="none"
-              borderColor="primary.light"
-              onClick={onClickAdd}
-            >
-              Adicionar
-            </Button>
-          </FlexBox>
         </FlexBox>
       </div>
     </StyledProductCard1>
