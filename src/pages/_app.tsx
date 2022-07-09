@@ -1,6 +1,5 @@
 import ErrorBoundary from "@component/ErrorBoundary";
 import DispatchInitialProps from "@component/DispatchInitialProps";
-import withAuth from "@component/withAuth";
 import { NextPage } from "next";
 import NextApp from "next/app";
 import Head from "next/head";
@@ -22,6 +21,9 @@ import { theme } from "../utils/theme";
 import "react-datepicker/dist/react-datepicker.css";
 import "./_app.css";
 import SplashScreen from "@component/splash-screen/SplashScreen";
+import axios from "axios";
+import { PROD_URL } from "services/api";
+import { parseCookies } from "nookies";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -39,7 +41,7 @@ const App: NextPage = ({ Component, pageProps }: any) => {
   let Layout = Component.layout || Fragment;
 
   const onBeforeLift = () => {
-    setTimeout(() => { 
+    setTimeout(() => {
       setLifted(true);
     }, 3000);
   };
@@ -72,7 +74,10 @@ const App: NextPage = ({ Component, pageProps }: any) => {
               <SplashScreen />
             ) : (
               <ErrorBoundary>
-                <DispatchInitialProps categories={pageProps.categories}>
+                <DispatchInitialProps
+                  categories={pageProps.categories}
+                  matches={pageProps.matches}
+                >
                   <Layout>
                     <div style={{ position: "absolute", zIndex: 99999 }}>
                       <ToastContainer align={"right"} position={"bottom"} />
@@ -90,18 +95,39 @@ const App: NextPage = ({ Component, pageProps }: any) => {
 };
 
 App.getInitialProps = async (appContext: any) => {
-  const appProps = await NextApp.getInitialProps(appContext);
-  const [categories] = await Promise.all([getCategory()]);
+  try {
+    const { ["shop_token"]: token } = parseCookies(appContext.ctx);
 
-  return {
-    ...appProps,
-    pageProps: {
-      categories: {
-        formated: categories.formated,
-        clean: categories.clean,
+    const appProps = await NextApp.getInitialProps(appContext);
+
+    const [categories, matches] = await Promise.all([
+      getCategory(),
+      token ? axios.get(`${PROD_URL}auth/v1/matches`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }) : null
+    ]);
+
+    return {
+      ...appProps,
+      pageProps: {
+        categories: {
+          formated: categories.formated,
+          clean: categories.clean,
+        },
+        matches: matches? matches.data: []
       },
-    },
-  };
+    };
+  } catch (err) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/404"
+      }
+    }
+  }
+
 };
 
-export default withAuth(App);
+export default App;

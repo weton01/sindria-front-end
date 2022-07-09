@@ -8,6 +8,7 @@ import storage from 'redux-persist/lib/storage';
 import user_reducer from "./store/actions/user/reducer";
 import category_reducer from "./store/actions/category/reducer";
 import cart_reducer from "./store/actions/cart/reducer";
+import favorires_reducer from "./store/actions/favorites/reducer";
 
 export let store; 
 const logger = createLogger({});
@@ -26,7 +27,8 @@ if (process.env.NODE_ENV === "development") {
 const reducers = combineReducers({
   user: user_reducer,
   category: category_reducer,
-  cart: cart_reducer
+  cart: cart_reducer,
+  favorites: favorires_reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers)

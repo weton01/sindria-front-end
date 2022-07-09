@@ -13,6 +13,9 @@ import Card from "@component/Card";
 import { formatCurrency } from "@utils/formatCurrency";
 import { useAppDispatch } from "@hook/hooks";
 import { PaymentFees } from "@utils/enums/paymentFees";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { PROD_URL } from "services/api";
 
 export interface ProductIntroProps {
   title: string;
@@ -171,6 +174,30 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     setSelectedPrice(price)
   }, [selectedSize, selectedColor, selectedType])
 
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
+
+  const favorites = useSelector((selec: any) =>
+    selec?.favorites?.matches
+  );
+
+  const foundProduct = favorites.find(item => item.id === id)
+
+  const onMatch = () => {
+    axios.post(`${PROD_URL}product/v1/${id}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    dispatch({
+      type: "MATCH_PRODUCT",
+      payload: id
+    });
+
+  }
+
   return (
     <Box >
       <Grid container justifyContent="space-between" >
@@ -192,7 +219,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     src={viewimage}
                     alt={title}
                     height="400px"
-                    width="auto"
+                    width="700px"
                     loading="eager"
                     objectFit="contain"
                     spinning={true}
@@ -313,11 +340,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   </H1>
 
                 </Box>
-
-
-
                 <Box>
-
                   {
                     colors?.length > 0 ?
                       <FlexBox
@@ -470,14 +493,21 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       Adicionar no carrinho
                     </Button>
                     <Button
-                      variant="outlined"
+                      variant={ 'outlined'}
                       size="small"
                       color="primary"
                       mb="12px"
                       height="46px"
+                      onClick={onMatch}
                     >
-                      <Icon size="20px" defaultcolor="currentColor" mr="8px" >
-                        heart
+                      <Icon
+                        onClick={onMatch}
+                        color={foundProduct ? 'primary' : 'secondary'}
+                        className={`favorite-icon`}
+                        variant="small"
+                        mr={'8px'}
+                      >
+                        {foundProduct ? 'heart-filled' : 'heart'}
                       </Icon>
                       1233
                     </Button>
