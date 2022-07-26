@@ -15,7 +15,9 @@ if (typeof window !== "undefined") {
   const Config = (config) => {
     const token = localStorage.getItem("shop_token");
     const end_date = new Date(localStorage.getItem("shop_end_date"));
- 
+
+    if (end_date.getTime() < new Date().getTime())
+
     if (token) config.headers.Authorization = "Bearer " + token;
 
     return config;

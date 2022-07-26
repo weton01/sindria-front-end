@@ -15,8 +15,6 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case HYDRATE:
-      return action.payload;
     case USER_SIGN_IN:  
       const endDate = new Date();
       endDate.setDate(7);
