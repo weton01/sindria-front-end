@@ -1,35 +1,59 @@
 import Grid from "@component/grid/Grid";
 import DashboardPageHeader from "@component/layout/DashboardPageHeader";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useWindowSize from "../../hooks/useWindowSize";
 import Button from '@component/buttons/Button'
 import Card from "@component/Card";
-import { ErrorMessage, Field, Formik } from "formik";
+import { ErrorMessage, Field, Formik, yupToFormErrors } from "formik";
 import * as yup from "yup";
 import TextField, { MaskInput } from "@component/text-field/TextField";
 import DropZone, { handleOnChangeImage } from "@component/DropZone";
 import DashboardLayout from "@component/layout/CustomerDashboardLayout";
 import FlexBox from "@component/FlexBox";
 import Avatar from "@component/avatar/Avatar";
-import Typography from "@component/Typography";
+import Typography, { H3, H6, Paragraph } from "@component/Typography";
 import MaskedInputCustom from "@component/masked-input/MaskedInput";
 import Select from "@component/Select";
 import DatePicker from "@component/datepicker/Datepicker";
 import { uuid } from "uuidv4";
 import Divider from "@component/Divider";
 import Box from "@component/Box";
+import Accordion from "@component/accordion/Accordion";
+import AccordionHeader from "@component/accordion/AccordionHeader";
+import AddressForm from '@component/address/AddressForm';
+import { GetServerSideProps } from "next";
+import { authRoute } from "middlewares/authRoute";
+import axios from "axios";
+import { PROD_URL } from "services/api";
+import { useSelector } from "react-redux";
+import { fail } from "@component/notification/notifcate";
 
-const Store = () => {
+const Store = ({ address }) => {
+  const [selectedAddress, setSelectedAddress] = useState({ id: '' })
+
   const width = useWindowSize();
-  const isTablet = width < 1025;
-  const [companyMembers, setCompanyMembers] = useState([uuid()])
 
-  const hadleAddNewCompanyMember = () => {
-    const newCompanyMembers = [...companyMembers];
-    newCompanyMembers.push(uuid());
+  const token = useSelector((selec: any) =>
+    selec?.user?.token
+  );
 
-    setCompanyMembers(newCompanyMembers);
-  };
+  const onSubmit = async (values: any) => {
+    if (selectedAddress.id === '') {
+      return fail('Endereço Obrigatório')
+    }
+
+    if (values?.images?.length === 0) {
+      return fail('Logo Obrigatório')
+    }
+
+    const { data } = await axios.post(`${PROD_URL}store/v1`, values, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+  }
+
+  useEffect(() => {
+    setSelectedAddress(address.items[0])
+  }, [address])
 
   return (
     <div>
@@ -48,9 +72,9 @@ const Store = () => {
         }
       />
       <Formik
-        initialValues={{} as any}
+        initialValues={{images: []} as any}
         validationSchema={checkoutSchema}
-        onSubmit={() => { }}
+        onSubmit={onSubmit}
       >
         {({
           values,
@@ -63,11 +87,12 @@ const Store = () => {
           setFieldError,
           setFieldTouched,
         }) => {
+          const newErrors: any = errors;
 
           return (
             <form onSubmit={handleSubmit}>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xl={12}>
                   <Card p="30px" width="100%" >
                     <Grid spacing={4} container>
                       <Grid item xs={12}>
@@ -92,19 +117,19 @@ const Store = () => {
                           fullwidth
                           onChange={handleChange}
                           value={values.name || ""}
-                          errorText={touched?.name && errors?.name}
+                          errorText={newErrors?.name}
                         />
                       </Grid>
                       <Grid item xs={12}>
-                        <Field name={"image"}>
+                        <Field name={"images"}>
                           {({ meta }) => (
                             <div>
                               <DropZone
-                                imgs={values.image}
+                                imgs={values.images}
                                 removeImage={(index) => {
-                                  const image = values.image;
+                                  const image = values.images;
                                   image.splice(index, 1);
-                                  setFieldValue("image", image);
+                                  setFieldValue("images", image);
                                 }}
                                 title="Arraste ou solte a logo da loja aqui"
                                 onChange={(files, setLoading) => {
@@ -117,8 +142,8 @@ const Store = () => {
                                   );
                                 }}
                               />
-                              {meta?.touched && meta?.error && (
-                                <ErrorMessage name={"image"} />
+                              {meta?.error && (
+                                <ErrorMessage name={"images"} />
                               )}
                             </div>
                           )}
@@ -129,7 +154,7 @@ const Store = () => {
                   </Card>
                 </Grid>
 
-                <Grid item xs={3.5}>
+                <Grid item xs={12} >
                   <Card p="30px" width="100%" >
                     <Grid spacing={4} container>
                       <Grid item xs={12}>
@@ -142,33 +167,81 @@ const Store = () => {
                           >
                             2
                           </Avatar>
-                          <Typography fontSize="18px">Dados Pessoais</Typography>
+                          <Typography fontSize="18px">Dados da Empresa</Typography>
                         </FlexBox>
                       </Grid>
 
                       <Grid item xs={12}>
-                        <MaskedInputCustom
-                          name="document"
-                          label="Número do CNPJ"
+                        <TextField
+                          name={`meta.Name`}
+                          label="Nome da Empresa"
+                          placeholder="Soluções Ltda..."
                           fullwidth
-                          mask="11.111.111/1111-11"
-                          onBlur={handleBlur}
                           onChange={handleChange}
-                          value={values.number || ""}
-                          errorText={touched.number && errors.number}
+                          value={values?.meta?.Name || ""}
+                          errorText={newErrors?.meta?.Name}
                         />
                       </Grid>
 
                       <Grid item xs={12}>
+                        <TextField
+                          name={`meta.CommercialName`}
+                          label="Nome Fantasia"
+                          placeholder="Soluções Ltda..."
+                          fullwidth
+                          onChange={handleChange}
+                          value={values?.meta?.CommercialName || ""}
+                          errorText={newErrors?.meta?.CommercialName}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} md={12} xl={6}>
                         <MaskedInputCustom
-                          name="phone"
-                          label="Número do Celular"
+                          name={`meta.Identity`} 
+                          label="CNPJ"
+                          mask="11.111.111/1111-11"
+                          fullwidth
+                          onChange={handleChange}
+                          value={values?.meta?.Identity || ""}
+                          errorText={newErrors.meta?.Identity}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} md={12} xl={6}>
+                        <TextField
+                          name={`meta.ResponsibleName`}
+                          label="Responsável Legal"
+                          placeholder="João da Silva..."
+                          fullwidth
+                          onChange={handleChange}
+                          value={values?.meta?.ResponsibleName || ""}
+                          errorText={newErrors?.meta?.ResponsibleName}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} md={12} xl={6}>
+                        <MaskedInputCustom
+                          name={`meta.ResponsibleIdentity`}
+                          label="CPF do Responsável"
+                          mask="111.111.111-11"
+                          fullwidth
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values?.meta?.ResponsibleIdentity || ""}
+                          errorText={newErrors?.meta?.ResponsibleIdentity}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} md={12} xl={6}>
+                        <MaskedInputCustom
+                          name="meta.ResponsiblePhone"
+                          label="Telefone do Responsável"
                           fullwidth
                           mask="+55 (11) 11111-1111"
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={values.number || ""}
-                          errorText={touched.number && errors.number}
+                          value={values?.meta?.ResponsiblePhone || ""}
+                          errorText={newErrors?.meta?.ResponsiblePhone}
                         />
                       </Grid>
                     </Grid>
@@ -176,10 +249,10 @@ const Store = () => {
                   </Card>
                 </Grid>
 
-                <Grid item xs={4.5}>
+                <Grid item xs={12} >
                   <Card p="30px" width="100%" >
                     <Grid spacing={4} container>
-                      <Grid item xs={12}>
+                      <Grid item xs={12}  >
                         <FlexBox alignItems="center">
                           <Avatar
                             bg="primary.main"
@@ -189,241 +262,142 @@ const Store = () => {
                           >
                             3
                           </Avatar>
-                          <Typography fontSize="18px">Dados da Empresa</Typography>
-                        </FlexBox>
-                      </Grid>
-                      <Grid item xs={7}>
-                        <TextField
-                          name={`businessArea`}
-                          label="Código de Negócio"
-                          placeholder="133445"
-                          fullwidth
-                          onChange={handleChange}
-                          value={values.name || ""}
-                          errorText={touched?.name && errors?.name}
-                        />
-                      </Grid>
-                      <Grid item xs={5}>
-                        <MaskedInputCustom
-                          name="cnae"
-                          label="CNAE"
-                          fullwidth
-                          mask="1111111"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          value={values.number || ""}
-                          errorText={touched.number && errors.number}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          name={`linesOfBusiness`}
-                          label="Ramo de Atuação"
-                          placeholder="Textil..."
-                          fullwidth
-                          onChange={handleChange}
-                          value={values.name || ""}
-                          errorText={touched?.name && errors?.name}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={4}>
-                  <Card p="30px" width="100%" >
-                    <Grid spacing={4} container>
-                      <Grid item xs={12}>
-                        <FlexBox alignItems="center">
-                          <Avatar
-                            bg="primary.main"
-                            size={25}
-                            color="primary.text"
-                            mr="0.875rem"
-                          >
-                            4
-                          </Avatar>
-                          <Typography fontSize="18px">Tipo da Empresa</Typography>
-                        </FlexBox>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Select
-                          name="companyType"
-                          label="Tipo de companhia"
-                          options={CompanyTypeList}
-                          value={values.country || "US"}
-                          errorText={touched.country && errors.country}
-                          onChange={(v) => {
-                            setFieldValue("companyType", v);
-                          }}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        <TextField
-                          name="monthlyIncomeOrRevenue"
-                          label="Renda mensal ou receita"
-                          mask={MaskInput.money}
-                          addonBefore="R$"
-                          fullwidth
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          value={values.netAmount || ""}
-                          errorText={touched.netAmount && errors.netAmount}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Card p="30px" width="100%" >
-                    <Grid spacing={4} container>
-                      <Grid item xs={12}>
-                        <FlexBox alignItems="center">
-                          <Avatar
-                            bg="primary.main"
-                            size={25}
-                            color="primary.text"
-                            mr="0.875rem"
-                          >
-                            5
-                          </Avatar>
-                          <Typography fontSize="18px">Representatividade Legal</Typography>
+                          <Typography fontSize="18px">Contato da Empresa</Typography>
                         </FlexBox>
                       </Grid>
 
-                      <Grid item xs={6}>
+                      <Grid item xs={12} md={6}>
                         <TextField
-                          name={`legalRepresentative.name`}
-                          label="Nome"
+                          name={`meta.TechName`}
+                          label="Nome de Contato"
                           placeholder="João da Silva..."
                           fullwidth
                           onChange={handleChange}
-                          value={values.legalRepresentative?.name || ""}
-                          errorText={touched?.legalRepresentative && errors?.legalRepresentative}
+                          value={values?.meta?.TechName || ""}
+                          errorText={newErrors?.meta?.TechName}
                         />
                       </Grid>
 
-                      <Grid item xs={6}>
-                        <TextField
-                          name={`legalRepresentative.motherName`}
-                          label="Nome da Mãe"
-                          placeholder="Ana Aparecida..."
-                          fullwidth
-                          onChange={handleChange}
-                          value={values.legalRepresentative?.motherName || ""}
-                          errorText={touched?.legalRepresentative && errors?.legalRepresentative}
-                        />
-                      </Grid>
-
-                      <Grid item xs={4}>
+                      <Grid item xs={12} md={6}>
                         <MaskedInputCustom
-                          name="legalRepresentative.document"
-                          label="Número do CPF"
-                          fullwidth
+                          name={`meta.TechIdentity`}
+                          label="CPF do Contato"
                           mask="111.111.111-11"
+                          fullwidth
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={values.legalRepresentative?.document || ""}
-                          errorText={touched.legalRepresentative && errors.legalRepresentative}
+                          value={values?.meta?.TechIdentity || ""}
+                          errorText={newErrors?.meta?.TechIdentity}
                         />
                       </Grid>
-                      <Grid item xs={4}>
-                        <DatePicker
-                          label="Número do CPF"
-                          name="legalRepresentative.date"
-                          date={values.legalRepresentative?.date}
-                          format="YYYY-MM-DD"
-                          selected={(values.legalRepresentative?.date && new Date(values.legalRepresentative?.date)) || null}
-                          onChange={(val) => {
-                            const date = new Date(val.toString())
-                            setFieldValue('legalRepresentative.date', date.toISOString());
-                          }}
+
+                      <Grid item xs={12} md={6}>
+                        <TextField
+                          name={`meta.TechEmail`}
+                          label="E-mail do Contato"
+                          placeholder="any@mail.com"
+                          fullwidth
+                          onChange={handleChange}
+                          value={values?.meta?.TechEmail || ""}
+                          errorText={newErrors?.meta?.TechEmail}
                         />
                       </Grid>
-                      <Grid item xs={4}>
-                        <Select
-                          name="legalRepresentative.type"
-                          label="Tipo"
-                          placeholder="selecione..."
-                          options={legalRepresentativeType}
-                          value={values.legalRepresentative?.type || "US"}
-                          errorText={touched.legalRepresentative && errors.legalRepresentative}
-                          onChange={(value) => {
-                            setFieldValue("legalRepresentative.type", value);
-                          }}
+
+                      <Grid item xs={12} md={6}>
+
+                        <MaskedInputCustom
+                          name={`meta.TechPhone`}
+                          label="Telefone do Contato"
+                          fullwidth
+                          mask="+55 (11) 11111-1111"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values?.meta?.TechPhone || ""}
+                          errorText={newErrors?.meta?.TechPhone}
                         />
                       </Grid>
+
+
                     </Grid>
+
                   </Card>
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item xl={12}>
                   <Card p="30px" width="100%" >
-                    <Grid spacing={4} container>
-                      <Grid item xs={12}>
-                        <FlexBox alignItems="center">
-                          <Avatar
-                            bg="primary.main"
-                            size={25}
-                            color="primary.text"
-                            mr="0.875rem"
-                          >
-                            6
-                          </Avatar>
-                          <Typography fontSize="18px">Membros da Companhia</Typography>
-                        </FlexBox>
-                      </Grid>
-                      <Button
-                        variant="text"
-                        size="small"
-                        color="primary"
-                        mt="1rem"
-                        width="100%"
-                        height="46px"
-                        onClick={hadleAddNewCompanyMember}
-                      >
-                        Adicionar Membro +
-                      </Button>
-                      {
-                        companyMembers?.map((item, index) => (
 
-                          <Box width="100%" key={`company-members-${index}`}>
-                            <Grid spacing={4} container>
-                              <Grid item xs={12}>
-                                <Select
-                                  name="companyType"
-                                  label="Tipo de companhia"
-                                  options={CompanyTypeList}
-                                  value={values.country || "US"}
-                                  errorText={touched.country && errors.country}
-                                  onChange={(v) => {
-                                    setFieldValue("companyType", v);
-                                  }}
-                                />
-                              </Grid>
+                    <Grid container spacing={6}>
+                      <Grid item lg={12} md={12} xs={12}>
+                        <Grid item xs={12}  >
+                          <FlexBox alignItems="center">
+                            <Avatar
+                              bg="primary.main"
+                              size={25}
+                              color="primary.text"
+                              mr="0.875rem"
+                            >
+                              4
+                            </Avatar>
+                            <Typography fontSize="18px">Endereço da Loja</Typography>
+                          </FlexBox>
+                        </Grid>
 
-                              <Grid item xs={12}>
-                                <TextField
-                                  name="monthlyIncomeOrRevenue"
-                                  label="Renda mensal ou receita"
-                                  mask={MaskInput.money}
-                                  addonBefore="R$"
-                                  fullwidth
-                                  onBlur={handleBlur}
-                                  onChange={handleChange}
-                                  value={values.netAmount || ""}
-                                  errorText={touched.netAmount && errors.netAmount}
-                                />
-                              </Grid>
-                            </Grid>
-                            <Divider bg="gray.300" mb="1.5rem" />
+                        <Grid container  >
+                          <Box mb="1rem" mt="1rem">
+                            <Accordion
+                              isForm
+                              expanded={false}
+                            >
+                              <AccordionHeader px="0px" py="6px">
+                                <H3 mb="0.75rem" >Novo Endereço de Entrega</H3>
+                              </AccordionHeader>
+                              <AddressForm redirect={'/store/create'} />
+                              <Divider mt="1rem" />
+                            </Accordion>
                           </Box>
-                        ))
-                      }
+                        </Grid>
+
+                        <Typography mb="0.75rem">Endereço da Empresa</Typography>
+                        <Grid container spacing={6}>
+                          {address?.items.map((item, ind) => (
+                            <Grid item md={4} sm={6} xs={12} key={`addr-${ind}`}>
+                              <Card
+                                bg="gray.100"
+                                p="1rem"
+                                boxShadow="none"
+                                border="1px solid"
+                                cursor="pointer"
+                                borderColor={
+                                  item.id === selectedAddress?.id
+                                    ? "primary.main"
+                                    : "transparent"
+                                }
+                                onClick={() => {
+                                  setSelectedAddress(item)
+                                }}
+                              >
+                                <H6 mb="0.25rem">CEP: {item.cep}</H6>
+                                <Paragraph color="gray.700">{item.street}, {item.number}, {item.neighborhood}</Paragraph>
+                              </Card>
+                            </Grid>
+                          ))}
+                        </Grid>
+
+                      </Grid>
                     </Grid>
                   </Card>
+
+                </Grid>
+
+                <Grid item xs={12} md={2}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullwidth
+                  >
+                    Criar
+                  </Button>
                 </Grid>
               </Grid>
             </form>
@@ -436,23 +410,20 @@ const Store = () => {
 };
 
 const checkoutSchema = yup.object().shape({
-  name: yup.string().required("campo requerido"),
-  description: yup.string().required("campo requerido"),
-  grossAmount: yup.number().required("campo requerido"),
-  netAmount: yup.number().required("campo requerido"),
-  images: yup
-    .array()
-    .min(1, "selecione uma imagem")
-    .required("campo requerido"),
-  categories: yup
-    .array()
-    .min(1, "selecione uma categoria")
-    .required("campo requerido"),
-  tags: yup
-    .array()
-    .min(1, "selecione uma etiqueta")
-    .required("campo requerido"),
-  brand: yup.object().required("campo requerido"),
+  name: yup.string().required('Campo Obrigatório'),
+  meta: yup.object().shape({
+    ['Name']: yup.string().required('Campo Obrigatório'),
+    ['CommercialName']: yup.string().required('Campo Obrigatório'),
+    ['Identity']: yup.string().required('Campo Obrigatório'),
+    ['ResponsibleName']: yup.string().required('Campo Obrigatório'),
+    ['ResponsibleIdentity']: yup.string().required('Campo Obrigatório'),
+    ['ResponsiblePhone']: yup.string().required('Campo Obrigatório'),
+    ['TechName']: yup.string().required('Campo Obrigatório'),
+    ['TechIdentity']: yup.string().required('Campo Obrigatório'),
+    ['TechEmail']: yup.string().email('Campo é um E-mail').required('Campo Obrigatório'),
+    ['TechPhone']: yup.string().required('Campo Obrigatório'),
+  })
+
 });
 
 Store.layout = DashboardLayout;
@@ -474,5 +445,32 @@ const legalRepresentativeType = [
   { label: "Diretor", value: "DIRECTOR" },
   { label: "Presidente", value: "PRESIDENT" },
 ]
+
+export const getServerSideProps: GetServerSideProps = async (c) => {
+  return authRoute(c, async (ctx: any) => {
+    try {
+      const { data } = await axios.get(`${PROD_URL}address/v1`, {
+        params: { skip: 0, take: 10, orderBy: 'DESC' },
+        headers: {
+          'Authorization': `Bearer ${ctx.token}`
+        }
+      })
+
+      return {
+        props: {
+          address: data
+        }
+      }
+
+    } catch {
+      return {
+        redirect: {
+          permanent: false,
+          destination: "/404"
+        }
+      }
+    }
+  })
+}
 
 export default Store;

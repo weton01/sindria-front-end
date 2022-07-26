@@ -13,7 +13,6 @@ if (typeof window !== "undefined") {
     const end_date = new Date(localStorage.getItem("shop_end_date"));
 
     if (end_date.getTime() < new Date().getTime())
-      store.dispatch({ type: "USER_LOGOUT" });
 
     if (token) config.headers.Authorization = "Bearer " + token;
 
