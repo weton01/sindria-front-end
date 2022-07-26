@@ -17,7 +17,7 @@ interface LazyImageProps {
 }
 
 interface LazySpinn {
-  spinning?: boolean
+  spinning?: boolean;
 }
 
 const LazyImageStyle = styled(NextImage)<
@@ -30,8 +30,13 @@ const LazyImageStyle = styled(NextImage)<
 `;
 
 const LazyImage: React.FC<
-  LazyImageProps & ImageProps & BorderProps & SpaceProps & ColorProps & LazySpinn
-> = ({ onLoad,   ...props }) => {
+  LazyImageProps &
+    ImageProps &
+    BorderProps &
+    SpaceProps &
+    ColorProps &
+    LazySpinn
+> = ({ onLoad, src, ...props }) => {
   const [count, setCount] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -44,8 +49,12 @@ const LazyImage: React.FC<
   };
 
   return (
-    <Spin loading={props.spinning? loading: false}>
-      <LazyImageStyle onLoad={onLoadImage} {...props} />
+    <Spin loading={props.spinning ? loading : false}>
+      <LazyImageStyle
+        onLoad={onLoadImage}
+        {...props}
+        src={src ? src : "/assets/images/icons/cloud-off.svg"}
+      />
     </Spin>
   );
 };

@@ -34,7 +34,7 @@ const Rating: React.FC<RatingProps> = ({
     if (!readonly) {
       setState(inputValue);
       if (onChange) onChange(inputValue);
-    }
+    } 
   };
 
   useEffect(() => {

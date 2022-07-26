@@ -1,24 +1,29 @@
 import ErrorBoundary from "@component/ErrorBoundary";
-import withAuth from "@component/withAuth";
+import DispatchInitialProps from "@component/DispatchInitialProps";
 import { NextPage } from "next";
 import NextApp from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import React, { Fragment, useEffect } from "react";
-import "react-credit-cards/es/styles-compiled.css";
+import React, { Fragment, useState } from "react";
 import { ToastContainer } from "react-nextjs-toast";
-import { Provider, useDispatch } from "react-redux";
-import "reactjs-popup/dist/index.css";
+import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import { get } from "services/api";
+import { getCategory } from "services/category";
 import { ThemeProvider } from "styled-components";
 import { AppProvider } from "../contexts/app/AppContext";
 import { useStore } from "../store";
 import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
-import "react-datepicker/dist/react-datepicker.css";
+import SplashScreen from "@component/splash-screen/SplashScreen";
+import axios from "axios";
+import { PROD_URL } from "services/api";
+import { parseCookies } from "nookies";
+
+//Css
+import "reactjs-popup/dist/index.css";
+import "react-credit-cards/es/styles-compiled.css";
 import "./_app.css";
 
 //Binding events.
@@ -30,10 +35,17 @@ NProgress.configure({ showSpinner: false });
 
 const App: NextPage = ({ Component, pageProps }: any) => {
   const store = useStore(pageProps.initialReduxState);
+  const [lifted, setLifted] = useState(false);
   const persistor = persistStore(store, {}, function () {
     persistor.persist();
   });
   let Layout = Component.layout || Fragment;
+
+  const onBeforeLift = () => {
+    setTimeout(() => {
+      setLifted(true);
+    }, 3000);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -58,15 +70,24 @@ const App: NextPage = ({ Component, pageProps }: any) => {
       <GlobalStyles />
       <AppProvider>
         <Provider store={store}>
-          <PersistGate persistor={persistor} loading={<div>Loading</div>}>
-            <ErrorBoundary>
-              <Layout categories={pageProps.categories}>
-                <div style={{ position: "absolute", zIndex: 99999 }}>
-                  <ToastContainer align={"right"} position={"bottom"} />
-                </div>
-                <Component {...pageProps} />
-              </Layout>{" "}
-            </ErrorBoundary>
+          <PersistGate persistor={persistor} onBeforeLift={onBeforeLift}>
+            {!lifted ? (
+              <SplashScreen />
+            ) : (
+              <ErrorBoundary>
+                <DispatchInitialProps
+                  categories={pageProps.categories}
+                  matches={pageProps.matches}
+                >
+                  <Layout>
+                    <div style={{ position: "absolute", zIndex: 99999 }}>
+                      <ToastContainer align={"right"} position={"bottom"} />
+                    </div>
+                    <Component {...pageProps} />
+                  </Layout>{" "}
+                </DispatchInitialProps>
+              </ErrorBoundary>
+            )}
           </PersistGate>
         </Provider>
       </AppProvider>
@@ -75,43 +96,39 @@ const App: NextPage = ({ Component, pageProps }: any) => {
 };
 
 App.getInitialProps = async (appContext: any) => {
-  const appProps = await NextApp.getInitialProps(appContext);
+  try {
+    const { ["shop_token"]: token } = parseCookies(appContext.ctx);
 
-  const [categories]: any = await Promise.all([get(`category/v1/`)]);
+    const appProps = await NextApp.getInitialProps(appContext);
 
-  const newData = categories.map((item) => {
-    const groupNames = item.subCategories.map((aux) => aux.groupName);
-    const newCategories = [...new Set(groupNames)];
+    const [categories, matches] = await Promise.all([
+      getCategory(),
+      token ? axios.get(`${PROD_URL}auth/v1/matches`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }) : null
+    ]);
 
     return {
-      icon: item.image,
-      title: item.name,
-      href: `/${item.name}`,
-      menuComponent: "MegaMenu1",
-      menuData: {
-        categories: newCategories.map((aux) => ({
-          title: aux,
-          subCategories: item.subCategories
-            .filter((subs) => subs.groupName === aux)
-            .map((subs) => ({
-              title: subs.name,
-              href: `/${item.name}/${subs.name}`,
-            })),
-          href: "/",
-        })),
+      ...appProps,
+      pageProps: {
+        categories: {
+          formated: categories.formated,
+          clean: categories.clean,
+        },
+        matches: matches? matches.data: []
       },
     };
-  });
+  } catch (err) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/404"
+      }
+    }
+  }
 
-  return {
-    ...appProps,
-    pageProps: {
-      categories: {
-        formated: newData,
-        clean: categories,
-      },
-    },
-  };
 };
 
-export default withAuth(App);
+export default App;

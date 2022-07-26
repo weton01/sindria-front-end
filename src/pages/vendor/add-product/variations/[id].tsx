@@ -34,7 +34,7 @@ const ProductVariation = (props) => {
   const router = useRouter();
   const id = router?.query?.id;
   const { route } = router;
- 
+
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
@@ -135,7 +135,6 @@ const ProductVariation = (props) => {
   };
 
   const handleFormSubmit = async (values) => {
-    let result;
     const { netAmount, weight, height, width, image, name } = values;
     let newVariations = [...product.variations];
 
@@ -161,23 +160,17 @@ const ProductVariation = (props) => {
     if (values.id !== undefined) {
       delete payload.name;
       delete payload.image;
-      result = await patchVariation(id, payload);
-    } else result = await postVariation(id, payload);
-
-    if (typeof result === "string") {
-      toast.notify(result, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
+      await patchVariation({
+        id,
+        payload,
+        actionSuccess: () => router.reload(),
       });
-    } else {
-      toast.notify(`Variação ${values.id ? "alterada" : "adicionada"}`, {
-        title: "Sucesso!",
-        duration: 5,
-        type: "success",
+    } else
+      await postVariation({
+        id,
+        payload,
+        actionSuccess: () => router.reload(),
       });
-      router.reload();
-    }
 
     newVariations[index].loading.create = false;
     setProduct({ ...product, variations: newVariations });
@@ -188,22 +181,10 @@ const ProductVariation = (props) => {
     newVariations[index].loading.delete = true;
     setProduct({ ...product, variations: newVariations });
 
-    const result = await removeVariation(id);
-
-    if (typeof result === "string") {
-      toast.notify(result, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-    } else {
-      toast.notify(`Variação deletada`, {
-        title: "Sucesso!",
-        duration: 5,
-        type: "success",
-      });
-      router.reload();
-    }
+    await removeVariation({
+      id,
+      actionSuccess: () => router.reload(),
+    });
 
     newVariations[index].loading.delete = false;
     setProduct({ ...product, variations: newVariations });
@@ -272,7 +253,9 @@ const ProductVariation = (props) => {
                         <Grid container spacing={4}>
                           <Grid item xs={12}>
                             <TextField
-                              disabled={index !== product.variations?.length - 1}
+                              disabled={
+                                index !== product.variations?.length - 1
+                              }
                               name={`name`}
                               label="Nome"
                               placeholder="Nome do produto"
@@ -293,12 +276,8 @@ const ProductVariation = (props) => {
                                     notEdit={
                                       index !== product.variations?.length - 1
                                     }
+                                    setFieldValue={setFieldValue}
                                     imgs={values.image}
-                                    removeImage={(index) => {
-                                      const image = values.image;
-                                      image.splice(index, 1);
-                                      setFieldValue("image", image);
-                                    }}
                                     title="Arraste ou solte a imagem do produto aqui"
                                     onChange={(files, setLoading) => {
                                       handleOnChangeImage(
@@ -477,16 +456,13 @@ const stepperList = [
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
   const { id } = ctx.query;
-  try {
-    api.interceptors.request.use((config) => {
-      config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
 
-    const [product] = await Promise.all([getProductById(id)]);
+  try {
+    const [product] = await Promise.all([getProductById({ id, token })]);
 
     if ("name" in product) {
       product.variations.push(initialValues);
+      
       return {
         props: { product },
       };

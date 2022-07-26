@@ -36,3 +36,7 @@
   border-radius: 5px;
   height: 100%;
 }
+
+.error{
+  color: #E94560 !important;
+}

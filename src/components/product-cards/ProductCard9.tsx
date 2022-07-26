@@ -1,18 +1,18 @@
 import { Chip } from "@component/Chip";
 import Image from "@component/Image";
+import axios from "axios";
 import Link from "next/link";
 import React, { Fragment, useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { PROD_URL } from "services/api";
 import { CSSProperties } from "styled-components";
 import Box from "../Box";
 import Button from "../buttons/Button";
-import Card from "../Card";
 import FlexBox from "../FlexBox";
 import Grid from "../grid/Grid";
 import Hidden from "../hidden/Hidden";
 import Icon from "../icon/Icon";
-import Modal from "../modal/Modal";
 import NavLink from "../nav-link/NavLink";
-import ProductIntro from "../products/ProductIntro";
 import Rating from "../rating/Rating";
 import { H5, SemiSpan } from "../Typography";
 import { StyledProductCard9 } from "./ProductCardStyle";
@@ -29,6 +29,7 @@ export interface ProductCard9Props {
     title: string;
     url: string;
   }>;
+  id?: string;
   [key: string]: unknown;
   // className?: string;
   // style?: CSSProperties;
@@ -50,10 +51,36 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
   off,
   subcategories,
   rating,
+  id,
   ...props
 }) => {
+  const dispatch = useDispatch();
   const [cartAmount, setCartAmount] = useState(0);
   const [open, setOpen] = useState(false);
+
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
+
+  const favorites = useSelector((selec: any) =>
+    selec?.favorites?.matches
+  );
+
+  const foundProduct = favorites.find(item => item.id === id)
+
+  const onMatch = () => {
+    axios.post(`${PROD_URL}product/v1/${id}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    dispatch({
+      type: "MATCH_PRODUCT",
+      payload: id
+    });
+
+  }
 
   const toggleDialog = useCallback(() => {
     setOpen((open) => !open);
@@ -67,6 +94,7 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
     },
     []
   );
+
 
   return (
     <StyledProductCard9 overflow="hidden" width="100%" {...props}>
@@ -99,7 +127,7 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
               src={imgUrl}
               alt={title}
               width="100%"
-              borderRadius="0.5rem"
+              borderRadius="0.5rem 0px 0px 0.5rem"
             />
           </Box>
         </Grid>
@@ -154,9 +182,20 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
                 flexDirection="row-reverse"
                 height="30px"
               >
-                <Icon className="favorite-icon outlined-icon" variant="small">
-                  heart
-                </Icon>
+                {
+                  user.isLogged ? (
+                    <FlexBox className="extra-icons">
+                      <Icon
+                        onClick={onMatch}
+                        color={foundProduct ? 'primary' : 'secondary'}
+                        className={`favorite-icon`}
+                        variant="small"
+                      >
+                        {foundProduct ? 'heart-filled' : 'heart'}
+                      </Icon>
+                    </FlexBox>
+                  ) : null
+                }
 
                 <FlexBox alignItems="center" flexDirection="row-reverse">
                   <Button
@@ -203,9 +242,23 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
             p="1rem 0rem"
             ml="auto"
           >
-            <Icon className="favorite-icon outlined-icon" variant="small">
-              heart
-            </Icon>
+            {
+              user.isLogged ? (
+                <FlexBox className="extra-icons">
+                  <Icon
+                    onClick={onMatch}
+                    color={foundProduct ? 'primary' : 'secondary'}
+                    className={`favorite-icon`}
+                    variant="small"
+                  >
+                    {foundProduct ? 'heart-filled' : 'heart'}
+                  </Icon>
+                  {/* <Icon className="favorite-icon" color="primary" variant="small">
+                heart-filled
+              </Icon> */}
+                </FlexBox>
+              ) : null
+            }
             {/* <Icon className="favorite-icon" color="primary" variant="small">
               heart-filled
             </Icon> */}
@@ -247,26 +300,6 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
         </Hidden>
       </Grid>
 
-      <Modal open={open} onClose={toggleDialog}>
-        <Card p="1rem" position="relative">
-          <ProductIntro imgUrl={[imgUrl]} title={title} price={price} />
-          <Box
-            position="absolute"
-            top="0.75rem"
-            right="0.75rem"
-            cursor="pointer"
-          >
-            <Icon
-              className="close"
-              color="primary"
-              variant="small"
-              onClick={toggleDialog}
-            >
-              close
-            </Icon>
-          </Box>
-        </Card>
-      </Modal>
     </StyledProductCard9>
   );
 };

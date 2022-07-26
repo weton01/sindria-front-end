@@ -5,7 +5,7 @@ import { H3, H5 } from "@component/Typography";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { StyledSessionCard } from "components/sessions/SessionStyle";
-import Button from "components/buttons/Button";
+import Button from "@component/buttons/Button";
 import CountDown from "./CountDown";
 import { api } from "services/api";
 

@@ -13,6 +13,9 @@ import Card from "@component/Card";
 import { formatCurrency } from "@utils/formatCurrency";
 import { useAppDispatch } from "@hook/hooks";
 import { PaymentFees } from "@utils/enums/paymentFees";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { PROD_URL } from "services/api";
 
 export interface ProductIntroProps {
   title: string;
@@ -171,6 +174,30 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     setSelectedPrice(price)
   }, [selectedSize, selectedColor, selectedType])
 
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
+
+  const favorites = useSelector((selec: any) =>
+    selec?.favorites?.matches
+  );
+
+  const foundProduct = favorites.find(item => item.id === id)
+
+  const onMatch = () => {
+    axios.post(`${PROD_URL}product/v1/${id}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    dispatch({
+      type: "MATCH_PRODUCT",
+      payload: id
+    });
+
+  }
+
   return (
     <Box >
       <Grid container justifyContent="space-between" >
@@ -192,7 +219,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     src={viewimage}
                     alt={title}
                     height="400px"
-                    width="auto"
+                    width="700px"
                     loading="eager"
                     objectFit="contain"
                     spinning={true}
@@ -201,7 +228,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 <FlexBox
                   overflow="auto"
                 >
-                  {images.map((url, ind) => (
+                  {images?.map((url, ind) => (
                     <Box
                       size={100}
                       width={100}
@@ -251,7 +278,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         <Box>
                           <Rating color="warn" value={rating} outof={5} />
                         </Box>
-                        {rating.toFixed(1)}
+                        {rating?.toFixed(1)}
                       </FlexBox>
                       <FlexBox alignItems="center" gap={4}>
                         ({reviewsQuantity})
@@ -267,14 +294,14 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   </FlexBox>
 
                   <FlexBox alignItems="center" mb="0.7rem" gap={4}>
-                    <H6 >{brand.name}</H6>
+                    <H6 >{brand?.name}</H6>
                     <Icon size="20px" defaultcolor="currentColor">
-                      {brand.image}
+                      {brand?.image}
                     </Icon>
                   </FlexBox>
 
                   <FlexBox justifyContent="flex-start" alignItems="center" mb="0.8rem" gap={4}>
-                    {tags.map(item => (
+                    {tags?.map(item => (
                       <Box
                         key={item?.id}
                         backgroundColor="rgb(239, 239, 239)"
@@ -283,7 +310,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         borderRadius={2}
                         color="#000000d9"
                       >
-                        {item.name}
+                        {item?.name}
                       </Box>
                     ))}
                   </FlexBox>
@@ -300,9 +327,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       >
                         <FlexBox justifyContent="flex-start" alignItems="center" gap={4}>
                           <Icon size="20px" defaultcolor="currentColor">
-                            {item.image}
+                            {item?.image}
                           </Icon>
-                          {item.name}
+                          {item?.name}
                         </FlexBox>
                       </Box>
                     ))}
@@ -313,11 +340,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   </H1>
 
                 </Box>
-
-
-
                 <Box>
-
                   {
                     colors?.length > 0 ?
                       <FlexBox
@@ -470,14 +493,21 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       Adicionar no carrinho
                     </Button>
                     <Button
-                      variant="outlined"
+                      variant={ 'outlined'}
                       size="small"
                       color="primary"
                       mb="12px"
                       height="46px"
+                      onClick={onMatch}
                     >
-                      <Icon size="20px" defaultcolor="currentColor" mr="8px" >
-                        heart
+                      <Icon
+                        onClick={onMatch}
+                        color={foundProduct ? 'primary' : 'secondary'}
+                        className={`favorite-icon`}
+                        variant="small"
+                        mr={'8px'}
+                      >
+                        {foundProduct ? 'heart-filled' : 'heart'}
                       </Icon>
                       1233
                     </Button>

@@ -18,6 +18,7 @@ const ProductCard2: React.FC<ProductCard2Props> = ({
   price,
   productUrl,
 }) => {
+  
   return (
     <Link href={productUrl}>
       <a>

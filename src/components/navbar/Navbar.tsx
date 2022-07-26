@@ -114,8 +114,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
       >
         <Categories open={navListOpen}> 
           <FlexBox color="text.hint" alignItems="center" ml="1rem">
-            <Button
-              width="278px"
+            <Button 
               height="40px"
               bg="body.default"
               variant="text"

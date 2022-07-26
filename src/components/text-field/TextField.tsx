@@ -25,6 +25,7 @@ export interface TextFieldProps {
   value?: any;
   addonAfter?: any;
   addonBefore?: any;
+  fontSize?: number | string;
 }
 
 const TextField: React.FC<

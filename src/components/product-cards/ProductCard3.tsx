@@ -1,4 +1,7 @@
+import axios from "axios";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { PROD_URL } from "services/api";
 import { CSSProperties } from "styled-components";
 import Button from "../buttons/Button";
 import FlexBox from "../FlexBox";
@@ -9,9 +12,36 @@ import { StyledProductCard3 } from "./ProductCardStyle";
 export interface ProductCard3Props {
   className?: string;
   style?: CSSProperties;
+  id?: string;
 }
 
 const ProductCard3: React.FC<ProductCard3Props> = ({ ...props }) => {
+  const dispatch = useDispatch();
+
+  const user = useSelector((selec: any) =>
+    selec?.user
+  );
+
+  const favorites = useSelector((selec: any) =>
+    selec?.favorites?.matches
+  );
+
+  const foundProduct = favorites.find(item => item.id === props.id)
+
+  const onMatch = () => {
+    axios.post(`${PROD_URL}product/v1/${props.id}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    dispatch({
+      type: "MATCH_PRODUCT",
+      payload: props.id
+    });
+
+  }
+
   return (
     <StyledProductCard3 {...props}>
       <div className="image-holder">
@@ -26,9 +56,24 @@ const ProductCard3: React.FC<ProductCard3Props> = ({ ...props }) => {
 
           <div className="icon-holder">
             {/* <Icon className="favorite-icon outlined-icon">heart</Icon> */}
-            <Icon className="favorite-icon" color="primary" variant="small">
-              heart-filled
-            </Icon>
+
+            {
+              user.isLogged ? (
+                <FlexBox className="extra-icons">
+                  <Icon
+                    onClick={onMatch}
+                    color={foundProduct ? 'primary' : 'secondary'}
+                    className={`favorite-icon`}
+                    variant="small"
+                  >
+                    {foundProduct ? 'heart-filled' : 'heart'}
+                  </Icon>
+                  {/* <Icon className="favorite-icon" color="primary" variant="small">
+                heart-filled
+              </Icon> */}
+                </FlexBox>
+              ) : null
+            }
           </div>
         </FlexBox>
         <FlexBox justifyContent="space-between">

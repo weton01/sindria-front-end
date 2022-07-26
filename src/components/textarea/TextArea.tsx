@@ -38,7 +38,7 @@ const TextArea: React.FC<TextAreaProps> = ({
       {...spacingProps}
     >
       {label && <label htmlFor={id}>{label}</label>}
-      <SyledTextArea id={id} {...otherProps} />
+      <SyledTextArea id={id} {...otherProps}  maxLength={props.maxLength} />
       {errorText && <small>{errorText}</small>}
     </TextAreaWrapper>
   );

@@ -29,6 +29,7 @@ const AddressList = (props) => {
       duration: 2,
       type: "info",
     });
+    
     try {
       await api.delete(`brand/v1/${id}`);
       router.replace(router.asPath);
