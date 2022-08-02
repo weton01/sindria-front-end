@@ -1,14 +1,21 @@
 import { themeGet } from "@styled-system/theme-get";
 import styled from "styled-components";
 import { color, ColorProps, space, SpaceProps } from "styled-system";
+ 
+export interface MenuItemInterface {
+  width?: string; 
+} 
 
-const MenuItem = styled.div<ColorProps & SpaceProps>`
+const MenuItem = styled.div<ColorProps & SpaceProps & MenuItemInterface>`
   padding: 0.5rem 1rem;
-  cursor: pointer;
+  cursor: pointer; 
+  color: ${themeGet("colors.text.secondary")};   
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   word-break: break-all;
-  color: ${themeGet("colors.text.secondary")};
-  display: flex;
-  align-items: center;
+  width: ${({width}) => width };
+  display: ${({width}) => width !== "auto"? "block": "flex" };
 
   &:hover {
     color: ${themeGet("colors.primary.main")};
@@ -18,4 +25,9 @@ const MenuItem = styled.div<ColorProps & SpaceProps>`
   ${space}
 `;
 
+MenuItem.defaultProps = {
+  width: "auto"
+};
+
 export default MenuItem;
+
