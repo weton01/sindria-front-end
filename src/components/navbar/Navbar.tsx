@@ -1,5 +1,6 @@
 import Box from "@component/Box";
 import Card from "@component/Card";
+import CepCart from "@component/cep/CepCart";
 import MenuItem from "@component/MenuItem";
 import navbarNavigations from "@data/navbarNavigations";
 import React from "react";
@@ -112,31 +113,21 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
         alignItems="center"
         height="100%"
       >
-        <Categories open={navListOpen}> 
-          <FlexBox color="text.hint" alignItems="center" ml="1rem">
-            <Button 
-              height="40px"
-              bg="body.default"
-              variant="text"
-            >
-              <Icon>categories</Icon>
-              <Typography
-                fontWeight="600"
-                textAlign="left"
-                flex="1 1 0"
-                ml="10px"
-                color="text.muted"
-              >
-                Categorias
-              </Typography>
-              <Icon className="dropdown-icon" variant="small">
+        <FlexBox alignItems={"center"} gap={8}>
+          <CepCart />
+        </FlexBox>
+
+        <FlexBox width={"79%"}>
+          <Categories open={false}>
+            <FlexBox color="text.hint" alignItems="center" ml="1rem" marginRight={16}>
+              <Typography color="text.primary">Categorias</Typography>
+              <Icon className="dropdown-icon" variant="small" color="inherit">
                 chevron-right
               </Icon>
-            </Button>
-          </FlexBox>
-        </Categories>
-
-        <FlexBox>{renderNestedNav(navbarNavigations, true)}</FlexBox>
+            </FlexBox>
+          </Categories>
+          {renderNestedNav(navbarNavigations, true)}
+        </FlexBox>
       </Container>
     </StyledNavbar>
   );

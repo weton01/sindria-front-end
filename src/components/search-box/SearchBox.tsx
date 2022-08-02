@@ -30,10 +30,7 @@ const SearchBox: React.FC<SearchBoxProps> = () => {
 
   const handleCategoryChange = (cat) => () => {
     setCategory(cat);
-  };
-
-  useEffect(() => { 
-  }, [category])
+  }; 
 
   const search = async (e) => {
     const value = e.target?.value;
@@ -88,7 +85,7 @@ const SearchBox: React.FC<SearchBoxProps> = () => {
           }
         >
           {categories?.map((item) => (
-            <MenuItem key={item.id} onClick={handleCategoryChange(item)}>
+            <MenuItem key={item.id} onClick={handleCategoryChange(item)} width={"200px"}>
               {item.name}
             </MenuItem>
           ))}
