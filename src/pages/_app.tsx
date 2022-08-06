@@ -25,6 +25,8 @@ import { parseCookies } from "nookies";
 import "reactjs-popup/dist/index.css";
 import "react-credit-cards/es/styles-compiled.css";
 import "./_app.css";
+import { getAddress } from "services/address";
+import { getMatches } from "services/matches";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -34,7 +36,9 @@ Router.events.on("routeChangeError", () => NProgress.done());
 NProgress.configure({ showSpinner: false });
 
 const App: NextPage = ({ Component, pageProps }: any) => {
-  const store = useStore(pageProps.initialReduxState);
+  console.log(pageProps);
+
+  const store = useStore(pageProps?.initialReduxState);
   const [lifted, setLifted] = useState(false);
   const persistor = persistStore(store, {}, function () {
     persistor.persist();
@@ -76,8 +80,9 @@ const App: NextPage = ({ Component, pageProps }: any) => {
             ) : (
               <ErrorBoundary>
                 <DispatchInitialProps
-                  categories={pageProps.categories}
-                  matches={pageProps.matches}
+                  categories={pageProps?.categories || []}
+                  matches={pageProps?.matches || []}
+                  address={pageProps?.address || []}
                 >
                   <Layout>
                     <div style={{ position: "absolute", zIndex: 99999 }}>
@@ -101,13 +106,10 @@ App.getInitialProps = async (appContext: any) => {
 
     const appProps = await NextApp.getInitialProps(appContext);
 
-    const [categories, matches] = await Promise.all([
+    const [categories, matches, address] = await Promise.all([
       getCategory(),
-      token ? axios.get(`${PROD_URL}auth/v1/matches`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }) : null
+      getMatches({token}),
+      getAddress({token, skip: 0, take: 10000}) 
     ]);
 
     return {
@@ -116,19 +118,19 @@ App.getInitialProps = async (appContext: any) => {
         categories: {
           formated: categories.formated,
           clean: categories.clean,
-        },
-        matches: matches? matches.data: []
+        }, 
+        matches: matches ? matches : [],
+        address: address? address : []
       },
     };
   } catch (err) {
     return {
       redirect: {
         permanent: false,
-        destination: "/404"
-      }
-    }
+        destination: "/404",
+      },
+    };
   }
-
 };
 
 export default App;

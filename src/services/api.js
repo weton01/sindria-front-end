@@ -200,7 +200,7 @@ if (typeof window !== "undefined") {
       });
       return data;
     } catch (err) {
-      return err?.response;
+      err?.response;
     }
   };
 }
