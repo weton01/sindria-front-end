@@ -16,8 +16,7 @@ export interface FormFeedbackProps {
 }
 
 const FormFeedback: React.FC<FormFeedbackProps> = ({ onCloseModal }) => {
-  const handleFormSubmit = (values) => { 
-  };
+  const handleFormSubmit = (values) => {};
 
   return (
     <Card p="2rem 3rem" position="relative" width={600}>
@@ -60,7 +59,7 @@ const FormFeedback: React.FC<FormFeedbackProps> = ({ onCloseModal }) => {
                 color="warn"
                 readonly={false}
                 onChange={(value) => {
-                  //setFieldValue("rating", value);
+                  setFieldValue("rating", value);
                 }}
               />
               <FlexBox flexDirection={"column"} width={"100%"}>
@@ -86,34 +85,38 @@ const FormFeedback: React.FC<FormFeedbackProps> = ({ onCloseModal }) => {
                   value={values.description || ""}
                   errorText={touched.description && errors.description}
                 />
-                <DropZone
-                  multiple={true}
-                  setFieldValue={setFieldValue}
-                  onChange={(files, setLoading) => {
-                    handleOnChangeImage(
-                      files,
-                      setFieldError,
-                      setFieldTouched,
-                      setLoading,
-                      setFieldValue,
-                      values,
-                      true
-                    );
-                  }}
-                  title="Arraste ou solte a imagem do problema aqui"
-                  imgs={values.image}
-                />
+                {values.rating < 3 ? (
+                  <>
+                    <DropZone
+                      multiple={true}
+                      setFieldValue={setFieldValue}
+                      onChange={(files, setLoading) => {
+                        handleOnChangeImage(
+                          files,
+                          setFieldError,
+                          setFieldTouched,
+                          setLoading,
+                          setFieldValue,
+                          values,
+                          true
+                        );
+                      }}
+                      title="Arraste ou solte a imagem do problema aqui"
+                      imgs={values.image}
+                    />
 
-                {touched.image && errors.image && (
-                  <ErrorMessage name={"image"} />
-                )}
+                    {touched.image && errors.image && (
+                      <ErrorMessage name={"image"} />
+                    )}
+                  </>
+                ) : null}
 
                 <FlexBox justifyContent={"flex-end"} marginTop="16px">
-                  <Button  color="secondary" onClick={onCloseModal}>
+                  <Button color="secondary" onClick={onCloseModal}>
                     Cancelar
                   </Button>
                   <Button
-                    // loading={loading} 
+                    // loading={loading}
                     variant="contained"
                     color="primary"
                     type="submit"
