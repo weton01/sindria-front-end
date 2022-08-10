@@ -73,8 +73,8 @@ const Section9: React.FC = () => {
                 onClick={() => handleCategoryClick(brand)}
               >
                 <LazyImage
-                  height="20px"
-                  width="20px"
+                  height={20}
+                  width={20}
                   objectFit="contain"
                   src={`/assets/images/logos/${ind % 2 === 0 ? "v" : "u"}.png`}
                   alt={brand}

@@ -1,7 +1,6 @@
 import Card from "@component/Card";
 import { Chip } from "@component/Chip";
 import HoverBox from "@component/HoverBox";
-import LazyImage from "@component/LazyImage";
 import Image from 'next/image'
 import React from "react";
 

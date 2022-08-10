@@ -210,55 +210,55 @@ const DropZone: React.FC<DropZoneProps> = ({
       <FlexBox display="flex" gap={16} flexWrap={"wrap"}>
         {imgs?.length > 0
           ? imgs.map((item, index) => {
-              return (
-                <Box
-                  display={"flex"}
-                  flexDirection={"column"}
-                  alignItems="flex-end"
-                  gap={4}
-                  key={index}
-                >
-                  {notEdit ? null : (
-                    <IconButton
-                      size="small"
-                      variant="contained"
-                      type="button"
-                      bg="gray.400"
-                      p="0.15rem"
-                      mr="0.15rem"
-                      color={"gray.700"}
-                      marginRight="-4px"
-                    >
-                      <Icon
-                        variant="small"
-                        defaultcolor="currentColor"
-                        onClick={() => removeImage(index)}
-                      >
-                        x
-                      </Icon>
-                    </IconButton>
-                  )}
-
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="center"
-                    minHeight="120px"
-                    minWidth={"120px"}
-                    border="1px dashed"
-                    borderColor="gray.500"
-                    borderRadius="10px"
-                    marginBottom={16}
-                    bg={isDragActive && "gray.200"}
-                    transition="all 250ms ease-in-out"
-                    style={{ outline: "none" }}
+            return (
+              <Box
+                display={"flex"}
+                flexDirection={"column"}
+                alignItems="flex-end"
+                gap={4}
+                key={index}
+              >
+                {notEdit ? null : (
+                  <IconButton
+                    size="small"
+                    variant="contained"
+                    type="button"
+                    bg="gray.400"
+                    p="0.15rem"
+                    mr="0.15rem"
+                    color={"gray.700"}
+                    marginRight="-4px"
                   >
-                    <LazyImage src={item} width="100px" height="100px" />
-                  </Box>
+                    <Icon
+                      variant="small"
+                      defaultcolor="currentColor"
+                      onClick={() => removeImage(index)}
+                    >
+                      x
+                    </Icon>
+                  </IconButton>
+                )}
+
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  minHeight="120px"
+                  minWidth={"120px"}
+                  border="1px dashed"
+                  borderColor="gray.500"
+                  borderRadius="10px"
+                  marginBottom={16}
+                  bg={isDragActive && "gray.200"}
+                  transition="all 250ms ease-in-out"
+                  style={{ outline: "none" }}
+                >
+                  <LazyImage src={item} width="100px" height="100px" layout="responsive" />
                 </Box>
-              );
-            })
+              </Box>
+            );
+          })
           : null}
       </FlexBox>
     </>

@@ -34,8 +34,8 @@ const Section6: React.FC = () => {
                 onClick={handleCategoryClick}
               >
                 <LazyImage
-                  width="20px"
-                  height="20px"
+                  width={20}
+                  height={20}
                   layout="fixed"
                   objectFit="contain"
                   src={`/assets/images/logos/${ind % 2 === 0 ? "v" : "u"}.png`}

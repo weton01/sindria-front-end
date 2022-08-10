@@ -48,11 +48,15 @@ const LazyImage: React.FC<
     }
   };
 
+  console.log(props.layout, props.height, props.width)
+
   return (
     <Spin loading={props.spinning ? loading : false}>
       <LazyImageStyle
         onLoad={onLoadImage}
         {...props}
+        objectFit="contain"
+        layout="responsive"
         src={src ? src : "/assets/images/icons/cloud-off.svg"}
       />
     </Spin>

@@ -37,8 +37,8 @@ const Section10: React.FC<Section10Props> = ({ data }: Section10Props) => {
                   <LazyImage
                     src={`/assets/images/icons/${item.image}.svg`}
                     alt="fashion"
-                    height="52px"
-                    width="52px"
+                    height={52} 
+                    width={20}
                     objectFit="contain"
                     borderRadius={8}
                   />

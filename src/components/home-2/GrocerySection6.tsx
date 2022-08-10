@@ -44,10 +44,11 @@ const GrocerySection6: React.FC = () => {
                   </Box>
                   <LazyImage
                     src={item.imgUrl}
-                    width="320px"
-                    height="auto"
+                    width={320}
+                    height="100%"
                     objectFit="contain"
-                  />
+                    layou="responsive"            
+                    />
                 </FlexBox>
               </Card>
             </Box>

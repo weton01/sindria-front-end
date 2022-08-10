@@ -40,7 +40,7 @@ const Section13: React.FC = () => {
                       <LazyImage
                         src={item.imgUrl}
                         width="100%"
-                        height="auto"
+                        height="100%"
                         layout="responsive"
                         alt={item.title}
                       />

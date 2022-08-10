@@ -57,6 +57,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav }) => {
               src="/assets/images/logos/shopping-bag.svg"
               width="90px"
               height="100%"
+              layout="responive"
             />
             <Paragraph
               mt="1rem"

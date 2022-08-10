@@ -118,7 +118,9 @@ const MegaMenu3: React.FC<MegaMenuProps> = ({
                   position="relative"
                 >
                   <LazyImage
-                    layout="fill"
+                    height={"100%"}
+                    width={"100%"}
+                    layout="responsive"
                     objectFit="contain"
                     src="/assets/images/products/paper-bag.png"
                     alt="model"

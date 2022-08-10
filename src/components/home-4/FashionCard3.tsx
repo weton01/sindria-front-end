@@ -31,7 +31,9 @@ const FashionCard3: React.FC<FashionCard3Props> = () => {
                   <Box height="100%" minHeight="190px" position="relative">
                     <LazyImage
                       src="/assets/images/products/t-shirt-1.png"
-                      layout="fill"
+                      height={"100%"}
+                      width={"100%"}
+                      layout="responsive"
                       objectFit="contain"
                       alt="model"
                     />

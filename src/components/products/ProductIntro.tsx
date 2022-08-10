@@ -218,8 +218,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   <LazyImage
                     src={viewimage}
                     alt={title}
-                    height="400px"
-                    width="700px"
+                    height={400}
+                    width={700}
                     loading="eager"
                     objectFit="contain"
                     spinning={true}

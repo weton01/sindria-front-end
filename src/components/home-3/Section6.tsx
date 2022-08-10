@@ -20,7 +20,7 @@ const Section6: React.FC<Section6Props> = () => {
                 <LazyImage
                   src="/assets/images/products/Rectangle 133.png"
                   width="100%"
-                  height="auto"
+                  height="100%"
                   layout="responsive"
                 />
                 <H3 fontWeight="600" p="1.5rem">
@@ -41,7 +41,7 @@ const Section6: React.FC<Section6Props> = () => {
                         <LazyImage
                           src={item.imgUrl}
                           width="100%"
-                          height="auto"
+                          height="100%"
                           layout="responsive"
                         />
                         <H5 fontWeight="600" p="1rem" mt="1rem">

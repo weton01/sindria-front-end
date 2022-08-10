@@ -53,7 +53,9 @@ const FashionCard2: React.FC<FashionCard2Props> = () => {
                   <Box height="100%" minHeight="190px" position="relative">
                     <LazyImage
                       src="/assets/images/products/jacket.png"
-                      layout="fill"
+                      layout="responsive"
+                      width={"100%"}
+                      height={"100%"}
                       objectFit="contain"
                       alt="model"
                     />

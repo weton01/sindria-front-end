@@ -63,7 +63,7 @@ const FashionCard5: React.FC<FashionCard5Props> = ({
               <LazyImage
                 src={imgUrl}
                 width="100%"
-                height="auto"
+                height="100%"
                 layout="responsive"
                 objectFit="contain"
                 alt="model"
