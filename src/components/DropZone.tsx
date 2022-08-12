@@ -40,13 +40,14 @@ export const handleOnChangeImage = (
     const image = new Image();
 
     image.onload = () => {
+      const fieldName = !multiple ? "image" : "images"
       const canvas = document.createElement("canvas");
       canvas.width = image.naturalWidth;
       canvas.height = image.naturalHeight;
 
       if (image.naturalWidth > 480 || image.naturalHeight > 480) {
-        setFieldError("image", "limite da dimensão da imagem é 480*480");
-        setFieldTouched("image", true, false);
+        setFieldError(fieldName, "limite da dimensão da imagem é 480*480");
+        setFieldTouched(fieldName, true, false);
         setLoading(false);
         return;
       }
@@ -76,10 +77,10 @@ export const handleOnChangeImage = (
           },
         });
 
-        const images = [...values.image];
+        const images = [...values[fieldName]];
 
         images.push(url.get);
-        setFieldValue("image", images);
+        setFieldValue(fieldName, images);
       }, "image/webp");
     };
     image.src = blob;
@@ -149,7 +150,7 @@ const DropZone: React.FC<DropZoneProps> = ({
     const image = [...imgs];
     image.splice(index, 1);
 
-    setFieldValue("image", image);
+    setFieldValue(multiple? "images": "image", image);
   };
 
   return (

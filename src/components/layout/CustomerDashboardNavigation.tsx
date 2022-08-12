@@ -66,6 +66,12 @@ const linkList = [
         iconName: "customer-service",
         count: 1,
       },
+      {
+        href: "/store",
+        title: "Lojas",
+        iconName: "shop",
+        count: 1,
+      },
     ],
   },
   {
