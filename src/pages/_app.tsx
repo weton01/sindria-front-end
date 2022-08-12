@@ -39,17 +39,12 @@ const App: NextPage = ({ Component, pageProps }: any) => {
   console.log(pageProps);
 
   const store = useStore(pageProps?.initialReduxState);
-  const [lifted, setLifted] = useState(false);
+
   const persistor = persistStore(store, {}, function () {
     persistor.persist();
   });
-  let Layout = Component.layout || Fragment;
 
-  const onBeforeLift = () => {
-    setTimeout(() => {
-      setLifted(true);
-    }, 3000);
-  };
+  let Layout = Component.layout || Fragment;
 
   return (
     <ThemeProvider theme={theme}>
@@ -72,30 +67,22 @@ const App: NextPage = ({ Component, pageProps }: any) => {
         />
       </Head>
       <GlobalStyles />
-      <AppProvider>
-        <Provider store={store}>
-          <PersistGate persistor={persistor} onBeforeLift={onBeforeLift}>
-            {!lifted ? (
-              <SplashScreen />
-            ) : (
-              <ErrorBoundary>
-                <DispatchInitialProps
-                  categories={pageProps?.categories || []}
-                  matches={pageProps?.matches || []}
-                  address={pageProps?.address || []}
-                >
-                  <Layout>
-                    <div style={{ position: "absolute", zIndex: 99999 }}>
-                      <ToastContainer align={"right"} position={"bottom"} />
-                    </div>
-                    <Component {...pageProps} />
-                  </Layout>{" "}
-                </DispatchInitialProps>
-              </ErrorBoundary>
-            )}
-          </PersistGate>
-        </Provider>
-      </AppProvider>
+      <Provider store={store}>
+        <ErrorBoundary>
+          <DispatchInitialProps
+            categories={pageProps?.categories || []}
+            matches={pageProps?.matches || []}
+            address={pageProps?.address || []}
+          >
+            <Layout>
+              <div style={{ position: "absolute", zIndex: 99999 }}>
+                <ToastContainer align={"right"} position={"bottom"} />
+              </div>
+              <Component {...pageProps} />
+            </Layout>
+          </DispatchInitialProps>
+        </ErrorBoundary>
+      </Provider>
     </ThemeProvider>
   );
 };
@@ -108,8 +95,8 @@ App.getInitialProps = async (appContext: any) => {
 
     const [categories, matches, address] = await Promise.all([
       getCategory(),
-      getMatches({token}),
-      getAddress({token, skip: 0, take: 10000}) 
+      getMatches({ token }),
+      getAddress({ token, skip: 0, take: 10000 })
     ]);
 
     return {
@@ -118,9 +105,9 @@ App.getInitialProps = async (appContext: any) => {
         categories: {
           formated: categories.formated,
           clean: categories.clean,
-        }, 
+        },
         matches: matches ? matches : [],
-        address: address? address : []
+        address: address ? address : []
       },
     };
   } catch (err) {
