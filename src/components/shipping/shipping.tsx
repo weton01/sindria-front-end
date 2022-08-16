@@ -3,7 +3,6 @@ import Icon from "@component/icon/Icon";
 import Radio from "@component/radio/Radio";
 import Typography, { H6 } from "@component/Typography";
 import { formatCurrency } from "@utils/formatCurrency";
-import { formatFloat } from "@utils/formatFloat";
 import React, { useState } from "react";
 import { useAppDispatch } from "@hook/hooks";
 
@@ -33,6 +32,8 @@ const Shipping: React.FC<ShippingProps> = ({
     })
   }
 
+  console.log('values', values)
+
   return (
     <FlexBox
       p={10}
@@ -46,7 +47,7 @@ const Shipping: React.FC<ShippingProps> = ({
         Loja: {values?.user}
       </H6>
       <FlexBox alignItems="center" gap={12}>
-        {values?.data?.map(it => (
+        {values?.data?.map((it, index) => (
           <FlexBox width="50%" alignItems="center">
             <Radio
               checked={code === it.Codigo}
@@ -65,7 +66,7 @@ const Shipping: React.FC<ShippingProps> = ({
                 {it.PrazoEntrega} dias úteis
               </Typography>
               <Typography fontSize={13}>
-                {formatCurrency(formatFloat(it?.Valor))}
+                {formatCurrency(it?.Valor)}
               </Typography>
             </FlexBox>
           </FlexBox>

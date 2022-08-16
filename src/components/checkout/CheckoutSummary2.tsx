@@ -35,7 +35,7 @@ const calculateShippingPrice = (orderStores) => {
   let total: number = 0;
 
   orderStores.forEach((i) => {
-    total += formatFloat(i?.shippingPrice?.Valor) | 0
+    total += i?.shippingPrice?.Valor | 0
   })
 
   return total
