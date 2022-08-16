@@ -170,7 +170,6 @@ const CustomButtom = ({
   ...props
 }) => {
   const router = useRouter();
-  console.log(width)
   return (
     <Button
       disabled={loading || disabled}

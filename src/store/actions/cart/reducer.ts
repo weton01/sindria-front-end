@@ -108,14 +108,14 @@ const addNewProduct = (item, orderProducts) => {
   )
 
   if (foundIndex >= 0) {
-    newOrderProducts[foundIndex].quantity += 1;
+    newOrderProducts[foundIndex].quantity += item.quantity;
     newOrderProducts[foundIndex].netAmount += item.netAmount
     newOrderProducts[foundIndex].grossAmount += item.grossAmount
   }
   else {
     newOrderProducts.push({
       ...item,
-      quantity: 1
+      quantity: item.quantity
     })
   }
 
