@@ -13,44 +13,38 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import Popup from "reactjs-popup";
-import { api, PROD_URL } from "services/api";
+import { api, PROD_URL, request } from "services/api";
 import { toast } from "react-nextjs-toast";
 import Result from "@component/result";
 import { authRoute } from "middlewares/authRoute";
 import axios from "axios";
+import { fail } from "@component/notification/notifcate";
 
-const Categories = ({stores}) => {
+const Categories = ({ stores }) => {
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
 
-  const deleteCategory = async (id) => {
-    toast.notify("Removendo categoria", {
+  const deleteStore = async (id) => {
+    toast.notify("Removendo loja", {
       title: "Deletando...",
       duration: 2,
       type: "info",
     });
-    try {
-      await api.delete(`category/v1/${id}`);
-      router.replace(router.asPath);
-      toast.notify("Categoria removida", {
-        title: "Sucesso!",
-        duration: 5,
-        type: "success",
-      });
-    } catch (err) {
-      toast.notify(err.response.data.message, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-    }
+
+    await request.remove({
+      route: `store/v1/${id}`,
+      message: `Store removido!`,
+      actionSuccess: () => router.push("/store"),
+      actionError: () => {
+        return fail("Falha ao remover a loja");
+      },
+    });
   };
 
-  const editCategory = (id) => {
-    router.push(`categories/${id}`);
+  const editStore = (id) => {
+    router.push(`store/${id}`);
   };
-;
-
+  
   return (
     <div>
       <DashboardPageHeader
@@ -90,14 +84,14 @@ const Categories = ({stores}) => {
                   {item.name}
                 </H5>
                 <Small ml="20px" className="pre" m="6px">
-                  {item.active? "Ativa" : "Inativa"}
+                  {item.active ? "Ativa" : "Inativa"}
                 </Small>
-              </FlexBox>           
+              </FlexBox>
               <Typography className="pre" textAlign="right" color="text.muted">
                 <IconButton
                   size="small"
                   onClick={() => {
-                    editCategory(item.id);
+                    editStore(item.id);
                   }}
                 >
                   <Icon variant="small" defaultcolor="currentColor">
@@ -113,8 +107,34 @@ const Categories = ({stores}) => {
                       </Icon>
                     </IconButton>
                   }
-                  position="right center"
+                  position="left center"
                 >
+                  {(close) => (
+                    <div>
+                      Deseja realmete deletar?
+                      <span style={{ display: "flex", gap: 8 }}>
+                        <Button
+                          onClick={() => {
+                            close();
+                          }}
+                          size="small"
+                        >
+                          Não
+                        </Button>
+                        <Button
+                          color="primary"
+                          bg="primary.light"
+                          onClick={() => {
+                            close();
+                            deleteStore(item.id);
+                          }}
+                          size="small"
+                        >
+                          Sim
+                        </Button>
+                      </span>
+                    </div>
+                  )}
                 </Popup>
               </Typography>
             </TableRow>
@@ -141,15 +161,12 @@ Categories.layout = DashboardLayout;
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return authRoute(ctx, async ({ token }: any) => {
     try {
-      const {data} = await axios.get(
-        `${PROD_URL}store/v1`,
-        {
-          params: { skip: 0, take: 10},
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        }
-      );
+      const { data } = await axios.get(`${PROD_URL}store/v1`, {
+        params: { skip: 0, take: 10 },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       return {
         props: {

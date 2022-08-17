@@ -15,6 +15,7 @@ export interface Props {
   onBlur?: any;
   onChange?: any;
   onFocus?: any;
+  disabled?: any
 }
 
 const MaskedInputCustom: React.FC<Props> = (props) => {

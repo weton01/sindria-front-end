@@ -1,6 +1,6 @@
 import { processFile } from "@utils/utils";
 import axios from "axios";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { getUrlAssign } from "services/product";
 import Box from "./Box";
@@ -8,9 +8,7 @@ import Button from "./buttons/Button";
 import IconButton from "./buttons/IconButton";
 import Divider from "./Divider";
 import FlexBox from "./FlexBox";
-import Grid from "./grid/Grid";
 import Icon from "./icon/Icon";
-import LazyImage from "./LazyImage";
 import Spinner from "./Spinner";
 import Typography, { H5, Small } from "./Typography";
 
@@ -39,15 +37,14 @@ export const handleOnChangeImage = (
     const blob: any = await processFile(file);
     const image = new Image();
 
-    image.onload = () => {
-      const fieldName = !multiple ? "image" : "images"
+    image.onload = () => { 
       const canvas = document.createElement("canvas");
       canvas.width = image.naturalWidth;
       canvas.height = image.naturalHeight;
 
       if (image.naturalWidth > 480 || image.naturalHeight > 480) {
-        setFieldError(fieldName, "limite da dimensão da imagem é 480*480");
-        setFieldTouched(fieldName, true, false);
+        setFieldError("images", "limite da dimensão da imagem é 480*480");
+        setFieldTouched("images", true, false);
         setLoading(false);
         return;
       }
@@ -77,10 +74,13 @@ export const handleOnChangeImage = (
           },
         });
 
-        const images = [...values[fieldName]];
-
-        images.push(url.get);
-        setFieldValue(fieldName, images);
+        const images = [...values["images"]];
+ 
+        if(multiple)
+          images.push(url.get);
+        else
+          images[0] = url.get;
+        setFieldValue("images", images);
       }, "image/webp");
     };
     image.src = blob;
@@ -255,7 +255,7 @@ const DropZone: React.FC<DropZoneProps> = ({
                   transition="all 250ms ease-in-out"
                   style={{ outline: "none" }}
                 >
-                  <LazyImage src={item} width="100px" height="100px" layout="responsive" />
+                  <img src={item} width="100px" height="100px" />
                 </Box>
               </Box>
             );

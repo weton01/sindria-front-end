@@ -4,81 +4,78 @@ import { HYDRATE } from "next-redux-wrapper";
 const initialState = {
   invoiceType: "credit",
   description: "",
-  address: {},
+  address: { items: [], count: 0 },
   creditCard: {},
-  orderStores: []
+  orderStores: [],
 };
 
 const setTotalAmountByStore = (orderStores) => {
-  let newStores = orderStores.map(ost => {
-    ost.totalAmount = ost.shippingPrice.Valor
+  let newStores = orderStores.map((ost) => {
+    ost.totalAmount = ost.shippingPrice.Valor;
 
-    ost.orderProducts.forEach(op => {
+    ost.orderProducts.forEach((op) => {
       ost.totalAmount += op?.otherProps?.netAmount * op.quantity;
-      ost.totalAmount += op?.otherProps?.mutation.feeTotal * op.quantity
-    })
-    return ost
-  })
+      ost.totalAmount += op?.otherProps?.mutation.feeTotal * op.quantity;
+    });
+    return ost;
+  });
 
-  return [...newStores]
-
-}
+  return [...newStores];
+};
 
 const setStoreShippingPrice = (userId, price, orderStores) => {
-  const newOrderStores = [...orderStores]
+  const newOrderStores = [...orderStores];
 
-  const index = newOrderStores.findIndex(store =>
-    store.userId === userId
-  )
+  const index = newOrderStores.findIndex((store) => store.userId === userId);
 
   if (index >= 0) {
-    newOrderStores[index].shippingPrice = price
+    newOrderStores[index].shippingPrice = price;
   }
 
-  return newOrderStores
-}
+  return newOrderStores;
+};
 
 const recalculateShippingValues = (orderStores) => {
-  let newStores = orderStores.map(ost => {
+  let newStores = orderStores.map((ost) => {
     ost.nVlPeso = 0;
     ost.nVlComprimento = 0;
     ost.nVlAltura = 0;
     ost.nVlLargura = 0;
     ost.nVlDiametro = 0;
 
-    ost.orderProducts.forEach(op => {
+    ost.orderProducts.forEach((op) => {
       ost.nVlPeso += op.otherProps.weight * op.quantity;
       ost.nVlComprimento += op.otherProps.width * op.quantity;
       ost.nVlAltura += op.otherProps.height * op.quantity;
       ost.nVlLargura += op.otherProps.width * op.quantity;
       ost.nVlDiametro += op.otherProps.width * op.quantity;
 
-      op?.otherProps?.mutation?.variations?.forEach(v => {
+      op?.otherProps?.mutation?.variations?.forEach((v) => {
         ost.nVlPeso += v.weight * op.quantity;
         ost.nVlComprimento += v.width * op.quantity;
         ost.nVlAltura += v.height * op.quantity;
         ost.nVlLargura += v.width * op.quantity;
         ost.nVlDiametro += v.width * op.quantity;
-      })
-    })
-    return ost
-  })
+      });
+    });
+    return ost;
+  });
 
-  return [...newStores]
-}
+  return [...newStores];
+};
 
 const newAddNewProduct = (item, orderStores) => {
-  const newOrderStores = [...orderStores]
+  const newOrderStores = [...orderStores];
 
-  const index = newOrderStores.findIndex(store =>
-    store.userId === item?.otherProps?.user?.id,
-  )
+  const index = newOrderStores.findIndex(
+    (store) => store.userId === item?.otherProps?.user?.id
+  );
 
   if (index >= 0) {
     newOrderStores[index].orderProducts = addNewProduct(
       item,
       newOrderStores[index].orderProducts
-    )
+    );
   } else {
     newOrderStores.push({
       shippingPrice: { Valor: 0.0 },
@@ -89,23 +86,20 @@ const newAddNewProduct = (item, orderStores) => {
       nVlPeso: 0,
       totalAmount: 0,
       userId: item?.otherProps?.user?.id,
-      orderProducts: addNewProduct(
-        item,
-        []
-      )
-    })
+      orderProducts: addNewProduct(item, []),
+    });
   }
 
-  return [...newOrderStores]
-}
+  return [...newOrderStores];
+};
 
 const addNewProduct = (item, orderProducts) => {
-  const newOrderProducts = [...orderProducts]
+  const newOrderProducts = [...orderProducts];
 
-  const foundIndex = newOrderProducts.findIndex(p =>
-    p.product.id === item.product.id &&
-    p.mutation.id === item.mutation.id
-  )
+  const foundIndex = newOrderProducts.findIndex(
+    (p) =>
+      p.product.id === item.product.id && p.mutation.id === item.mutation.id
+  );
 
   if (foundIndex >= 0) {
     newOrderProducts[foundIndex].quantity += item.quantity;
@@ -119,72 +113,69 @@ const addNewProduct = (item, orderProducts) => {
     })
   }
 
-  return newOrderProducts
-}
+  return newOrderProducts;
+};
 
 const newRemoveProduct = (item, orderStores) => {
-  const newOrderStores = [...orderStores]
+  const newOrderStores = [...orderStores];
 
-  const index = newOrderStores.findIndex(store =>
-    store.userId === item?.otherProps?.user?.id
-  )
+  const index = newOrderStores.findIndex(
+    (store) => store.userId === item?.otherProps?.user?.id
+  );
 
   if (index >= 0) {
     newOrderStores[index].orderProducts = removeProduct(
       item,
       newOrderStores[index].orderProducts
-    )
+    );
   }
 
-  return newOrderStores
-
-}
+  return newOrderStores;
+};
 
 const removeProduct = (item, orderProducts) => {
-  const newOrderProducts = [...orderProducts]
+  const newOrderProducts = [...orderProducts];
 
-  const foundIndex = newOrderProducts.findIndex(p =>
-    p.product.id === item.product.id &&
-    p.mutation.id === item.mutation.id
-  )
+  const foundIndex = newOrderProducts.findIndex(
+    (p) =>
+      p.product.id === item.product.id && p.mutation.id === item.mutation.id
+  );
 
   if (foundIndex >= 0) {
     newOrderProducts[foundIndex].quantity--;
-    newOrderProducts[foundIndex].netAmount -= item.netAmount
-    newOrderProducts[foundIndex].grossAmount -= item.grossAmount
+    newOrderProducts[foundIndex].netAmount -= item.netAmount;
+    newOrderProducts[foundIndex].grossAmount -= item.grossAmount;
   }
-  return newOrderProducts
-}
+  return newOrderProducts;
+};
 
 const newDeleteProduct = (item, orderStores) => {
-  const newOrderStores = [...orderStores]
+  const newOrderStores = [...orderStores];
 
-  const index = newOrderStores.findIndex(store =>
-    store.userId === item?.otherProps?.user?.id
-  )
+  const index = newOrderStores.findIndex(
+    (store) => store.userId === item?.otherProps?.user?.id
+  );
 
   if (index >= 0) {
     newOrderStores[index].orderProducts = deleteProduct(
       item,
       newOrderStores[index].orderProducts
-    )
+    );
   }
 
-  return newOrderStores
-}
+  return newOrderStores;
+};
 
 const deleteProduct = (item, orderProducts) => {
-  const newOrderProducts = [...orderProducts]
+  const newOrderProducts = [...orderProducts];
 
-  const foundIndex = newOrderProducts.findIndex(p =>
-    p.product.id === item.product.id &&
-    p.mutation.id === item.mutation.id
-  )
+  const foundIndex = newOrderProducts.findIndex(
+    (p) =>
+      p.product.id === item.product.id && p.mutation.id === item.mutation.id
+  );
 
-  return newOrderProducts.filter((_p, index) =>
-    index !== foundIndex
-  )
-}
+  return newOrderProducts.filter((_p, index) => index !== foundIndex);
+};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -196,12 +187,9 @@ const reducer = (state = initialState, action) => {
         ...state,
         orderStores: setTotalAmountByStore(
           recalculateShippingValues(
-            newAddNewProduct(
-              action.payload,
-              state.orderStores
-            )
+            newAddNewProduct(action.payload, state.orderStores)
           )
-        )
+        ),
       };
 
     case types.DELETE_FROM_CART:
@@ -209,10 +197,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         orderStores: setTotalAmountByStore(
           recalculateShippingValues(
-            newDeleteProduct(
-              action.payload,
-              state.orderStores
-            )
+            newDeleteProduct(action.payload, state.orderStores)
           )
         ),
       };
@@ -222,10 +207,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         orderStores: setTotalAmountByStore(
           recalculateShippingValues(
-            newRemoveProduct(
-              action.payload,
-              state.orderStores
-            )
+            newRemoveProduct(action.payload, state.orderStores)
           )
         ),
       };
@@ -244,6 +226,15 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         address: action.payload,
+      };
+
+    case types.DELETE_ADDRESS:
+      const address = state.address.items.filter(
+        (_, index) => index !== action.payload
+      );
+      return {
+        ...state,
+        address:{address, count: address.length}
       };
 
     case types.SELECT_PAYMENT_TYPE:
@@ -265,7 +256,7 @@ const reducer = (state = initialState, action) => {
       };
 
     case types.CLEAR_CART:
-      return initialState
+      return initialState;
 
     default:
       return state;

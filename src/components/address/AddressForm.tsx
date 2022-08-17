@@ -45,7 +45,7 @@ const AdressForm = (props) => {
         type: "success",
       });
       resetForm()
-      router.push(props.redirect);
+      router.replace(props.redirect);
     } catch (err) {
       toast.notify(err.response.data.message, {
         title: "Erro!",

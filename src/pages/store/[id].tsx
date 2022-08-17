@@ -1,42 +1,48 @@
 import React from "react";
 import DashboardLayout from "@component/layout/CustomerDashboardLayout";
-import BrandsEditor from "@component/brands/BrandsForm";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
-import { api } from "services/api";
+import StoreEditor from "@component/store/StoreEditor";
+import { authRoute } from "middlewares/authRoute";
+import { getAddress } from "services/address";
+import { getStoreById } from "services/store";
 
-const Brands = (props) => {
+const StoreEdit = (props) => {
   return (
     <div>
-      <BrandsEditor {...props}/>
+      <StoreEditor {...props} />
     </div>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["shop_token"]: token } = parseCookies(ctx);
-  const {id} = ctx.query;
-  
-  try {
-    api.interceptors.request.use((config) => {
-      config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
+export const getServerSideProps: GetServerSideProps = async (c) => {
+  return authRoute(c, async (ctx: any) => {
+    try {
+      const { ["shop_token"]: token } = parseCookies(ctx); 
+      const { id } = ctx.query;
 
-    const { data } = await api.get(`brand/v1/${id}`); 
-    
-    return {
-      props: { data: data },
-    };
-  } catch (err) {
-    console.log("fail to verify tokens", err);
-  }
+      const [address, store] = await Promise.all([
+        getAddress({ token, skip: 0, take: 10000 }),
+        getStoreById({ token, id })
+      ]);
 
-  return {
-    props: {},
-  };
+      return {
+        props: {
+          address,
+          store
+        },
+      };
+    } catch {
+      return {
+        redirect: {
+          permanent: false,
+          destination: "/404",
+        },
+      };
+    }
+  });
 };
 
-Brands.layout = DashboardLayout;
+StoreEdit.layout = DashboardLayout;
 
-export default Brands;
+export default StoreEdit;

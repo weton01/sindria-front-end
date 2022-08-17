@@ -46,7 +46,6 @@ const Select: React.FC<SelectProps> = ({
         // label="Single Select"
         // placeholder="Single Select"
         // defaultValue={options[0]}
-        // isDisabled={isDisabled}
         // isLoading={isLoading}
         // isClearable={true}
         // isRtl={isRtl}
@@ -54,6 +53,7 @@ const Select: React.FC<SelectProps> = ({
         // menuIsOpen={true}
         // name="color"
         options={options}
+        isDisabled={props.disabled || false}
         styles={customStyles}
         theme={(theme) => ({
           ...theme,
