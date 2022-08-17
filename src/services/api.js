@@ -17,8 +17,7 @@ if (typeof window !== "undefined") {
     const end_date = new Date(localStorage.getItem("shop_end_date"));
 
     if (end_date.getTime() < new Date().getTime())
-
-    if (token) config.headers.Authorization = "Bearer " + token;
+      if (token) config.headers.Authorization = "Bearer " + token;
 
     return config;
   };
@@ -48,12 +47,13 @@ if (typeof window !== "undefined") {
         ? err?.response?.data?.message[0]
         : err?.response?.data?.message || "Erro inesperado!";
 
-      toast.notify(error, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-      actionError();
+      if (actionError(err) === null) {
+        toast.notify(error, {
+          title: "Erro!",
+          duration: 5,
+          type: "error",
+        });
+      }
 
       return error;
     }
@@ -82,12 +82,13 @@ if (typeof window !== "undefined") {
         ? err?.response?.data?.message[0]
         : err?.response?.data?.message || "Erro inesperado!";
 
-      toast.notify(error, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-      actionError();
+      if (actionError(err) === null) {
+        toast.notify(error, {
+          title: "Erro!",
+          duration: 5,
+          type: "error",
+        });
+      }
 
       return error;
     }
@@ -117,13 +118,13 @@ if (typeof window !== "undefined") {
         ? err?.response?.data?.message[0]
         : err?.response?.data?.message || "Erro inesperado!";
 
-      toast.notify(error, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-
-      actionError();
+      if (actionError(err) === null) {
+        toast.notify(error, {
+          title: "Erro!",
+          duration: 5,
+          type: "error",
+        });
+      }
       return error;
     }
   };
@@ -140,11 +141,13 @@ if (typeof window !== "undefined") {
         ? err?.response?.data?.message[0]
         : err?.response?.data?.message || "Erro inesperado!";
 
-      toast.notify(error, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
+      if (actionError(err) === null) {
+        toast.notify(error, {
+          title: "Erro!",
+          duration: 5,
+          type: "error",
+        });
+      }
 
       return error;
     }
@@ -171,13 +174,13 @@ if (typeof window !== "undefined") {
         ? err?.response?.data?.message[0]
         : err?.response?.data?.message || "Erro inesperado!";
 
-      toast.notify(error, {
-        title: "Erro!",
-        duration: 5,
-        type: "error",
-      });
-
-      actionError();
+      if (actionError(err) === null) {
+        toast.notify(error, {
+          title: "Erro!",
+          duration: 5,
+          type: "error",
+        });
+      }
       return error;
     }
   };
@@ -192,7 +195,6 @@ if (typeof window !== "undefined") {
   }) => {
     try {
       if (token) headers["Authorization"] = "Bearer " + token;
-      console.log(headers);
 
       const { data } = await axios.get(`${PROD_URL}${route}`, {
         params,

@@ -9,7 +9,8 @@ type Categories = {
 type Props = {
   categories?: Categories;
   matches: any[];
-  address: any[]
+  address: any[];
+  children: any
 };
 
 const DispatchInitialProps: React.FC<Props> = ({ categories, children, matches, address }) => {
