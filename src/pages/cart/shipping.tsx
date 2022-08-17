@@ -1,117 +1,191 @@
-import AddressForm from '@component/address/AddressForm';
+import AddressForm from "@component/address/AddressForm";
 import Avatar from "@component/avatar/Avatar";
-import Box from '@component/Box';
+import Box from "@component/Box";
 import Button from "@component/buttons/Button";
 import Card from "@component/Card";
 import { Card1 } from "@component/Card1";
 import CheckoutSummary2 from "@component/checkout/CheckoutSummary2";
 import FlexBox from "@component/FlexBox";
-import Shipping from '@component/shipping/shipping';
+import Shipping from "@component/shipping/shipping";
 import Typography, { H3, H6, Paragraph } from "@component/Typography";
 import { useAppDispatch } from "@hook/hooks";
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { Container } from "next/app";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { PROD_URL } from "services/api";
 import Grid from "../../components/grid/Grid";
 import CheckoutNavLayout from "../../components/layout/CheckoutNavLayout";
 import Accordion from "@component/accordion/Accordion";
-import AccordionHeader from '@component/accordion/AccordionHeader';
-import Divider from '@component/Divider';
-import { useSelector } from 'react-redux';
-import Spin from '@component/spin/Spin';
-import { authRoute } from 'middlewares/authRoute';
+import AccordionHeader from "@component/accordion/AccordionHeader";
+import Divider from "@component/Divider";
+import { useSelector } from "react-redux";
+import Spin from "@component/spin/Spin";
+import { authRoute } from "middlewares/authRoute";
+import Container from "@component/Container";
+import { formatFloat } from "@utils/formatFloat";
 
 const Checkout = ({ address }) => {
-  const [selectedAddress, setSelectedAddress] = useState({ id: '' })
-  const [loadingShippings, setLoadingShippings] = useState(false)
-  const [shippings, setShippings] = useState([])
+  const [selectedAddress, setSelectedAddress] = useState({ id: "" });
+  const [loadingShippings, setLoadingShippings] = useState(false);
+  const [shippings, setShippings] = useState([]);
 
-  const router = useRouter()
+  const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const orderStores = useSelector((selec: any) =>
-    selec?.cart?.orderStores
-  );
+  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores);
 
   const fetchShippings = useCallback(async () => {
-    setLoadingShippings(true)
+    setLoadingShippings(true);
     if (orderStores?.length > 0) {
-      const shippings = await Promise.all(orderStores?.map(async ost => {
+      const promises = orderStores?.map((ost) => {
+        const localPromises: any[] = [];
 
-        const sh = await axios.post(`${PROD_URL}/shipping/v1`, {
-          "sCepOrigem": "13844-257",
-          "sCepDestino": "01310-200",
-          "nVlPeso": ost?.nVlPeso.toString(),
-          "nCdFormato": "1",
-          "nVlComprimento": ost?.nVlComprimento > 15 ?
-            ost?.nVlComprimento.toString() : "15",
-          "nVlAltura": ost?.nVlAltura > 15 ?
-            ost?.nVlAltura.toString() : "15",
-          "nVlLargura": ost?.nVlLargura > 15 ?
-            ost?.nVlLargura?.toString() : "15",
-          "nVlDiametro": ost?.nVlDiametro > 15 ?
-            ost?.nVlDiametro?.toString() : "15",
-          "nCdServico": [
-            "04014",
-            "04510"
-          ],
-        })
+        const totalValue = ost?.nVlAltura + ost?.nVlLargura + ost?.nVlDiametro;
+        if (totalValue < 200) {
+          localPromises.push({
+            sCepOrigem: "13844-257",
+            sCepDestino: "01032-000 ",
+            nVlPeso: ost?.nVlPeso.toString(),
+            nCdFormato: "1",
+            nVlComprimento:
+              ost?.nVlComprimento > 15 ? ost?.nVlComprimento.toString() : "15",
+            nVlAltura: ost?.nVlAltura > 15 ? ost?.nVlAltura.toString() : "15",
+            nVlLargura:
+              ost?.nVlLargura > 15 ? ost?.nVlLargura?.toString() : "15",
+            nVlDiametro:
+              ost?.nVlDiametro > 15 ? ost?.nVlDiametro?.toString() : "15",
+            nCdServico: ["04014", "04510"],
+            user: ost.userId,
+          });
+        } else {
+          const rest = totalValue % 200;
 
-        return {
-          ...sh,
-          user: ost.userId
+          for (let i = 0; i < totalValue / 200; i++) {
+            localPromises.push({
+              sCepOrigem: "13844-257",
+              sCepDestino: "01032-000 ",
+              nVlPeso: ost?.nVlPeso.toString(),
+              nCdFormato: "1",
+              nVlComprimento: "66.66",
+              nVlAltura: "66.66",
+              nVlLargura: "66.66",
+              nVlDiametro: "33.33",
+              nCdServico: ["04014", "04510"],
+              user: ost.userId,
+            });
+          }
+
+          localPromises.push({
+            sCepOrigem: "13844-257",
+            sCepDestino: "01032-000 ",
+            nVlPeso: ost?.nVlPeso.toString(),
+            nCdFormato: "1",
+            nVlComprimento: (rest / 3).toString(),
+            nVlAltura: (rest / 3).toString(),
+            nVlLargura: (rest / 3).toString(),
+            nVlDiametro: (rest / 2).toString(),
+            nCdServico: ["04014", "04510"],
+            user: ost.userId,
+          });
         }
-      }))
 
-      setShippings(shippings)
+        return localPromises;
+      });
+
+      console.log("here", promises);
+
+      const shippings = await Promise.all(
+        promises.map(async (p) => {
+          let user;
+
+          const items = await Promise.all(
+            p.map((i) => {
+              user = i.user;
+              delete i.user;
+              return axios.post(`${PROD_URL}/shipping/v1`, i);
+            })
+          );
+
+          const newItem = [
+            {
+              Codigo: "04014",
+              Valor: 0,
+              PrazoEntrega: "",
+            },
+            {
+              Codigo: "04510",
+              Valor: 0,
+              PrazoEntrega: "",
+            },
+          ];
+
+          console.log("newItem: ", newItem);
+
+          items.forEach((l) => {
+            l?.data?.forEach((l3) => {
+              const index = newItem.findIndex(
+                (l2) => l2.Codigo === l3.Codigo
+              );
+              if (index < 0) {
+                return;
+              }
+              console.log('l3', l3.Valor)
+              newItem[index].Valor += formatFloat(l3.Valor)
+              newItem[index].PrazoEntrega = l3.PrazoEntrega;
+            });
+          });
+
+          console.log("newItemAfter: ", newItem);
+
+          return {
+            data: newItem,
+            user,
+          };
+        })
+      );
+
+      setShippings(shippings);
     }
 
-    setLoadingShippings(false)
-  }, [])
+    setLoadingShippings(false);
+  }, [selectedAddress]);
 
   useEffect(() => {
-    setSelectedAddress(address.items[0])
-  }, [address])
+    setSelectedAddress(address.items[0]);
+  }, [address]);
 
   useEffect(() => {
     dispatch({
       type: "SELECT_ADDRESS",
-      payload: selectedAddress
-    })
-  }, [selectedAddress])
+      payload: selectedAddress,
+    });
+  }, [selectedAddress]);
 
   useEffect(() => {
-    fetchShippings()
-  }, [fetchShippings])
+    console.log("chegou aqui");
+    fetchShippings();
+  }, [fetchShippings]);
 
   useEffect(() => {
-    if (
-      shippings[0] &&
-      shippings[0].data &&
-      shippings[0].data.length > 0
-    ) {
+    if (shippings[0] && shippings[0].data && shippings[0].data.length > 0) {
       dispatch({
         type: "SET_SHIPPING",
         payload: {
           user: shippings[0]?.user,
-          price: shippings[0].data[0]
-        }
-      })
+          price: shippings[0].data[0],
+        },
+      });
     }
-  }, [shippings])
+  }, [shippings]);
 
   const returnPage = () => {
-    router.push('/cart')
-  }
+    router.push("/cart");
+  };
 
   const nextPage = () => {
-    router.push('/cart/payment')
-  }
-
-  console.log(shippings)
+    router.push("/cart/payment");
+  };
 
   return (
     <Container my="1.5rem">
@@ -130,16 +204,13 @@ const Checkout = ({ address }) => {
               <Typography fontSize="20px">Detalhes do Envio</Typography>
             </FlexBox>
 
-            <Grid container  >
+            <Grid container>
               <Box mb="1rem">
-                <Accordion
-                  isForm
-                  expanded={false}
-                >
+                <Accordion isForm expanded={false}>
                   <AccordionHeader px="0px" py="6px">
-                    <H3 mb="0.75rem" >Novo Endereço de Entrega</H3>
+                    <H3 mb="0.75rem">Novo Endereço de Entrega</H3>
                   </AccordionHeader>
-                  <AddressForm redirect={'/cart/checkout'} />
+                  <AddressForm redirect={"/cart/checkout"} />
                   <Divider mt="1rem" />
                 </Accordion>
               </Box>
@@ -161,11 +232,13 @@ const Checkout = ({ address }) => {
                         : "transparent"
                     }
                     onClick={() => {
-                      setSelectedAddress(item)
+                      setSelectedAddress(item);
                     }}
                   >
                     <H6 mb="0.25rem">CEP: {item.cep}</H6>
-                    <Paragraph color="gray.700">{item.street}, {item.number}, {item.neighborhood}</Paragraph>
+                    <Paragraph color="gray.700">
+                      {item.street}, {item.number}, {item.neighborhood}
+                    </Paragraph>
                   </Card>
                 </Grid>
               ))}
@@ -182,22 +255,35 @@ const Checkout = ({ address }) => {
               </Avatar>
               <Typography fontSize="20px">Valores do Frete</Typography>
             </FlexBox>
-            <Spin loading={loadingShippings} size="30px" >
-              <FlexBox  >
-                {
-                  shippings.map((item, index) => <Shipping key={`shi-${index}`} values={item} />)
-                }
+            <Spin loading={loadingShippings} size="30px">
+              <FlexBox flexDirection={"column"} gap={8}>
+                {shippings.map((item, index) => (
+                  <Shipping key={`shi-${index}`} values={item} />
+                ))}
               </FlexBox>
             </Spin>
           </Card1>
           <Grid container spacing={7}>
             <Grid item sm={6} xs={12}>
-              <Button onClick={returnPage} variant="outlined" color="primary" type="button" fullwidth>
+              <Button
+                onClick={returnPage}
+                variant="outlined"
+                color="primary"
+                type="button"
+                fullwidth
+              >
                 Voltar ao Carrinho
               </Button>
             </Grid>
             <Grid item sm={6} xs={12}>
-              <Button disabled={loadingShippings} onClick={nextPage} variant="contained" color="primary" type="submit" fullwidth>
+              <Button
+                disabled={loadingShippings}
+                onClick={nextPage}
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullwidth
+              >
                 Pagamento
               </Button>
             </Grid>
@@ -212,33 +298,5 @@ const Checkout = ({ address }) => {
 };
 
 Checkout.layout = CheckoutNavLayout;
-
-export const getServerSideProps: GetServerSideProps = async (c) => {
-  return authRoute(c, async (ctx: any) => {
-    try {
-      const { data } = await axios.get(`${PROD_URL}address/v1`, {
-        params: { skip: 0, take: 10, orderBy: "DESC" },
-        headers: {
-          'Authorization': `Bearer ${ctx.token}`
-        }
-      })
-
-      return {
-        props: {
-          address: data
-        }
-      }
-
-    } catch {
-      return {
-        redirect: {
-          permanent: false,
-          destination: "/404"
-        }
-      }
-    }
-  })
-}
-
 
 export default Checkout;
