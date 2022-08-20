@@ -23,6 +23,9 @@ import Box from "@component/Box";
 import axios from "axios";
 import { getBrands } from "services/brand";
 import { processFile } from "@utils/utils";
+import FlexBox from "@component/FlexBox";
+import Avatar from "@component/avatar/Avatar";
+import Typography from "@component/Typography";
 
 const AddProduct = (props) => {
   const { categories, tags, brands } = props;
@@ -73,11 +76,28 @@ const AddProduct = (props) => {
   }, [route]);
 
   const handleFormSubmit = async (values) => {
-    const { categories, tags, brand, grossAmount, netAmount } = values;
+    const {
+      categories,
+      tags,
+      brand,
+      unitMeasurement,
+      grossAmount,
+      netAmount,
+      minSale,
+      width,
+      height,
+      weight,
+    } = values;
+    
     const payload = {
       ...values,
       brand: { id: brand.value },
+      unitMeasurement: { id: unitMeasurement.value },
       grossAmount: Number(grossAmount),
+      minSale: Number(minSale),
+      width: Number(width),
+      height: Number(height),
+      weight: Number(weight),
       netAmount: Number(netAmount),
       categories: categories.map((item) => ({
         id: item.value,
@@ -92,15 +112,15 @@ const AddProduct = (props) => {
       await request.patch({
         route: `product/v1/${id}`,
         payload,
-        message: `Produto ${edit ? "alterado" : "adicionado"}`,
+        message: `Produto alterado`,
         actionSuccess: (product) =>
           router.push(`/vendor/add-product/variations/${product.id}`),
       });
     else
       await request.post({
-        route: `product/v1/${id}`,
+        route: `product/v1/`,
         payload,
-        message: `Produto ${edit ? "alterado" : "adicionado"}`,
+        message: `Produto adicionado`,
         actionSuccess: (product) =>
           router.push(`/vendor/add-product/variations/${product.id}`),
       });
@@ -131,231 +151,348 @@ const AddProduct = (props) => {
           onChange={handleStepChange}
         />
       </Box>
-      <Card p="30px">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={checkoutSchema}
-          onSubmit={handleFormSubmit}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldTouched,
-            setFieldValue,
-            setFieldError,
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={6}>
-                <Grid item sm={12} xs={12}>
-                  <TextField
-                    name="name"
-                    label="Nome"
-                    placeholder="Nome do produto"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.name || ""}
-                    errorText={touched.name && errors.name}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Field name="images">
-                    {({ meta }) => (
-                      <div>
-                        <DropZone
-                          setFieldValue={setFieldValue}
-                          multiple={true}
-                          imgs={values.images}
-                          title="Arraste ou solte a imagem do produto aqui"
-                          onChange={(files, setLoading) => {
-                            files.forEach(async (file: File, index) => {
-                              const { url } = await getUrlAssign();
-                              let fd = new FormData();
-                              const blob: any = await processFile(file);
-                              const image = new Image();
-                              image.onload = () => {
-                                const canvas = document.createElement("canvas");
-                                canvas.width = image.naturalWidth;
-                                canvas.height = image.naturalHeight;
-                                console.log(image.naturalWidth);
-                                if (
-                                  image.naturalWidth > 480 ||
-                                  image.naturalHeight > 480
-                                ) {
-                                  setFieldError(
-                                    "images",
-                                    "limite da dimensão da imagem é 480*480"
-                                  );
-                                  setFieldTouched("images", true, false);
-                                  setLoading(false);
-                                  return;
-                                }
-                                canvas.getContext("2d").drawImage(image, 0, 0);
-                                canvas.toBlob(async (blob) => {
-                                  const myImage = new File([blob], file.name, {
-                                    type: blob.type,
-                                  });
-                                  fd.append("acl", "public-read");
-                                  fd.append("Content-Type", "image/webp");
-
-                                  fd.append("key", url.put.fields["key"]);
-                                  fd.append("bucket", url.put.fields["bucket"]);
-                                  fd.append(
-                                    "X-Amz-Algorithm",
-                                    url.put.fields["X-Amz-Algorithm"]
-                                  );
-                                  fd.append(
-                                    "X-Amz-Credential",
-                                    url.put.fields["X-Amz-Credential"]
-                                  );
-                                  fd.append(
-                                    "X-Amz-Date",
-                                    url.put.fields["X-Amz-Date"]
-                                  );
-
-                                  fd.append(
-                                    "X-Amz-Signature",
-                                    url.put.fields["X-Amz-Signature"]
-                                  );
-
-                                  fd.append("Policy", url.put.fields["Policy"]);
-
-                                  fd.append("file", myImage);
-                                  await axios.post(url.put.url, fd, {
-                                    onUploadProgress: (
-                                      progress: ProgressEvent
-                                    ) => {
-                                      let percent = Math.round(
-                                        (progress.loaded * 100) / progress.total
+      <Formik
+        initialValues={initialValues}
+        validationSchema={checkoutSchema}
+        onSubmit={handleFormSubmit}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          setFieldTouched,
+          setFieldValue,
+          setFieldError,
+        }) => (
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={6}>
+              <Grid item xs={12}>
+                <Card p="30px" width="100%">
+                  <FlexBox alignItems="center" marginBottom={16}>
+                    <Avatar
+                      bg="primary.main"
+                      size={25}
+                      color="primary.text"
+                      mr="0.875rem"
+                    >
+                      1
+                    </Avatar>
+                    <Typography fontSize="18px">Detalhes do produto</Typography>
+                  </FlexBox>
+                  <Grid container spacing={6}>
+                    <Grid item sm={12} xs={12}>
+                      <TextField
+                        name="name"
+                        label="Nome"
+                        placeholder="Nome do produto"
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.name || ""}
+                        errorText={touched.name && errors.name}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Field name="images">
+                        {({ meta }) => (
+                          <div>
+                            <DropZone
+                              setFieldValue={setFieldValue}
+                              multiple={true}
+                              imgs={values.images}
+                              title="Arraste ou solte a imagem do produto aqui"
+                              onChange={(files, setLoading) => {
+                                files.forEach(async (file: File, index) => {
+                                  const { url } = await getUrlAssign();
+                                  let fd = new FormData();
+                                  const blob: any = await processFile(file);
+                                  const image = new Image();
+                                  image.onload = () => {
+                                    const canvas =
+                                      document.createElement("canvas");
+                                    canvas.width = image.naturalWidth;
+                                    canvas.height = image.naturalHeight;
+                                    console.log(image.naturalWidth);
+                                    if (
+                                      image.naturalWidth > 480 ||
+                                      image.naturalHeight > 480
+                                    ) {
+                                      setFieldError(
+                                        "images",
+                                        "limite da dimensão da imagem é 480*480"
                                       );
-                                      if (
-                                        percent === 100 &&
-                                        files?.length - 1 === index
-                                      ) {
-                                        setLoading(false);
-                                      }
-                                    },
-                                  });
-                                  const images = [...values.images];
+                                      setFieldTouched("images", true, false);
+                                      setLoading(false);
+                                      return;
+                                    }
+                                    canvas
+                                      .getContext("2d")
+                                      .drawImage(image, 0, 0);
+                                    canvas.toBlob(async (blob) => {
+                                      const myImage = new File(
+                                        [blob],
+                                        file.name,
+                                        {
+                                          type: blob.type,
+                                        }
+                                      );
+                                      fd.append("acl", "public-read");
+                                      fd.append("Content-Type", "image/webp");
 
-                                  images.push(url.get);
-                                  setFieldValue("images", images);
-                                }, "image/webp");
-                              };
-                              image.src = blob;
-                            });
-                          }}
-                        />
-                        {meta.touched && meta.error && (
-                          <ErrorMessage name="images" />
+                                      fd.append("key", url.put.fields["key"]);
+                                      fd.append(
+                                        "bucket",
+                                        url.put.fields["bucket"]
+                                      );
+                                      fd.append(
+                                        "X-Amz-Algorithm",
+                                        url.put.fields["X-Amz-Algorithm"]
+                                      );
+                                      fd.append(
+                                        "X-Amz-Credential",
+                                        url.put.fields["X-Amz-Credential"]
+                                      );
+                                      fd.append(
+                                        "X-Amz-Date",
+                                        url.put.fields["X-Amz-Date"]
+                                      );
+
+                                      fd.append(
+                                        "X-Amz-Signature",
+                                        url.put.fields["X-Amz-Signature"]
+                                      );
+
+                                      fd.append(
+                                        "Policy",
+                                        url.put.fields["Policy"]
+                                      );
+
+                                      fd.append("file", myImage);
+                                      await axios.post(url.put.url, fd, {
+                                        onUploadProgress: (
+                                          progress: ProgressEvent
+                                        ) => {
+                                          let percent = Math.round(
+                                            (progress.loaded * 100) /
+                                              progress.total
+                                          );
+                                          if (
+                                            percent === 100 &&
+                                            files?.length - 1 === index
+                                          ) {
+                                            setLoading(false);
+                                          }
+                                        },
+                                      });
+                                      const images = [...values.images];
+
+                                      images.push(url.get);
+                                      setFieldValue("images", images);
+                                    }, "image/webp");
+                                  };
+                                  image.src = blob;
+                                });
+                              }}
+                            />
+                            {meta.touched && meta.error && (
+                              <ErrorMessage name="images" />
+                            )}
+                          </div>
                         )}
-                      </div>
-                    )}
-                  </Field>
-                </Grid>
-                <Grid item xs={12}>
-                  <TextArea
-                    name="description"
-                    label="Descrição"
-                    placeholder="Descrição"
-                    rows={6}
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.description || ""}
-                    errorText={touched.description && errors.description}
-                  />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField
-                    name="grossAmount"
-                    label="Valor Bruto"
-                    placeholder="Valor bruto"
-                    mask={MaskInput.money}
-                    addonBefore="R$"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.grossAmount || ""}
-                    errorText={touched.grossAmount && errors.grossAmount}
-                  />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField
-                    name="netAmount"
-                    label="Valor liquido"
-                    placeholder="Valor liquido"
-                    mask={MaskInput.money}
-                    addonBefore="R$"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.netAmount || ""}
-                    errorText={touched.netAmount && errors.netAmount}
-                  />
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                  <Select
-                    name="brand"
-                    label="Marca"
-                    placeholder="Selecione a marca"
-                    options={brands}
-                    onBlur={handleBlur}
-                    onChange={(e) => {
-                      setFieldValue("brand", e || []);
-                    }}
-                    defaultValue={values.brand || ""}
-                    errorText={touched.brand && errors.brand}
-                  />
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                  <Select
-                    name="categories"
-                    label="Categorias"
-                    placeholder="Selecione as categorias"
-                    isMulti
-                    options={categories}
-                    onBlur={handleBlur}
-                    onChange={(e) => {
-                      setFieldValue("categories", e || []);
-                    }}
-                    defaultValue={values.categories || ""}
-                    errorText={touched.categories && errors.categories}
-                  />
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                  <Select
-                    name="tags"
-                    label="Etiquetas"
-                    placeholder="Selecione as etiquetas"
-                    isMulti
-                    options={tags}
-                    onBlur={handleBlur}
-                    onChange={(e) => {
-                      setFieldValue("tags", e || []);
-                    }}
-                    defaultValue={values.tags || ""}
-                    errorText={touched.tags && errors.tags}
-                  />
-                </Grid>
+                      </Field>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextArea
+                        name="description"
+                        label="Descrição"
+                        placeholder="Descrição"
+                        rows={6}
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.description || ""}
+                        errorText={touched.description && errors.description}
+                      />
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                      <TextField
+                        name="grossAmount"
+                        label="Valor Bruto"
+                        placeholder="Valor bruto"
+                        mask={MaskInput.money}
+                        addonBefore="R$"
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.grossAmount || ""}
+                        errorText={touched.grossAmount && errors.grossAmount}
+                      />
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                      <TextField
+                        name="netAmount"
+                        label="Valor liquido"
+                        placeholder="Valor liquido"
+                        mask={MaskInput.money}
+                        addonBefore="R$"
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.netAmount || ""}
+                        errorText={touched.netAmount && errors.netAmount}
+                      />
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                      <TextField
+                        name="minSale"
+                        label="Venda mínima"
+                        mask={MaskInput.money}
+                        addonBefore="R$"
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.netAmount || ""}
+                        errorText={touched.netAmount && errors.netAmount}
+                      />
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                      <Select
+                        name="unitMeasurement"
+                        label="Unidade de medida"
+                        placeholder="Selecione a unidade de medida"
+                        options={unitMeasurement}
+                        onBlur={handleBlur}
+                        onChange={(e) => {
+                          setFieldValue("unitMeasurement", e || []);
+                        }}
+                        defaultValue={values.unitMeasurement || ""}
+                        errorText={
+                          touched.unitMeasurement && errors.unitMeasurement
+                        }
+                      />
+                    </Grid>
+                    <Grid item sm={12} xs={12}>
+                      <Select
+                        name="brand"
+                        label="Marca"
+                        placeholder="Selecione a marca"
+                        options={brands}
+                        onBlur={handleBlur}
+                        onChange={(e) => {
+                          setFieldValue("brand", e || []);
+                        }}
+                        defaultValue={values.brand || ""}
+                        errorText={touched.brand && errors.brand}
+                      />
+                    </Grid>
+                    <Grid item sm={12} xs={12}>
+                      <Select
+                        name="categories"
+                        label="Categorias"
+                        placeholder="Selecione as categorias"
+                        isMulti
+                        options={categories}
+                        onBlur={handleBlur}
+                        onChange={(e) => {
+                          setFieldValue("categories", e || []);
+                        }}
+                        defaultValue={values.categories || ""}
+                        errorText={touched.categories && errors.categories}
+                      />
+                    </Grid>
+                    <Grid item sm={12} xs={12}>
+                      <Select
+                        name="tags"
+                        label="Etiquetas"
+                        placeholder="Selecione as etiquetas"
+                        isMulti
+                        options={tags}
+                        onBlur={handleBlur}
+                        onChange={(e) => {
+                          setFieldValue("tags", e || []);
+                        }}
+                        defaultValue={values.tags || ""}
+                        errorText={touched.tags && errors.tags}
+                      />
+                    </Grid>
+                  </Grid>
+                </Card>
               </Grid>
-              <Button
-                mt="25px"
-                variant="contained"
-                color="primary"
-                type="submit"
-                loading={loading}
-              >
-                Criar
-              </Button>
-            </form>
-          )}
-        </Formik>
-      </Card>
+              <Grid item xs={12}>
+                <Card p="30px" width="100%">
+                  <FlexBox alignItems="center" marginBottom={16}>
+                    <Avatar
+                      bg="primary.main"
+                      size={25}
+                      color="primary.text"
+                      mr="0.875rem"
+                    >
+                      2
+                    </Avatar>
+                    <Typography fontSize="18px">
+                      Informações de envio
+                    </Typography>
+                  </FlexBox>
+                  <Grid container spacing={6}>
+                    <Grid item sm={4} xs={12}>
+                      <TextField
+                        name="width"
+                        label="Tamanho"
+                        placeholder={`40cm`}
+                        addonAfter={"cm"}
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.netAmount || ""}
+                        errorText={touched.netAmount && errors.netAmount}
+                      />
+                    </Grid>
+                    <Grid item sm={4} xs={12}>
+                      <TextField
+                        name="height"
+                        label="Altura"
+                        placeholder={`30cm`}
+                        addonAfter={"cm"}
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.netAmount || ""}
+                        errorText={touched.netAmount && errors.netAmount}
+                      />
+                    </Grid>
+                    <Grid item sm={4} xs={12}>
+                      <TextField
+                        name="weight"
+                        label="Peso"
+                        placeholder={`450kg`}
+                        addonAfter={"cm"}
+                        fullwidth
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.netAmount || ""}
+                        errorText={touched.netAmount && errors.netAmount}
+                      />
+                    </Grid>
+                  </Grid>
+                </Card>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  loading={loading}
+                >
+                  Criar produto
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        )}
+      </Formik>
     </div>
   );
 };
@@ -369,6 +506,14 @@ const initialValues = {
   images: [],
   brand: "",
 };
+
+const unitMeasurement = [
+  { label: "KG", value: "KG" },
+  { label: "CM", value: "CM" },
+  { label: "MT", value: "MT" },
+  { label: "LT", value: "LT" },
+  { label: "UN", value: "UN" },
+];
 
 const checkoutSchema = yup.object().shape({
   name: yup.string().required("campo requerido"),
@@ -442,7 +587,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
 
     return {
-      props: { categories: newCategories, tags: newTags, brands: newBrands },
+      props: {
+        categories: newCategories || [],
+        tags: newTags || [],
+        brands: newBrands || [],
+      },
     };
   } catch (err) {
     console.log("fail to verify tokens", err);

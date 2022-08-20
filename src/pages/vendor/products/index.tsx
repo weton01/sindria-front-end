@@ -20,6 +20,7 @@ import Button from "@component/buttons/Button";
 import Grid from "@component/grid/Grid";
 import { useRouter } from "next/router";
 import { toast } from "react-nextjs-toast";
+import { authRoute } from "middlewares/authRoute";
 
 const Products = (props) => {
   const { products } = props;
@@ -95,7 +96,7 @@ const Products = (props) => {
         </TableRow>
       </Hidden>
 
-      {products.items.map((item, ind) => (
+      {products?.items?.map((item, ind) => (
         <TableRow my="1rem" padding="6px 18px" key={ind}>
           <Grid container alignItems={"center"}>
             <Grid item sm={6} xs={6}>
@@ -243,31 +244,38 @@ const productList = [
 Products.layout = VendorDashboardLayout;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["shop_token"]: token } = parseCookies(ctx);
+  return authRoute(ctx, async ({ token }: any) => {
+    try {
+      api.interceptors.request.use((config) => {
+        config.headers["Authorization"] = `Bearer ${token}`;
+        return config;
+      });
 
-  try {
-    api.interceptors.request.use((config) => {
-      config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
+      const take = ITEMS_PER_PAGE.MAX;
+      const { skip = 0 } = ctx.query;
 
-    const take = ITEMS_PER_PAGE.MAX;
-    const { skip = 0 } = ctx.query;
+      let [products] = await Promise.all([
+        getProduct({
+          params: {
+            take,
+            skip, 
+          },
+        }),
+      ]);
 
-    let [products] = await Promise.all([getProduct(skip, take)]);
+      return {
+        props: {
+          products: products || [],
+        },
+      };
+    } catch (err) {
+      console.log("fail to verify tokens", err);
+    }
 
     return {
-      props: {
-        products,
-      },
+      props: {},
     };
-  } catch (err) {
-    console.log("fail to verify tokens", err);
-  }
-
-  return {
-    props: {},
-  };
+  });
 };
 
 export default Products;

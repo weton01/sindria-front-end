@@ -6,8 +6,7 @@ import Section10 from "../components/home-1/Section10";
 import Section12 from "../components/home-1/Section12";
 import Section2 from "../components/home-1/Section2";
 import Section3 from "../components/home-1/Section3";
-import Section4 from "../components/home-1/Section4";
-import Section5 from "../components/home-1/Section5";
+import Section4 from "../components/home-1/Section4"; 
 import AppLayout from "../components/layout/AppLayout";
 import Section15 from "@component/home-4/Section2";
 import Container from "../components/Container";
@@ -24,8 +23,7 @@ const IndexPage = ({ section2, section3, section4, section5 }) => {
       <Section1 />
       <Section2 data={section2} />
       <Section3 data={section3} />
-      <Section4 data={section4} />
-      <Section5 data={section5} />
+      <Section4 data={section4} /> 
       <Container my="2rem">
         <Section14 />
         <Box mb="3.75rem">
@@ -56,7 +54,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     props: {
       section2: [],
       section3: [],
-      section5: section5,
+      section5: section5 || [],
       section4: {
         reviews: [],
         brands: [],

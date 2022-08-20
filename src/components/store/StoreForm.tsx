@@ -371,8 +371,7 @@ const StoreForm = ({ address, edit, data }) => {
                                     ? "primary.main"
                                     : "transparent"
                                 }
-                                onClick={() => {
-                                  console.log(item);
+                                onClick={() => { 
                                   setSelectedAddress(item);
                                 }}
                               >

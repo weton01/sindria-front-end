@@ -5,20 +5,15 @@ import NextApp from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { ToastContainer } from "react-nextjs-toast";
 import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
-import { PersistGate } from "redux-persist/integration/react";
 import { getCategory } from "services/category";
 import { ThemeProvider } from "styled-components";
-import { AppProvider } from "../contexts/app/AppContext";
 import { useStore } from "../store";
 import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
-import SplashScreen from "@component/splash-screen/SplashScreen";
-import axios from "axios";
-import { PROD_URL } from "services/api";
 import { parseCookies } from "nookies";
 
 //Css
