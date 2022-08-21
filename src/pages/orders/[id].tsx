@@ -3,7 +3,6 @@ import Box from "@component/Box";
 import Button from "@component/buttons/Button";
 import Card from "@component/Card";
 import Divider from "@component/Divider";
-import DropZone from "@component/DropZone";
 import FlexBox from "@component/FlexBox";
 import RateForm from "@component/orders/forms/rate";
 import Grid from "@component/grid/Grid";

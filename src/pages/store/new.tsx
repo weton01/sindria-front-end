@@ -24,10 +24,8 @@ const Store = ({ address }) => {
             Voltar para produtos
           </Button>
         }
-      /> 
-
-      <StoreForm address={address}/>
-
+      />  
+      <StoreForm address={address}/> 
     </div>
   );
 };

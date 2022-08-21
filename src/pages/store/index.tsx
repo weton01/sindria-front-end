@@ -19,6 +19,7 @@ import Result from "@component/result";
 import { authRoute } from "middlewares/authRoute";
 import axios from "axios";
 import { fail } from "@component/notification/notifcate";
+import { getStore } from "services/store";
 
 const Categories = ({ stores }) => {
   const router = useRouter();
@@ -44,7 +45,7 @@ const Categories = ({ stores }) => {
   const editStore = (id) => {
     router.push(`store/${id}`);
   };
-  
+
   return (
     <div>
       <DashboardPageHeader
@@ -161,16 +162,17 @@ Categories.layout = DashboardLayout;
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return authRoute(ctx, async ({ token }: any) => {
     try {
-      const { data } = await axios.get(`${PROD_URL}store/v1`, {
-        params: { skip: 0, take: 10 },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const [store] = await Promise.all([
+        getStore({
+          token,
+          take: 1000,
+          skip: 0,
+        }),
+      ]);
+ 
       return {
         props: {
-          stores: data,
+          stores: store,
         },
       };
     } catch {

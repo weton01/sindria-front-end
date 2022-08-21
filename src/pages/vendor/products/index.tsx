@@ -27,6 +27,8 @@ const Products = (props) => {
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
 
+  console.log(products);
+  
   const deleteProduct = async (id) => {
     toast.notify("Removendo produto", {
       title: "Deletando...",
