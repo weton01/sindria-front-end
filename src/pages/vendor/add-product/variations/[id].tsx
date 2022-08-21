@@ -10,6 +10,7 @@ import Stepper from "@component/stepper/Stepper";
 import { useRouter } from "next/router";
 import Box from "@component/Box";
 import VariationForm from "@component/vendor/variations/VariationForm";
+import Typography from "@component/Typography";
 
 const ProductVariation = (props) => {
   const [selectedStep, setSelectedStep] = useState(0);
@@ -83,6 +84,9 @@ const ProductVariation = (props) => {
         />
       </Box>
       <Card p="30px">
+        <Typography fontSize={"24px"} fontWeight={600}>
+          Variações do Produto
+        </Typography>
         <VariationForm {...props} />
       </Card>
     </div>

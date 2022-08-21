@@ -1,38 +1,35 @@
 import Button from "@component/buttons/Button";
 import Card from "@component/Card";
-import Grid from "@component/grid/Grid";
 import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import VendorDashboardLayout from "@component/layout/VendorDashboardLayout";
-import TextField from "@component/text-field/TextField";
-import { Formik } from "formik";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 import { parseCookies } from "nookies";
-import * as yup from "yup";
-import { api } from "services/api";
+import { getVariationById } from "services/product";
 import Stepper from "@component/stepper/Stepper";
 import { useRouter } from "next/router";
 import Box from "@component/Box";
+import VariationForm from "@component/vendor/variations/VariationForm";
 
 const ProductColor = (props) => {
   const [selectedStep, setSelectedStep] = useState(0);
-
   const router = useRouter();
-  const { pathname } = router;
+  const id = router?.query?.id;
+  const { route } = router; 
 
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
-        router.push("/vendor/add-product");
+        router.push(`/vendor/add-product/${id}`);
         break;
       case 1:
-        router.push("/vendor/add-product/variations");
+        router.push(`/vendor/add-product/variations/${id}`);
         break;
       case 2:
-        router.push("/vendor/add-product/colors");
+        router.push(`/vendor/add-product/colors/${id}`);
         break;
       case 3:
-        router.push("/vendor/add-product/sizes");
+        router.push(`/vendor/add-product/sizes/${id}`);
         break;
       default:
         break;
@@ -40,41 +37,29 @@ const ProductColor = (props) => {
   };
 
   useEffect(() => {
-    switch (pathname) {
-      case "/vendor/add-product":
+    switch (route) {
+      case `/vendor/add-product/[id]`:
         setSelectedStep(1);
         break;
-      case "/vendor/add-product/variations":
+      case `/vendor/add-product/variations/[id]`:
         setSelectedStep(2);
         break;
-      case "/vendor/add-product/colors":
+      case `/vendor/add-product/colors/[id]`:
         setSelectedStep(3);
         break;
-      case "/vendor/add-product/sizes":
+      case `/vendor/add-product/sizes/[id]`:
         setSelectedStep(4);
         break;
 
       default:
         break;
     }
-  }, [pathname]);
-
-  const handleFormSubmit = async (values) => {
-    const payload = {
-      ...values,
-      categories: values.categories.map((item) => ({
-        id: item.value,
-      })),
-      tags: values.tags.map((item) => ({
-        id: item.value,
-      })),
-    };
-  };
+  }, [route]);
 
   return (
     <div>
       <DashboardPageHeader
-        title="Adicionar produto"
+        title={`Produto ${props.product.name}`}
         iconName="delivery-box"
         button={
           <Button
@@ -87,7 +72,6 @@ const ProductColor = (props) => {
           </Button>
         }
       />
-
       <Box mb="14px" width="100%">
         <Stepper
           stepperList={stepperList}
@@ -96,54 +80,23 @@ const ProductColor = (props) => {
         />
       </Box>
       <Card p="30px">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={checkoutSchema}
-          onSubmit={handleFormSubmit}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={6}>
-                <Grid item sm={12} xs={12}>
-                  <TextField
-                    name="name"
-                    label="Nome"
-                    placeholder="Nome do produto"
-                    fullwidth
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.name || ""}
-                    errorText={touched.name && errors.name}
-                  />
-                </Grid>
-              </Grid>
-              <Button
-                mt="25px"
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Save product
-              </Button>
-            </form>
-          )}
-        </Formik>
+        <VariationForm {...props} />
       </Card>
     </div>
   );
 };
 
-const initialValues = {};
-
-const checkoutSchema = yup.object().shape({});
+const initialValues = {
+  name: "",
+  netAmount: "",
+  weight: "",
+  height: "",
+  width: "",
+  image: [],
+  type: "default",
+  length: "",
+  loading: { create: false, delete: false },
+};
 
 ProductColor.layout = VendorDashboardLayout;
 
@@ -168,26 +121,26 @@ const stepperList = [
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
+  const { id } = ctx.query;
 
   try {
-    api.interceptors.request.use((config) => {
-      config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
+    const [product] = await Promise.all([getVariationById({ id, token })]);
 
-    /* const [categories, tags] = await Promise.all([]);
+    if ("name" in product) {
+      product.variations.push(initialValues);
 
-    
+      return {
+        props: { product },
+      };
+    }
     return {
-      props: { categories: newCategories, tags: newTags },
-    }; */
+      notFound: true,
+    };
   } catch (err) {
-    console.log("fail to verify tokens", err);
+    return {
+      notFound: true,
+    };
   }
-
-  return {
-    props: {},
-  };
 };
 
 export default ProductColor;

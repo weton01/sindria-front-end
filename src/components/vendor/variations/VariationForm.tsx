@@ -17,7 +17,7 @@ import {
 } from "services/variation";
 import FlexBox from "@component/FlexBox";
 import Avatar from "@component/avatar/Avatar";
-import Typography from "@component/Typography";
+import Typography, { H3 } from "@component/Typography";
 
 const VariationForm = (props) => {
   const [product, setProduct] = useState(props.product);
@@ -114,11 +114,18 @@ const VariationForm = (props) => {
                         expanded={index === product.variations?.length - 1}
                       >
                         <AccordionHeader
-                          px="0px"
+                          px="20px"
                           py="6px"
                           alignItems={"center"}
+                          backgroundColor={
+                            index === product.variations?.length - 1 &&
+                            "gray.400"
+                          }
+                          marginBottom={
+                            index === product.variations?.length - 1 && "16px"
+                          }
                         >
-                          <h1>
+                          <Typography fontSize={16} fontWeight={600}>
                             {index === product.variations?.length - 1 ? (
                               "Nova variação"
                             ) : (
@@ -136,7 +143,7 @@ const VariationForm = (props) => {
                                 </Typography>
                               </FlexBox>
                             )}
-                          </h1>
+                          </Typography>
                         </AccordionHeader>
                         <Grid container spacing={4}>
                           <Grid item xs={12}>
@@ -206,7 +213,7 @@ const VariationForm = (props) => {
                             <TextField
                               name={`weight`}
                               label="Peso"
-                              placeholder="Peso"
+                              placeholder="0.5"
                               type="number"
                               addonAfter={"kg"}
                               fullwidth
@@ -220,7 +227,7 @@ const VariationForm = (props) => {
                             <TextField
                               name={`height`}
                               label="Altura"
-                              placeholder="Altura"
+                              placeholder="14cm"
                               type="number"
                               addonAfter={"cm"}
                               fullwidth
@@ -234,7 +241,7 @@ const VariationForm = (props) => {
                             <TextField
                               name={`width`}
                               label="Largura"
-                              placeholder="Largura"
+                              placeholder="12cm"
                               type="number"
                               addonAfter={"cm"}
                               fullwidth
@@ -248,7 +255,7 @@ const VariationForm = (props) => {
                             <TextField
                               name={`length`}
                               label="Comprimento"
-                              placeholder="Largura"
+                              placeholder="22cm"
                               type="number"
                               addonAfter={"cm"}
                               fullwidth
