@@ -17,7 +17,7 @@ export const patchVariation = async ({
   payload,
   actionSuccess = () => null,
 }) =>
-  request.post({
+  request.patch({
     route: `inventory/v1/variation/default/${id}`,
     payload,
     message: `Variação editada!`,
@@ -26,7 +26,7 @@ export const patchVariation = async ({
 
 export const removeVariation = async ({ id, actionSuccess = () => null }) =>
   request.remove({
-    route: `inventory/v1/${id}`,
+    route: `inventory/v1/variation/${id}`,
     message: `Variação removida!`,
     actionSuccess,
   });

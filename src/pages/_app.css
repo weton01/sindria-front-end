@@ -1,5 +1,10 @@
+hr {
+  border: none;
+  border-bottom: 0.1rem solid #e0e0e0 !important;
+}
+
 .popup-content {
-  padding: 15px!important;
+  padding: 15px !important;
   display: flex !important;
   justify-content: flex-end !important;
   align-items: flex-end !important;
@@ -8,7 +13,7 @@
   width: auto !important;
 }
 
-.popup-content div { 
+.popup-content div {
   display: flex !important;
   flex-flow: column;
   justify-content: flex-end !important;
@@ -30,13 +35,13 @@
   background: transparent;
 }
 
-.list-image{ 
+.list-image {
   background-color: rgb(240, 240, 240);
   padding: 6px;
   border-radius: 5px;
   height: 100%;
 }
 
-.error{
-  color: #E94560 !important;
+.error {
+  color: #e94560 !important;
 }
