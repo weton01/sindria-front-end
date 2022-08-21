@@ -13,8 +13,8 @@ import { getBrands } from "services/brand";
 import { getStore } from "services/store";
 import ProductForm from "@component/vendor/product/ProdctForm";
 
-const AddProduct = (props) => { 
-  const [selectedStep, setSelectedStep] = useState(0); 
+const AddProduct = (props) => {
+  const [selectedStep, setSelectedStep] = useState(0);
   const router = useRouter();
   const { route } = router;
 
@@ -56,7 +56,7 @@ const AddProduct = (props) => {
         break;
     }
   }, [route]);
-  
+
   return (
     <div>
       <DashboardPageHeader
@@ -84,7 +84,7 @@ const AddProduct = (props) => {
     </div>
   );
 };
- 
+
 AddProduct.layout = VendorDashboardLayout;
 
 const stepperList = [
