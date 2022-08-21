@@ -28,9 +28,7 @@ const StoreForm = ({ address, edit, data }) => {
   const { id } = router.query;
   const [selectedAddress, setSelectedAddress]: [any, any] = useState({
     id: "",
-  });
-
-  console.log(data);
+  }); 
 
   const onSubmit = async (values: any) => {
     setLoading(true);
@@ -45,8 +43,7 @@ const StoreForm = ({ address, edit, data }) => {
       setLoading(false);
 
       return fail("Logo Obrigatório");
-    }
-    console.log(values);
+    } 
 
     let payload = {
       ...values,
