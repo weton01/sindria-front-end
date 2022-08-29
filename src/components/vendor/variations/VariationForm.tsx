@@ -2,7 +2,7 @@ import Button from "@component/buttons/Button";
 import Grid from "@component/grid/Grid";
 import TextField, { MaskInput } from "@component/text-field/TextField";
 import { Field, Formik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as yup from "yup";
 import { useRouter } from "next/router";
 import DropZone, { handleOnChangeImage } from "@component/DropZone";
@@ -14,19 +14,15 @@ import {
   patchVariation,
   postVariation,
   removeVariation,
-} from "services/variation";
+} from "services/inventory/variations/default";
 import FlexBox from "@component/FlexBox";
 import Avatar from "@component/avatar/Avatar";
-import Typography, { H3 } from "@component/Typography";
+import Typography from "@component/Typography";
 
 const VariationForm = (props) => {
   const [product, setProduct] = useState(props.product);
   const router = useRouter();
   const id = router?.query?.id;
-
-  useEffect(() => {
-    setProduct(props.product);
-  }, [props]);
 
   const handleFormSubmit = async (values) => {
     const { netAmount, weight, height, width, image, name, length } = values;
@@ -84,250 +80,243 @@ const VariationForm = (props) => {
 
   return (
     <div>
-      {product.variations
-        .filter((i) => i.type === "default")
-        .map((item, index) => {
-          return (
-            <div style={{ marginTop: 16 }}>
-              <Formik
-                key={index}
-                initialValues={item}
-                validationSchema={checkoutSchema}
-                onSubmit={handleFormSubmit}
-              >
-                {({
-                  values,
-                  errors,
-                  touched,
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                  setFieldValue,
-                  setFieldError,
-                  setFieldTouched,
-                }) => {
-                  return (
-                    <form onSubmit={handleSubmit}>
-                      <Accordion
-                        key={index}
-                        isForm
-                        expanded={index === product.variations?.length - 1}
+      {product.variations.map((item, index) => {
+        return (
+          <div style={{ marginTop: 16 }}>
+            <Formik
+              key={index}
+              initialValues={item}
+              validationSchema={checkoutSchema}
+              onSubmit={handleFormSubmit}
+            >
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                setFieldValue,
+                setFieldError,
+                setFieldTouched,
+              }) => {
+                return (
+                  <form onSubmit={handleSubmit}>
+                    <Accordion
+                      key={index}
+                      isForm
+                      expanded={index === product.variations?.length - 1}
+                    >
+                      <AccordionHeader
+                        px="20px"
+                        py="6px"
+                        alignItems={"center"}
+                        backgroundColor={
+                          index === product.variations?.length - 1 && "gray.400"
+                        }
+                        marginBottom={
+                          index === product.variations?.length - 1 && "16px"
+                        }
                       >
-                        <AccordionHeader
-                          px="20px"
-                          py="6px"
-                          alignItems={"center"}
-                          backgroundColor={
+                        <Typography fontSize={16} fontWeight={600}>
+                          {index === product.variations?.length - 1 ? (
+                            "Nova variação"
+                          ) : (
+                            <FlexBox alignItems="center">
+                              <Avatar
+                                bg="primary.main"
+                                size={25}
+                                color="primary.text"
+                                mr="0.675rem"
+                              >
+                                {index + 1}ª
+                              </Avatar>
+                              <Typography fontSize="18px">
+                                {product.variations[index].name}
+                              </Typography>
+                            </FlexBox>
+                          )}
+                        </Typography>
+                      </AccordionHeader>
+                      <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                          <TextField
+                            disabled={index !== product.variations?.length - 1}
+                            name={`name`}
+                            label="Nome"
+                            placeholder="Nome do produto"
+                            fullwidth
+                            onChange={handleChange}
+                            value={values.name || ""}
+                            errorText={touched?.name && errors?.name}
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Field name={"image"}>
+                            {({ meta }) => (
+                              <div>
+                                <DropZone
+                                  disabled={
+                                    index !== product.variations?.length - 1
+                                  }
+                                  notEdit={
+                                    index !== product.variations?.length - 1
+                                  }
+                                  setFieldValue={setFieldValue}
+                                  imgs={values.image}
+                                  title="Arraste ou solte a imagem do produto aqui"
+                                  onChange={(files, setLoading) => {
+                                    handleOnChangeImage(
+                                      files,
+                                      setFieldError,
+                                      setFieldTouched,
+                                      setLoading,
+                                      setFieldValue,
+                                      values,
+                                      false
+                                    );
+                                  }}
+                                />
+                                {meta?.touched && meta?.error && (
+                                  <ErrorMessage name={"image"} />
+                                )}
+                              </div>
+                            )}
+                          </Field>
+                        </Grid>
+                        <Grid item sm={4} xs={12}>
+                          <TextField
+                            name={`netAmount`}
+                            label="Valor liquido"
+                            placeholder="Valor liquido"
+                            mask={MaskInput.money}
+                            addonBefore="R$"
+                            fullwidth
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values?.netAmount || ""}
+                            errorText={touched?.netAmount && errors?.netAmount}
+                          />
+                        </Grid>
+                        <Grid item sm={2} xs={12}>
+                          <TextField
+                            name={`weight`}
+                            label="Peso"
+                            placeholder="0.5"
+                            type="number"
+                            addonAfter={"kg"}
+                            fullwidth
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values?.weight || ""}
+                            errorText={touched?.weight && errors?.weight}
+                          />
+                        </Grid>
+                        <Grid item sm={2} xs={12}>
+                          <TextField
+                            name={`height`}
+                            label="Altura"
+                            placeholder="14cm"
+                            type="number"
+                            addonAfter={"cm"}
+                            fullwidth
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values?.height || ""}
+                            errorText={touched?.height && errors?.height}
+                          />
+                        </Grid>
+                        <Grid item sm={2} xs={12}>
+                          <TextField
+                            name={`width`}
+                            label="Largura"
+                            placeholder="12cm"
+                            type="number"
+                            addonAfter={"cm"}
+                            fullwidth
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values?.width || ""}
+                            errorText={touched?.width && errors?.width}
+                          />
+                        </Grid>
+                        <Grid item sm={2} xs={12}>
+                          <TextField
+                            name={`length`}
+                            label="Comprimento"
+                            placeholder="22cm"
+                            type="number"
+                            addonAfter={"cm"}
+                            fullwidth
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values?.length || ""}
+                            errorText={touched?.length && errors?.length}
+                          />
+                        </Grid>
+                        <Grid
+                          item
+                          sm={12}
+                          xs={12}
+                          style={{ display: "flex", gap: 16 }}
+                          justifyContent={
                             index === product.variations?.length - 1 &&
-                            "gray.400"
-                          }
-                          marginBottom={
-                            index === product.variations?.length - 1 && "16px"
+                            "space-between"
                           }
                         >
-                          <Typography fontSize={16} fontWeight={600}>
-                            {index === product.variations?.length - 1 ? (
-                              "Nova variação"
-                            ) : (
-                              <FlexBox alignItems="center">
-                                <Avatar
-                                  bg="primary.main"
-                                  size={25}
-                                  color="primary.text"
-                                  mr="0.675rem"
-                                >
-                                  {index + 1}ª
-                                </Avatar>
-                                <Typography fontSize="18px">
-                                  {product.variations[index].name}
-                                </Typography>
-                              </FlexBox>
-                            )}
-                          </Typography>
-                        </AccordionHeader>
-                        <Grid container spacing={4}>
-                          <Grid item xs={12}>
-                            <TextField
-                              disabled={
-                                index !== product.variations?.length - 1
-                              }
-                              name={`name`}
-                              label="Nome"
-                              placeholder="Nome do produto"
-                              fullwidth
-                              onChange={handleChange}
-                              value={values.name || ""}
-                              errorText={touched?.name && errors?.name}
-                            />
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Field name={"image"}>
-                              {({ meta }) => (
-                                <div>
-                                  <DropZone
-                                    disabled={
-                                      index !== product.variations?.length - 1
-                                    }
-                                    notEdit={
-                                      index !== product.variations?.length - 1
-                                    }
-                                    setFieldValue={setFieldValue}
-                                    imgs={values.image}
-                                    title="Arraste ou solte a imagem do produto aqui"
-                                    onChange={(files, setLoading) => {
-                                      handleOnChangeImage(
-                                        files,
-                                        setFieldError,
-                                        setFieldTouched,
-                                        setLoading,
-                                        setFieldValue,
-                                        values,
-                                        false
-                                      );
-                                    }}
-                                  />
-                                  {meta?.touched && meta?.error && (
-                                    <ErrorMessage name={"image"} />
-                                  )}
-                                </div>
-                              )}
-                            </Field>
-                          </Grid>
-                          <Grid item sm={4} xs={12}>
-                            <TextField
-                              name={`netAmount`}
-                              label="Valor liquido"
-                              placeholder="Valor liquido"
-                              mask={MaskInput.money}
-                              addonBefore="R$"
-                              fullwidth
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values?.netAmount || ""}
-                              errorText={
-                                touched?.netAmount && errors?.netAmount
-                              }
-                            />
-                          </Grid>
-                          <Grid item sm={2} xs={12}>
-                            <TextField
-                              name={`weight`}
-                              label="Peso"
-                              placeholder="0.5"
-                              type="number"
-                              addonAfter={"kg"}
-                              fullwidth
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values?.weight || ""}
-                              errorText={touched?.weight && errors?.weight}
-                            />
-                          </Grid>
-                          <Grid item sm={2} xs={12}>
-                            <TextField
-                              name={`height`}
-                              label="Altura"
-                              placeholder="14cm"
-                              type="number"
-                              addonAfter={"cm"}
-                              fullwidth
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values?.height || ""}
-                              errorText={touched?.height && errors?.height}
-                            />
-                          </Grid>
-                          <Grid item sm={2} xs={12}>
-                            <TextField
-                              name={`width`}
-                              label="Largura"
-                              placeholder="12cm"
-                              type="number"
-                              addonAfter={"cm"}
-                              fullwidth
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values?.width || ""}
-                              errorText={touched?.width && errors?.width}
-                            />
-                          </Grid>
-                          <Grid item sm={2} xs={12}>
-                            <TextField
-                              name={`length`}
-                              label="Comprimento"
-                              placeholder="22cm"
-                              type="number"
-                              addonAfter={"cm"}
-                              fullwidth
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values?.length || ""}
-                              errorText={touched?.length && errors?.length}
-                            />
-                          </Grid>
-                          <Grid
-                            item
-                            sm={12}
-                            xs={12}
-                            style={{ display: "flex", gap: 16 }}
-                            justifyContent={
-                              index === product.variations?.length - 1 &&
-                              "space-between"
-                            }
+                          <Button
+                            mt="25px"
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            loading={values?.loading?.create}
                           >
+                            {index === product.variations?.length - 1
+                              ? "Criar"
+                              : "Alterar"}{" "}
+                            variação
+                          </Button>
+                          {index !== product.variations?.length - 1 ? (
                             <Button
                               mt="25px"
-                              variant="contained"
                               color="primary"
-                              type="submit"
-                              loading={values?.loading?.create}
+                              onClick={() =>
+                                deleteVariation(
+                                  product.variations[index].id,
+                                  index
+                                )
+                              }
+                              type="button"
+                              loading={values?.loading?.delete}
                             >
-                              {index === product.variations?.length - 1
-                                ? "Criar"
-                                : "Alterar"}{" "}
-                              variação
+                              Remover variação
                             </Button>
-                            {index !== product.variations?.length - 1 ? (
-                              <Button
-                                mt="25px"
-                                color="primary"
-                                onClick={() =>
-                                  deleteVariation(
-                                    product.variations[index].id,
-                                    index
-                                  )
-                                }
-                                type="button"
-                                loading={values?.loading?.delete}
-                              >
-                                Remover variação
-                              </Button>
-                            ) : (
-                              <Button
-                                mt="25px"
-                                type="button"
-                                color="secondary"
-                                route={`/vendor/add-product/colors/${id}`}
-                              >
-                                Próximo
-                                <Icon size="18px" defaultcolor="auto">
-                                  arrow-right
-                                </Icon>
-                              </Button>
-                            )}
-                          </Grid>
+                          ) : (
+                            <Button
+                              mt="25px"
+                              type="button"
+                              color="secondary"
+                              route={`/vendor/add-product/colors/${id}`}
+                            >
+                              Próximo
+                              <Icon size="18px" defaultcolor="auto">
+                                arrow-right
+                              </Icon>
+                            </Button>
+                          )}
                         </Grid>
-                      </Accordion>
-                    </form>
-                  );
-                }}
-              </Formik>
-              {index !== product.variations?.length - 1 && (
-                <hr style={{ marginTop: 24 }} />
-              )}
-            </div>
-          );
-        })}
+                      </Grid>
+                    </Accordion>
+                  </form>
+                );
+              }}
+            </Formik>
+            {index !== product.variations?.length - 1 && (
+              <hr style={{ marginTop: 24 }} />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -25,19 +25,22 @@ const EditProduct = (props) => {
   console.log('====================================');
   console.log(props);
   console.log('====================================');
-  const handleStepChange = (_step, ind) => {
+ const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
         router.push(`/vendor/add-product/${id}`);
         break;
       case 1:
-        router.push(`/vendor/add-product/variations/${id}`);
-        break;
-      case 2:
         router.push(`/vendor/add-product/colors/${id}`);
         break;
-      case 3:
+      case 2:
         router.push(`/vendor/add-product/sizes/${id}`);
+        break;
+      case 3:
+        router.push(`/vendor/add-product/inventory/${id}`);
+        break;
+      case 4:
+        router.push(`/vendor/add-product/variations/${id}`);
         break;
       default:
         break;
@@ -49,16 +52,18 @@ const EditProduct = (props) => {
       case `/vendor/add-product/[id]`:
         setSelectedStep(1);
         break;
-      case `/vendor/add-product/variations/[id]`:
-        setSelectedStep(2);
-        break;
       case `/vendor/add-product/colors/[id]`:
         setSelectedStep(3);
         break;
       case `/vendor/add-product/sizes/[id]`:
         setSelectedStep(4);
+        break; 
+      case `/vendor/add-product/inventory/[id]`:
+        setSelectedStep(3);
         break;
-
+      case `/vendor/add-product/variations/[id]`:
+        setSelectedStep(2);
+        break;
       default:
         break;
     }
@@ -100,17 +105,17 @@ const stepperList = [
     disabled: false,
   },
   {
-    title: "Variações",
-    disabled: false,
-  },
-  {
     title: "Cores",
     disabled: false,
   },
   {
     title: "Tamanhos",
     disabled: false,
-  },
+  }, 
+  {
+    title: "Estoque",
+    disabled: false,
+  }, 
 ];
  
 export const getServerSideProps: GetServerSideProps = async (c) => {

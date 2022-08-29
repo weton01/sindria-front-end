@@ -4,36 +4,36 @@ import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import VendorDashboardLayout from "@component/layout/VendorDashboardLayout";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
-import { parseCookies } from "nookies";
-import { getVariationById } from "services/product";
+import { parseCookies } from "nookies"; 
 import Stepper from "@component/stepper/Stepper";
 import { useRouter } from "next/router";
 import Box from "@component/Box";
 import VariationForm from "@component/vendor/variations/VariationForm";
 import Typography from "@component/Typography";
+import { getVariationById } from "services/inventory/variations/default";
 
 const ProductVariation = (props) => {
   const [selectedStep, setSelectedStep] = useState(0);
   const router = useRouter();
   const id = router?.query?.id;
-  const { route } = router;
-  console.log('====================================');
-  console.log(props);
-  console.log('====================================');
+  const { route } = router; 
 
-  const handleStepChange = (_step, ind) => {
+ const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
         router.push(`/vendor/add-product/${id}`);
         break;
       case 1:
-        router.push(`/vendor/add-product/variations/${id}`);
-        break;
-      case 2:
         router.push(`/vendor/add-product/colors/${id}`);
         break;
-      case 3:
+      case 2:
         router.push(`/vendor/add-product/sizes/${id}`);
+        break;
+      case 3:
+        router.push(`/vendor/add-product/inventory/${id}`);
+        break;
+      case 4:
+        router.push(`/vendor/add-product/variations/${id}`);
         break;
       default:
         break;
@@ -45,16 +45,18 @@ const ProductVariation = (props) => {
       case `/vendor/add-product/[id]`:
         setSelectedStep(1);
         break;
-      case `/vendor/add-product/variations/[id]`:
-        setSelectedStep(2);
-        break;
       case `/vendor/add-product/colors/[id]`:
         setSelectedStep(3);
         break;
       case `/vendor/add-product/sizes/[id]`:
         setSelectedStep(4);
+        break; 
+      case `/vendor/add-product/inventory/[id]`:
+        setSelectedStep(3);
         break;
-
+      case `/vendor/add-product/variations/[id]`:
+        setSelectedStep(2);
+        break;
       default:
         break;
     }
@@ -113,17 +115,17 @@ const stepperList = [
     disabled: false,
   },
   {
-    title: "Variações",
-    disabled: false,
-  },
-  {
     title: "Cores",
     disabled: false,
   },
   {
     title: "Tamanhos",
     disabled: false,
-  },
+  }, 
+  {
+    title: "Estoque",
+    disabled: false,
+  }, 
 ];
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {

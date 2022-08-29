@@ -156,17 +156,17 @@ const stepperList = [
     disabled: false,
   },
   {
-    title: "Variações",
-    disabled: false,
-  },
-  {
     title: "Cores",
     disabled: false,
   },
   {
     title: "Tamanhos",
     disabled: false,
-  },
+  }, 
+  {
+    title: "Estoque",
+    disabled: false,
+  }, 
 ];
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {

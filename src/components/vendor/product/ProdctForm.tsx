@@ -78,7 +78,7 @@ const ProductForm = (props) => {
         payload,
         message: `Produto alterado`,
         actionSuccess: (product) =>
-          router.push(`/vendor/add-product/variations/${product.id}`),
+          router.push(`/vendor/add-product/colors/${product.id}`),
       })
     }
     else
@@ -87,7 +87,7 @@ const ProductForm = (props) => {
         payload,
         message: `Produto adicionado`,
         actionSuccess: (product) =>
-          router.push(`/vendor/add-product/variations/${product.id}`),
+          router.push(`/vendor/add-product/colors/${product.id}`),
       });
     setLoading(false);
   };

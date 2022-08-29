@@ -16,6 +16,7 @@
     "axios": "^0.21.1",
     "cep-promise": "^4.1.2",
     "chart.js": "^2.9.4",
+    "chroma-js": "^2.4.2",
     "clsx": "^1.1.1",
     "date-fns": "^2.29.1",
     "formik": "^2.2.6",

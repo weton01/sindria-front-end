@@ -1,4 +1,22 @@
-import { request } from "./api";
+import { request } from "../../api";
+
+export const getVariationById = async ({ id, token }) => {
+  return request
+    .get({ route: `product/v1/creation/${id}`, token })
+    .then((value) => {
+      return {
+        ...value,
+        variations:
+          value?.variations
+            ?.map((item) => ({
+              ...item,
+              loading: { create: false, delete: false },
+              image: [item.image],
+            }))
+            .filter((i) => i.type === "default") || [],
+      };
+    });
+};
 
 export const postVariation = async ({
   id,
@@ -30,3 +48,4 @@ export const removeVariation = async ({ id, actionSuccess = () => null }) =>
     message: `Variação removida!`,
     actionSuccess,
   });
+
