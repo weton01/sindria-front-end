@@ -4,7 +4,7 @@ import { toast } from "react-nextjs-toast";
 
 export const request = {};
 export const PROD_URL =
-  "https://ag6bgmvg0g.execute-api.us-east-1.amazonaws.com/production/";
+  "https://hixylbo4ji.execute-api.us-east-1.amazonaws.com/production/";
 export const api = axios.create({
   baseURL: PROD_URL,
 });

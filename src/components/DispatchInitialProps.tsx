@@ -28,16 +28,6 @@ const DispatchInitialProps: React.FC<Props> = ({ categories, children, matches, 
         },
   });
 
-  dispatch({
-    type: "SET_INITIAL_MATCH",
-    payload: matches
-  })
-
-  dispatch({
-    type: "SELECT_ADDRESS",
-    payload: address
-  })
-
   return <>{children}</>;
 };
 

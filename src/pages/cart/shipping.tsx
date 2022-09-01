@@ -21,9 +21,9 @@ import AccordionHeader from "@component/accordion/AccordionHeader";
 import Divider from "@component/Divider";
 import { useSelector } from "react-redux";
 import Spin from "@component/spin/Spin";
-import { authRoute } from "middlewares/authRoute";
 import Container from "@component/Container";
 import { formatFloat } from "@utils/formatFloat";
+import { authRoute } from "middlewares/authRoute";
 
 const Checkout = ({ address }) => {
   const [selectedAddress, setSelectedAddress] = useState({ id: "" });
@@ -33,11 +33,12 @@ const Checkout = ({ address }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores);
+  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores); 
 
   const fetchShippings = useCallback(async () => {
-    setLoadingShippings(true);
-    if (orderStores?.length > 0) {
+    setLoadingShippings(true); 
+   
+    if (orderStores?.length > 0 ) {
       const promises = orderStores?.map((ost) => {
         const localPromises: any[] = [];
 
@@ -56,7 +57,8 @@ const Checkout = ({ address }) => {
             nVlDiametro:
               ost?.nVlDiametro > 15 ? ost?.nVlDiametro?.toString() : "15",
             nCdServico: ["04014", "04510"],
-            user: ost.userId,
+            user: ost?.userId,
+            storeName: ost?.storeName
           });
         } else {
           const rest = totalValue % 200;
@@ -72,7 +74,8 @@ const Checkout = ({ address }) => {
               nVlLargura: "66.66",
               nVlDiametro: "33.33",
               nCdServico: ["04014", "04510"],
-              user: ost.userId,
+              user: ost?.userId,
+              storeName: ost?.storeName
             });
           }
 
@@ -86,24 +89,28 @@ const Checkout = ({ address }) => {
             nVlLargura: (rest / 3).toString(),
             nVlDiametro: (rest / 2).toString(),
             nCdServico: ["04014", "04510"],
-            user: ost.userId,
+            user: ost?.userId,
+            storeName: ost?.storeName
           });
         }
 
         return localPromises;
       });
 
-      console.log("here", promises);
-
       const shippings = await Promise.all(
         promises.map(async (p) => {
           let user;
+          let storeName;
 
           const items = await Promise.all(
             p.map((i) => {
               user = i.user;
+              storeName = i.storeName;
+
               delete i.user;
-              return axios.post(`${PROD_URL}/shipping/v1`, i);
+              delete i.storeName;
+
+              return axios.post(`${PROD_URL}shipping/v1`, i);
             })
           );
 
@@ -118,9 +125,7 @@ const Checkout = ({ address }) => {
               Valor: 0,
               PrazoEntrega: "",
             },
-          ];
-
-          console.log("newItem: ", newItem);
+          ]; 
 
           items.forEach((l) => {
             l?.data?.forEach((l3) => {
@@ -130,29 +135,34 @@ const Checkout = ({ address }) => {
               if (index < 0) {
                 return;
               }
-              console.log('l3', l3.Valor)
               newItem[index].Valor += formatFloat(l3.Valor)
               newItem[index].PrazoEntrega = l3.PrazoEntrega;
             });
           });
 
-          console.log("newItemAfter: ", newItem);
-
           return {
             data: newItem,
             user,
+            storeName
           };
         })
       );
-
+ 
       setShippings(shippings);
     }
 
     setLoadingShippings(false);
   }, [selectedAddress]);
 
+
   useEffect(() => {
-    setSelectedAddress(address.items[0]);
+    fetchShippings();
+  }, [fetchShippings]);
+
+  useEffect(() => { 
+    if (address && address.items && address.items.length > 0){
+      setSelectedAddress(address?.items[0]);
+    }
   }, [address]);
 
   useEffect(() => {
@@ -162,12 +172,7 @@ const Checkout = ({ address }) => {
     });
   }, [selectedAddress]);
 
-  useEffect(() => {
-    console.log("chegou aqui");
-    fetchShippings();
-  }, [fetchShippings]);
-
-  useEffect(() => {
+  useEffect(() => { 
     if (shippings[0] && shippings[0].data && shippings[0].data.length > 0) {
       dispatch({
         type: "SET_SHIPPING",
@@ -178,6 +183,7 @@ const Checkout = ({ address }) => {
       });
     }
   }, [shippings]);
+
 
   const returnPage = () => {
     router.push("/cart");
@@ -258,7 +264,7 @@ const Checkout = ({ address }) => {
             <Spin loading={loadingShippings} size="30px">
               <FlexBox flexDirection={"column"} gap={8}>
                 {shippings.map((item, index) => (
-                  <Shipping key={`shi-${index}`} values={item} />
+                  <Shipping key={`shi-${index}`} values={item}/>
                 ))}
               </FlexBox>
             </Spin>
@@ -298,5 +304,13 @@ const Checkout = ({ address }) => {
 };
 
 Checkout.layout = CheckoutNavLayout;
+
+export const getServerSideProps: GetServerSideProps = async (c) => {
+  return authRoute(c, async (ctx: any) => {
+    return {
+      props: {}
+    } 
+  })
+}
 
 export default Checkout;

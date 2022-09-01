@@ -16,9 +16,9 @@ import { parseCookies } from "nookies";
 import { useAppDispatch } from "@hook/hooks";
 import { useRouter } from "next/router";
 import { ShippingTypes } from "@component/shipping/shipping";
-import { formatFloat } from "@utils/formatFloat";
 import { formatCurrency } from "@utils/formatCurrency";
 import Divider from "@component/Divider";
+import { formatFloat } from "@utils/formatFloat";
 
 const TranslatePaymentMethod = {
   credit: "Crédito",
@@ -26,17 +26,39 @@ const TranslatePaymentMethod = {
   boleto: "Boleto",
 }
 
+function addDaysWRONG(date: Date, days: any): Date {
+  const result = new Date();
+  result.setDate(date.getDate() + days);
+  return result;
+}
+
 const clearCart = (cart) => {
   const newCart = { ...cart }
-  newCart.orderStores = newCart.orderStores.map(ost => {
+  newCart.orderStores = [...newCart.orderStores]
 
-    ost.store = { id: ost.userId }
+  if (cart.invoiceType === 'BOLETO') {
+    newCart.installments = 1
+  }
+
+  delete newCart.fee
+  newCart.orderStores = newCart.orderStores.map(ost => {
+    const { trackingEstimated } = ost?.shippingPrice
+
+    ost.store = { id: ost.storeId }
     ost.description = cart.description
-    ost.shippingAmount = formatFloat(ost?.shippingPrice?.Valor)
+    ost.shippingAmount = ost?.shippingPrice?.Valor
+    ost.totalAmount = ost?.netAmount
     ost.orderProducts = ost.orderProducts.map(item => {
       delete item.otherProps
       return item
     })
+
+    ost.trackingEstimated = addDaysWRONG(
+      new Date(),
+      formatFloat(trackingEstimated)
+    ).toISOString()
+
+
     delete ost.nVlAltura
     delete ost.nVlComprimento
     delete ost.nVlDiametro
@@ -44,6 +66,9 @@ const clearCart = (cart) => {
     delete ost.nVlPeso
     delete ost.userId
     delete ost.shippingPrice
+    delete ost.storeName
+    delete ost.storeId
+    delete ost.netAmount
     return ost
   })
 
@@ -151,7 +176,7 @@ const CheckoutForm2 = () => {
                   flexDirection="column"
                 >
                   <H6 >
-                    Produtos da Loja:  <Typography fontSize={13} fontWeight="normal">   {item?.userId} </Typography>
+                    Produtos da Loja: {item?.storeName}
                   </H6>
                   <FlexBox alignItems="center" gap={12}>
                     <FlexBox width="100%" alignItems="center" gap={10}>
@@ -165,7 +190,7 @@ const CheckoutForm2 = () => {
                         <strong>Tempo de Entrega:</strong> {item?.shippingPrice?.PrazoEntrega} dias úteis
                       </Typography>
                       <Typography fontSize={13}>
-                        <strong>Preço:</strong> {formatCurrency(formatFloat(item.shippingPrice?.Valor))}
+                        <strong>Preço:</strong> {formatCurrency(item.shippingPrice?.Valor)}
                       </Typography>
                     </FlexBox>
 
@@ -211,10 +236,16 @@ const CheckoutForm2 = () => {
               {cart?.invoiceType}
             </Icon>
             <H6 ml="4px">{TranslatePaymentMethod[cart?.invoiceType]}</H6>
+            {
+              cart?.invoiceType === 'PIX' ? <>
+                PIX
+              </>
+                : null
+            }
           </FlexBox>
         </Card>
         {
-          cart?.invoiceType === 'credit' ? <>
+          cart?.invoiceType === 'CREDIT_CARD' ? <>
             <Typography mb="0.75rem">Cartão de crédito</Typography>
 
             <Card
@@ -239,6 +270,8 @@ const CheckoutForm2 = () => {
           </>
             : null
         }
+
+
 
       </Card1>
 

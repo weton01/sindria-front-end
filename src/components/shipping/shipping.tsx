@@ -20,9 +20,12 @@ const Shipping: React.FC<ShippingProps> = ({
 }: ShippingProps) => {
   const dispatch = useAppDispatch();
   const [code, setCode] = useState("04014")
-
+  console.log('values', values)
+  
   const onHandleChangeRadio = (it) => {
     setCode(it.Codigo)
+
+   
     dispatch({
       type: "SET_SHIPPING",
       payload: {
@@ -31,8 +34,6 @@ const Shipping: React.FC<ShippingProps> = ({
       }
     })
   }
-
-  console.log('values', values)
 
   return (
     <FlexBox
@@ -44,7 +45,7 @@ const Shipping: React.FC<ShippingProps> = ({
       flexDirection="column"
     >
       <H6 >
-        Loja: {values?.user}
+        Loja: {values?.storeName}
       </H6>
       <FlexBox alignItems="center" gap={12}>
         {values?.data?.map((it, index) => (
@@ -58,7 +59,12 @@ const Shipping: React.FC<ShippingProps> = ({
             <Icon size="45px" color="secondary">
               {ShippingTypes[it.Codigo].icon}
             </Icon>
-            <FlexBox flexDirection="column" pl={10} width="150px" justifyContent={"center"}>
+            <FlexBox 
+              flexDirection="column" 
+              pl={10} 
+              width="150px" 
+              justifyContent={"center"}
+            >
               <Typography fontSize={13}>
                 {ShippingTypes[it.Codigo].type}
               </Typography>
