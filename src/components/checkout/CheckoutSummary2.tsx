@@ -5,30 +5,33 @@ import Divider from "../Divider";
 import FlexBox from "../FlexBox";
 import Typography, { Span } from "../Typography";
 import { formatCurrency } from "@utils/formatCurrency";
-import { formatFloat } from "@utils/formatFloat";
 
-const calculateCartSubTotal = (orderProducts): number => {
+const calculateCartSubTotal = (orderStores): number => {
   let subTotal: number = 0;
-  orderProducts?.forEach((item) => {
+  orderStores?.forEach((item) => {
+    subTotal += item?.totalAmount
+  })
+  return subTotal
+}
+
+const calculateFees = (orderStores): number => {
+  let subTotal: number = 0;
+  orderStores?.forEach((item) => {
+    subTotal += item?.feeAmount
+  })
+  return subTotal
+}
+
+const calculateTotal = (orderStores): number => {
+  let subTotal: number = 0;
+  orderStores?.forEach((item) => {
     subTotal += item?.netAmount
   })
   return subTotal
 }
 
 const calculateDiscount = (cartP, products) => {
-  const subTotal: number = calculateCartSubTotal(products);
-
-  if (cartP?.invoiceType === 'credit') {
-    return subTotal * 0
-  }
-
-  if (cartP?.invoiceType === 'pix') {
-    return subTotal * 0.01
-  }
-
-  if (cartP?.invoiceType === 'boleto') {
-    return subTotal * 0.048
-  }
+  return 0;
 }
 
 const calculateShippingPrice = (orderStores) => { 
@@ -99,7 +102,7 @@ const CheckoutSummary2: React.FC = () => {
     </Typography>
   }
 
-  const subTotal = calculateCartSubTotal(products)
+  const subTotal = calculateCartSubTotal(cart.orderStores)
   const discount = calculateDiscount(cart, products)
   const shippingPrice = calculateShippingPrice(cart.orderStores)
 
@@ -149,6 +152,10 @@ const CheckoutSummary2: React.FC = () => {
         <Typography fontWeight="700">{formatCurrency(shippingPrice)}</Typography>
       </FlexBox>
 
+      <FlexBox justifyContent="space-between" alignItems="center" mb="0.5rem">
+        <Typography color="text.hint">Taxa:</Typography>
+        <Typography fontWeight="700">{formatCurrency(calculateFees(cart.orderStores))}</Typography>
+      </FlexBox>
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem">
         <Typography color="text.hint">Desconto:</Typography>
@@ -164,7 +171,7 @@ const CheckoutSummary2: React.FC = () => {
         mb="0.5rem"
       >
         <Typography>Total:</Typography>
-        <Typography fontWeight="700">{formatCurrency(subTotal - discount + shippingPrice)}</Typography>
+        <Typography fontWeight="700">{formatCurrency(calculateTotal(cart.orderStores))}</Typography>
       </FlexBox>
     </Box>
   );

@@ -23,6 +23,9 @@ import Box from "@component/Box";
 
 
 const PaymentForm = ({ creditCards }) => {
+  const width = useWindowSize();
+  const isMobile = width < 769;
+
   const router = useRouter()
   const dispatch = useAppDispatch();
 
@@ -55,9 +58,6 @@ const PaymentForm = ({ creditCards }) => {
   const nextPage = () => {
     router.push('/cart/checkout')
   }
-
-  const width = useWindowSize();
-  const isMobile = width < 769;
 
   const handlePaymentMethodChange = ({ target: { name } }) => {
     setPaymentMethod(name);
@@ -95,10 +95,10 @@ const PaymentForm = ({ creditCards }) => {
 
       <Card1 mb="2rem">
         <Radio
-          name="credit"
+          name="CREDIT_CARD"
           mb="1.5rem"
           color="secondary"
-          checked={paymentMethod === "credit"}
+          checked={paymentMethod === "CREDIT_CARD"}
           label={
             <Typography ml="6px" fontWeight="600" fontSize="18px">
               Pagar com Cartão de Crédito
@@ -108,7 +108,7 @@ const PaymentForm = ({ creditCards }) => {
         />
 
 
-        {paymentMethod === "credit" && (
+        {paymentMethod === "CREDIT_CARD" && (
           <>
             <Box mb="1rem">
               <Accordion
@@ -124,7 +124,7 @@ const PaymentForm = ({ creditCards }) => {
                   checkoutSchema={checkoutSchema}
                   loading={loading}
                 />
-                <Divider mt="1rem"  />
+                <Divider mt="1rem" />
 
               </Accordion>
             </Box>
@@ -178,10 +178,10 @@ const PaymentForm = ({ creditCards }) => {
         <Divider mb="1.25rem" mx="-2rem" />
 
         <Radio
-          name="pix"
+          name="PIX"
           mb="1.5rem"
           color="secondary"
-          checked={paymentMethod === "pix"}
+          checked={paymentMethod === "PIX"}
           label={
             <Typography ml="6px" fontWeight="600" fontSize="18px">
               Pagar com PIX
@@ -191,29 +191,10 @@ const PaymentForm = ({ creditCards }) => {
         />
         <Divider mb="1.5rem" mx="-2rem" />
 
-        {paymentMethod === "pix" && (
-          <Fragment>
-            <FlexBox alignItems="flex-end" mb="30px">
-              <TextField
-                name="email"
-                label="Paypal Email"
-                type="email"
-                mr={isMobile ? "1rem" : "30px"}
-                fullwidth
-              />
-              <Button variant="outlined" color="primary" type="button">
-                Submit
-              </Button>
-            </FlexBox>
-
-            <Divider mb="1.5rem" mx="-2rem" />
-          </Fragment>
-        )}
-
         <Radio
-          name="boleto"
+          name="BOLETO"
           color="secondary"
-          checked={paymentMethod === "boleto"}
+          checked={paymentMethod === "BOLETO"}
           label={
             <Typography ml="6px" fontWeight="600" fontSize="18px">
               Pagar com Boleto

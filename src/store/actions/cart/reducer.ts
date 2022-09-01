@@ -1,21 +1,56 @@
 import types from "./types";
-import { HYDRATE } from "next-redux-wrapper";
+import { HYDRATE } from "next-redux-wrapper"
 
 const initialState = {
-  invoiceType: "credit",
+  invoiceType: "CREDIT_CARD",
   description: "",
   address: { items: [], count: 0 },
   creditCard: {},
   orderStores: [],
 };
 
+const setFeeByStore = (orderStores, invoiceType) => {
+  const newOrderStores = [...orderStores]
+
+  newOrderStores.map(ost => {
+
+    if (invoiceType === "CREDIT_CARD") {
+      ost.feeAmount = ((ost.netAmount * 0.035) + 0.49)
+      ost.netAmount = ost.netAmount + ost.feeAmount
+    }
+
+    if (invoiceType === "BOLETO") {
+      ost.feeAmount = (1.99)
+      ost.netAmount = ost.netAmount + ost.feeAmount
+    }
+
+    if (invoiceType === "PIX") {
+      ost.feeAmount = (ost.netAmount * 0.01)
+      ost.netAmount = ost.netAmount + ost.feeAmount
+    }
+
+  })
+
+  return [...newOrderStores];
+};
+
+const setNetValue = (orderStores) => {
+  const newOrderStores = [...orderStores]
+
+  newOrderStores.map(ost => {
+    ost.netAmount = ost.totalAmount + ost?.shippingPrice?.Valor
+  })
+
+  return newOrderStores;
+}
+
 const setTotalAmountByStore = (orderStores) => {
   let newStores = orderStores.map((ost) => {
-    ost.totalAmount = ost.shippingPrice.Valor;
-
     ost.orderProducts.forEach((op) => {
-      ost.totalAmount += op?.otherProps?.netAmount * op.quantity;
-      ost.totalAmount += op?.otherProps?.mutation.feeTotal * op.quantity;
+      ost.totalAmount += (
+        (op?.otherProps?.netAmount + op?.otherProps?.mutation.feeTotal) *
+        op.quantity
+      );
     });
     return ost;
   });
@@ -78,7 +113,7 @@ const newAddNewProduct = (item, orderStores) => {
     );
   } else {
     newOrderStores.push({
-      shippingPrice: { Valor: 0.0 },
+      shippingPrice: { Valor: 0.0, Codigo: '', PrazoEntrega: 1 },
       nVlAltura: 0,
       nVlComprimento: 0,
       nVlDiametro: 0,
@@ -86,6 +121,8 @@ const newAddNewProduct = (item, orderStores) => {
       nVlPeso: 0,
       totalAmount: 0,
       userId: item?.otherProps?.user?.id,
+      storeName: item?.otherProps?.store.name,
+      storeId: item?.otherProps?.store.id,
       orderProducts: addNewProduct(item, []),
     });
   }
@@ -130,6 +167,14 @@ const newRemoveProduct = (item, orderStores) => {
     );
   }
 
+  if (index >= 0) {
+    if (newOrderStores[index].orderProducts.length === 0) {
+      return newOrderStores.filter(
+        (store) => store.userId !== item?.otherProps?.user?.id
+      )
+    }
+  }
+
   return newOrderStores;
 };
 
@@ -163,6 +208,14 @@ const newDeleteProduct = (item, orderStores) => {
     );
   }
 
+  if (index >= 0) {
+    if (newOrderStores[index].orderProducts.length === 0) {
+      return newOrderStores.filter(
+        (store) => store.userId !== item?.otherProps?.user?.id
+      )
+    }
+  }
+
   return newOrderStores;
 };
 
@@ -185,41 +238,60 @@ const reducer = (state = initialState, action) => {
     case types.ADD_TO_CART:
       return {
         ...state,
-        orderStores: setTotalAmountByStore(
-          recalculateShippingValues(
-            newAddNewProduct(action.payload, state.orderStores)
-          )
-        ),
+        orderStores: setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                newAddNewProduct(action.payload, state.orderStores)
+              )
+            )
+          ), state.invoiceType),
       };
+
+    case types.SET_FEE:
+      return {
+        ...state,
+        fee: action.payload
+      }
 
     case types.DELETE_FROM_CART:
       return {
         ...state,
-        orderStores: setTotalAmountByStore(
-          recalculateShippingValues(
-            newDeleteProduct(action.payload, state.orderStores)
-          )
+        orderStores: setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                newDeleteProduct(action.payload, state.orderStores)
+              )
+            )
+          ), state.invoiceType
         ),
       };
 
     case types.REMOVE_PRODUCT_FROM_CART:
       return {
         ...state,
-        orderStores: setTotalAmountByStore(
-          recalculateShippingValues(
-            newRemoveProduct(action.payload, state.orderStores)
-          )
-        ),
+        orderStores: setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                newRemoveProduct(action.payload, state.orderStores)
+              )
+            )
+          ), state.invoiceType)
       };
 
     case types.SET_SHIPPING:
       return {
         ...state,
-        orderStores: setStoreShippingPrice(
-          action.payload.user,
-          action.payload.price,
-          state.orderStores
-        ),
+        orderStores: setFeeByStore(
+          setNetValue(
+            setStoreShippingPrice(
+              action.payload.user,
+              action.payload.price,
+              state.orderStores
+            ),
+          ), state.invoiceType)
       };
 
     case types.SELECT_ADDRESS:
@@ -234,13 +306,14 @@ const reducer = (state = initialState, action) => {
       );
       return {
         ...state,
-        address:{address, count: address.length}
+        address: { address, count: address.length }
       };
 
     case types.SELECT_PAYMENT_TYPE:
       return {
         ...state,
         invoiceType: action.payload,
+        orderStores: setFeeByStore(setNetValue(state.orderStores), action.payload)
       };
 
     case types.SELECT_CREDIT_CARD:

@@ -1,13 +1,12 @@
 import Box from "@component/Box";
 import { formatCurrency } from "@utils/formatCurrency";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Card from "../Card";
-import CheckBox from "../CheckBox";
 import Divider from "../Divider";
 import FlexBox from "../FlexBox";
 import TextField, { MaskInput } from "../text-field/TextField";
-import Typography, { H5, H6, Paragraph, SemiSpan, Small } from "../Typography";
+import { H5, H6, Paragraph, SemiSpan, Small } from "../Typography";
 import Button from "@component/buttons/Button";
 import { useSelector } from "react-redux";
 import Accordion from "@component/accordion/Accordion";
