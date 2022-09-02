@@ -113,7 +113,7 @@ const Categories = (props) => {
                   }
                   position="right center"
                 >
-                  {(close) => (
+                  {(close): any => (
                     <div>
                       Deseja realmete deletar?
                       <span style={{ display: "flex", gap: 8 }}>
