@@ -47,7 +47,7 @@ const Checkout = ({ address }) => {
           localPromises.push({
             sCepOrigem: "13844-257",
             sCepDestino: "01032-000 ",
-            nVlPeso: ost?.nVlPeso.toString(),
+            nVlPeso: ost?.nVlPeso?.toString(),
             nCdFormato: "1",
             nVlComprimento:
               ost?.nVlComprimento > 15 ? ost?.nVlComprimento.toString() : "15",

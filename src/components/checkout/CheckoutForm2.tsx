@@ -2,7 +2,7 @@ import Avatar from "@component/avatar/Avatar";
 import Box from "@component/Box";
 import Card from "@component/Card";
 import FlexBox from "@component/FlexBox";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../buttons/Button";
 import { Card1 } from "../Card1";
 import Grid from "../grid/Grid";
@@ -19,6 +19,9 @@ import { ShippingTypes } from "@component/shipping/shipping";
 import { formatCurrency } from "@utils/formatCurrency";
 import Divider from "@component/Divider";
 import { formatFloat } from "@utils/formatFloat";
+import { Formik } from "formik";
+import TextField from "@component/text-field/TextField";
+import MaskedInputCustom from "@component/masked-input/MaskedInput";
 
 const TranslatePaymentMethod = {
   credit: "Crédito",
@@ -32,7 +35,7 @@ function addDaysWRONG(date: Date, days: any): Date {
   return result;
 }
 
-const clearCart = (cart) => {
+const clearCart = (cart, user, values) => {
   const newCart = { ...cart }
   newCart.orderStores = [...newCart.orderStores]
 
@@ -40,36 +43,47 @@ const clearCart = (cart) => {
     newCart.installments = 1
   }
 
+  if (cart.invoiceType === 'CREDIT_CARD') {
+    newCart.extraCreditCard = {
+      email: user.user.email,
+      postalCode: cart?.address?.cep.replace('-', ''),
+      addressNumber: cart?.address?.number,
+      ...values
+    }
+    newCart.installments = cart.installments
+  }
+
   delete newCart.fee
   newCart.orderStores = newCart.orderStores.map(ost => {
-    const { trackingEstimated } = ost?.shippingPrice
+    const newOst = {...ost};
+    const { trackingEstimated } = newOst?.shippingPrice
 
-    ost.store = { id: ost.storeId }
-    ost.description = cart.description
-    ost.shippingAmount = ost?.shippingPrice?.Valor
-    ost.totalAmount = ost?.netAmount
-    ost.orderProducts = ost.orderProducts.map(item => {
+    newOst.store = { id: newOst.storeId }
+    newOst.description = newOst.description || " "
+    newOst.shippingAmount = newOst?.shippingPrice?.Valor
+    newOst.totalAmount = newOst?.netAmount
+    newOst.orderProducts = newOst.orderProducts.map(item => {
       delete item.otherProps
       return item
     })
 
-    ost.trackingEstimated = addDaysWRONG(
+    newOst.trackingEstimated = addDaysWRONG(
       new Date(),
       formatFloat(trackingEstimated)
     ).toISOString()
 
 
-    delete ost.nVlAltura
-    delete ost.nVlComprimento
-    delete ost.nVlDiametro
-    delete ost.nVlLargura
-    delete ost.nVlPeso
-    delete ost.userId
-    delete ost.shippingPrice
-    delete ost.storeName
-    delete ost.storeId
-    delete ost.netAmount
-    return ost
+    delete newOst.nVlAltura
+    delete newOst.nVlComprimento
+    delete newOst.nVlDiametro
+    delete newOst.nVlLargura
+    delete newOst.nVlPeso
+    delete newOst.userId
+    delete newOst.shippingPrice
+    delete newOst.storeName
+    delete newOst.storeId
+    delete newOst.netAmount
+    return newOst
   })
 
   delete newCart.description
@@ -82,19 +96,33 @@ const clearCart = (cart) => {
 
 const CheckoutForm2 = () => {
   const [loading, setLoading] = useState(false)
+  const [cart, setCart]: [any, any]  = useState({})
+  const [user, setUser]: [any, any] = useState({})
 
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const cart = useSelector((selec: any) =>
+  const tempCart = useSelector((selec: any) =>
     selec.cart
   );
 
+  const tempUser = useSelector((selec: any) =>
+    selec.user
+  );
+
+  useEffect(() => {
+    setCart(tempCart)
+  }, [tempCart, setCart])
+ 
+  useEffect(() => {
+    setUser(tempUser)
+  }, [tempUser, setUser])
+
   const cookies = parseCookies()
 
-  const handleFormSubmit = async () => {
+  const handleFormSubmit = async (values) => {
     setLoading(true);
-    const newCart = clearCart(cart)
+    const newCart = clearCart(cart, user, values)
 
     try {
       await axios.post(`${PROD_URL}order/v1`, newCart, {
@@ -117,179 +145,252 @@ const CheckoutForm2 = () => {
     setLoading(false);
   };
 
+  console.log('hereee', cart?.creditCard?.type)
 
   return (
-    <Box>
-      <Card1 mb="1.5rem">
-        <FlexBox alignItems="center" mb="1.75rem">
-          <Avatar
-            bg="primary.main"
-            size={32}
-            color="primary.text"
-            mr="0.875rem"
-          >
-            1
-          </Avatar>
-          <Typography fontSize="20px">Detalhes de Entrega</Typography>
-        </FlexBox>
 
-        <Typography mb="0.75rem">Endereço de entrega</Typography>
-
-        <Card
-          bg="gray.100"
-          p="1rem"
-          boxShadow="none"
-          border="1px solid"
-          borderColor="transparent"
-        >
-          <H6 mb="0.25rem">CEP: {cart?.address?.cep}</H6>
-          <Paragraph color="gray.700">{cart?.address?.street}, {cart?.address?.number}, {cart?.address?.neighborhood}</Paragraph>
-        </Card>
-      </Card1>
-
-      <Card1 mb="1.5rem">
-        <FlexBox alignItems="center" mb="1.75rem">
-          <Avatar
-            bg="primary.main"
-            size={32}
-            color="primary.text"
-            mr="0.875rem"
-          >
-            2
-          </Avatar>
-          <Typography fontSize="20px">Detalhes do Envio</Typography>
-        </FlexBox>
-
-        <Typography mb="0.75rem">Lojas e Preços</Typography>
-
-        {
-          cart?.orderStores?.map((item, index) => {
-            return (
-              <React.Fragment key={`fx-1-${index}`}
-              >
-                <FlexBox
-                  p={10}
-                  width="100%"
-                  backgroundColor="#F6F9FC"
-                  gap={12}
-                  justifyContent="center"
-                  flexDirection="column"
+    <Formik
+      initialValues={{
+        name: '',
+        cpfCnpj: '',
+        phone: '',
+        mobilePhone: '',
+      }}
+      onSubmit={handleFormSubmit}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+      }) => (
+        <form onSubmit={handleSubmit}>
+          <Box>
+            <Card1 mb="1.5rem">
+              <FlexBox alignItems="center" mb="1.75rem">
+                <Avatar
+                  bg="primary.main"
+                  size={32}
+                  color="primary.text"
+                  mr="0.875rem"
                 >
-                  <H6 >
-                    Produtos da Loja: {item?.storeName}
-                  </H6>
-                  <FlexBox alignItems="center" gap={12}>
-                    <FlexBox width="100%" alignItems="center" gap={10}>
-                      <Icon size="45px" color="secondary">
-                        {ShippingTypes[item?.shippingPrice?.Codigo]?.icon}
-                      </Icon>
-                      <Typography fontSize={13}>
-                        <strong>Tipo de Envio:</strong> {ShippingTypes[item?.shippingPrice?.Codigo]?.type}
-                      </Typography>
-                      <Typography fontSize={13}>
-                        <strong>Tempo de Entrega:</strong> {item?.shippingPrice?.PrazoEntrega} dias úteis
-                      </Typography>
-                      <Typography fontSize={13}>
-                        <strong>Preço:</strong> {formatCurrency(item.shippingPrice?.Valor)}
-                      </Typography>
-                    </FlexBox>
-
-                  </FlexBox>
-                </FlexBox>{
-                  index !== cart.orderStores.length - 1 ? (
-                    <Divider
-                      bg="gray.300" mb="0.5rem" />
-                  ) : null
-                }
-              </React.Fragment>
-            )
-          })
-        }
-      </Card1>
-
-      <Card1 mb="1.5rem">
-        <FlexBox alignItems="center" mb="1.75rem">
-          <Avatar
-            bg="primary.main"
-            size={32}
-            color="primary.text"
-            mr="0.875rem"
-          >
-            3
-          </Avatar>
-          <Typography fontSize="20px">Informações de Pagamento</Typography>
-        </FlexBox>
-
-        <Typography mb="0.75rem">Método de Pagamento</Typography>
-        <Card
-          bg="gray.100"
-          p="1rem"
-          boxShadow="none"
-          border="1px solid"
-          borderColor="transparent"
-          mb="1rem"
-          display="flex"
-        >
-          <FlexBox alignItems="center" gap={4}>
-            <Icon
-            >
-              {cart?.invoiceType}
-            </Icon>
-            <H6 ml="4px">{TranslatePaymentMethod[cart?.invoiceType]}</H6>
-            {
-              cart?.invoiceType === 'PIX' ? <>
-                PIX
-              </>
-                : null
-            }
-          </FlexBox>
-        </Card>
-        {
-          cart?.invoiceType === 'CREDIT_CARD' ? <>
-            <Typography mb="0.75rem">Cartão de crédito</Typography>
-
-            <Card
-              bg="gray.100"
-              p="1rem"
-              boxShadow="none"
-              border="1px solid"
-              borderColor="transparent"
-            >
-              <H6 mb="0.25rem">{cart?.creditCard?.number}</H6>
-              <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
-                <Paragraph color="gray.700">
-                  {cart?.creditCard?.expirationDate}</Paragraph>
-
-                <Icon
-                  typer={IconType["payment-card"]}
-                >
-                  {cart?.creditCard?.type}
-                </Icon>
+                  1
+                </Avatar>
+                <Typography fontSize="20px">Detalhes de Entrega</Typography>
               </FlexBox>
-            </Card>
-          </>
-            : null
-        }
 
+              <Typography mb="0.75rem">Endereço de entrega</Typography>
 
+              <Card
+                bg="gray.100"
+                p="1rem"
+                boxShadow="none"
+                border="1px solid"
+                borderColor="transparent"
+              >
+                <H6 mb="0.25rem">CEP: {cart?.address?.cep}</H6>
+                <Paragraph color="gray.700">{cart?.address?.street}, {cart?.address?.number}, {cart?.address?.neighborhood}</Paragraph>
+              </Card>
+            </Card1>
 
-      </Card1>
+            <Card1 mb="1.5rem">
+              <FlexBox alignItems="center" mb="1.75rem">
+                <Avatar
+                  bg="primary.main"
+                  size={32}
+                  color="primary.text"
+                  mr="0.875rem"
+                >
+                  2
+                </Avatar>
+                <Typography fontSize="20px">Detalhes do Envio</Typography>
+              </FlexBox>
 
-      <Grid>
-        <Button
-          variant="contained"
-          color="primary"
-          mt="1.5rem"
-          type="submit"
-          fullwidth
-          loading={loading}
-          onClick={handleFormSubmit}
-        >
-          Fazer Pedido
-        </Button>
-      </Grid>
-    </Box >
+              <Typography mb="0.75rem">Lojas e Preços</Typography>
 
+              {
+                cart?.orderStores?.map((item, index) => {
+                  return (
+                    <React.Fragment key={`fx-1-${index}`}
+                    >
+                      <FlexBox
+                        p={10}
+                        width="100%"
+                        backgroundColor="#F6F9FC"
+                        gap={12}
+                        justifyContent="center"
+                        flexDirection="column"
+                      >
+                        <H6 >
+                          Produtos da Loja: {item?.storeName}
+                        </H6>
+                        <FlexBox alignItems="center" gap={12}>
+                          <FlexBox width="100%" alignItems="center" gap={10}>
+                            <Icon size="45px" color="secondary">
+                              {ShippingTypes[item?.shippingPrice?.Codigo]?.icon}
+                            </Icon>
+                            <Typography fontSize={13}>
+                              <strong>Tipo de Envio:</strong> {ShippingTypes[item?.shippingPrice?.Codigo]?.type}
+                            </Typography>
+                            <Typography fontSize={13}>
+                              <strong>Tempo de Entrega:</strong> {item?.shippingPrice?.PrazoEntrega} dias úteis
+                            </Typography>
+                            <Typography fontSize={13}>
+                              <strong>Preço:</strong> {formatCurrency(item.shippingPrice?.Valor)}
+                            </Typography>
+                          </FlexBox>
+
+                        </FlexBox>
+                      </FlexBox>{
+                        index !== cart.orderStores.length - 1 ? (
+                          <Divider
+                            bg="gray.300" mb="0.5rem" />
+                        ) : null
+                      }
+                    </React.Fragment>
+                  )
+                })
+              }
+            </Card1>
+
+            <Card1 mb="1.5rem">
+              <FlexBox alignItems="center" mb="1.75rem">
+                <Avatar
+                  bg="primary.main"
+                  size={32}
+                  color="primary.text"
+                  mr="0.875rem"
+                >
+                  3
+                </Avatar>
+                <Typography fontSize="20px">Informações de Pagamento</Typography>
+              </FlexBox>
+
+              <Typography mb="0.75rem">Método de Pagamento</Typography>
+              <Card
+                bg="gray.100"
+                p="1rem"
+                boxShadow="none"
+                border="1px solid"
+                borderColor="transparent"
+                mb="1rem"
+                display="flex"
+              >
+                <FlexBox alignItems="center" gap={4}>
+                  <Icon
+                  >
+                    {cart?.invoiceType}
+                  </Icon>
+                  <H6 ml="4px">{TranslatePaymentMethod[cart?.invoiceType]}</H6>
+                  {
+                    cart?.invoiceType === 'PIX' ? <>
+                      PIX
+                    </>
+                      : null
+                  }
+                </FlexBox>
+              </Card>
+              {
+                cart?.invoiceType === 'CREDIT_CARD' ? <>
+                  <Typography mb="0.75rem">Cartão de crédito</Typography>
+
+                  <Card
+                    bg="gray.100"
+                    p="1rem"
+                    boxShadow="none"
+                    border="1px solid"
+                    borderColor="transparent"
+                  >
+                    <H6 mb="0.25rem">{cart?.creditCard?.number}</H6>
+                    <FlexBox width="100%" ml={0} alignItems="center" justifyContent="space-between">
+                      <Paragraph color="gray.700">
+                        {cart?.creditCard?.expirationDate}</Paragraph>
+
+                      <Icon
+                        typer={IconType["payment-card"]}
+                      >
+                        visa
+                      </Icon>
+                    </FlexBox>
+                  </Card>
+                </>
+                  : null
+              }
+              {
+                cart?.invoiceType === 'CREDIT_CARD' ? <>
+                  <Box mb="30px" mt={12}>
+                    <Grid container horizontal_spacing={6} vertical_spacing={4}>
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          name="name"
+                          label="Nome"
+                          fullwidth
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values.name || ""}
+                          errorText={touched.name && errors.name}
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <MaskedInputCustom
+                          name="cpfCnpj"
+                          label="CPF"
+                          fullwidth
+                          mask="11111111111"
+                          onChange={handleChange}
+                          value={values.cpfCnpj || ""}
+                          errorText={touched.cpfCnpj && errors.cpfCnpj}
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <MaskedInputCustom
+                          name="phone"
+                          label="Telefone"
+                          fullwidth
+                          mask="11 11111111"
+                          onChange={handleChange}
+                          value={values.phone || ""}
+                          errorText={touched.phone && errors.phone}
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <MaskedInputCustom
+                          name="mobilePhone"
+                          label="Celular"
+                          fullwidth
+                          mask="11 111111111"
+                          onChange={handleChange}
+                          value={values.mobilePhone || ""}
+                          errorText={touched.mobilePhone && errors.mobilePhone}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </>
+                  : null
+              }
+
+            </Card1>
+
+            <Grid>
+              <Button
+                variant="contained"
+                color="primary"
+                mt="1.5rem"
+                type="submit"
+                fullwidth
+                loading={loading}
+              >
+                Fazer Pedido
+              </Button>
+            </Grid>
+          </Box >
+        </form>
+      )}
+
+    </Formik>
   );
 };
 

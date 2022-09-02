@@ -20,6 +20,7 @@ import Icon, { IconType } from "@component/icon/Icon";
 import Accordion from "@component/accordion/Accordion";
 import AccordionHeader from "@component/accordion/AccordionHeader";
 import Box from "@component/Box";
+import Select from "@component/Select";
 
 
 const PaymentForm = ({ creditCards }) => {
@@ -30,12 +31,20 @@ const PaymentForm = ({ creditCards }) => {
   const dispatch = useAppDispatch();
 
   const [selectedCreditCard, setSelectedCreditCard] = useState({ id: '' })
-  const [paymentMethod, setPaymentMethod] = useState("credit");
+  const [paymentMethod, setPaymentMethod] = useState("CREDIT_CARD");
   const [loading, setLoading] = useState(false);
+  const [installment, setInstallment] = useState(1)
 
   useEffect(() => {
     setSelectedCreditCard(creditCards?.items[0])
   }, [creditCards])
+
+  useEffect(() => {
+    dispatch({
+      type: "SET_INSTALLMENT",
+      payload: installment
+    })
+  }, [installment])
 
   useEffect(() => {
     dispatch({
@@ -113,7 +122,7 @@ const PaymentForm = ({ creditCards }) => {
             <Box mb="1rem">
               <Accordion
                 isForm
-                expanded={false}
+                expanded={creditCards?.items?.length === 0}
               >
                 <AccordionHeader px="0px" py="6px">
                   <H3 mb="0.75rem" >Novo Cartão de Crédito</H3>
@@ -172,6 +181,20 @@ const PaymentForm = ({ creditCards }) => {
               </Grid>
             </Box>
 
+            <Typography mb="0.75rem" >Numero de Parcelas</Typography>
+            <Box mb="1rem">
+              <Grid container spacing={4} >
+                <Grid item xs={12} md={4}>
+                  <Select
+                    options={CompanyTypeList}
+                    defaultValue={CompanyTypeList[0]}
+                    onChange={(v: any) => {
+                      setInstallment(v.value)
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
           </>
 
         )}
@@ -226,6 +249,21 @@ const initialValues = {
   expiry: "",
   cvc: "",
 };
+
+const CompanyTypeList = [
+  { label: "A vista", value: 1 },
+  { label: "2x sem juros", value: 2 },
+  { label: "3x sem juros", value: 3 },
+  { label: "4x sem juros", value: 4 },
+  { label: "5x sem juros", value: 5 },
+  { label: "6x sem juros", value: 6 },
+  { label: "7x sem juros", value: 7 },
+  { label: "8x sem juros", value: 8 },
+  { label: "9x sem juros", value: 9 },
+  { label: "10x sem juros", value: 10 },
+  { label: "11x sem juros", value: 11 },
+  { label: "12x sem juros", value: 12 },
+];
 
 const checkoutSchema = yup.object().shape({
   name: yup.string().required("nome requerido"),

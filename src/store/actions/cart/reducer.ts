@@ -7,6 +7,7 @@ const initialState = {
   address: { items: [], count: 0 },
   creditCard: {},
   orderStores: [],
+  installments: 1
 };
 
 const setFeeByStore = (orderStores, invoiceType) => {
@@ -298,6 +299,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         address: action.payload,
+      };
+
+    case types.SET_INSTALLMENT:
+      return {
+        ...state,
+        installments: action.payload,
       };
 
     case types.DELETE_ADDRESS:
