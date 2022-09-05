@@ -29,7 +29,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       props: { data: data },
     };
   } catch (err) {
-    console.log("fail to verify tokens", err);
   }
 
   return {

@@ -1,3 +1,4 @@
+import FlexBox from "@component/FlexBox";
 import LazyImage from "@component/LazyImage";
 import Link from "next/link";
 import React from "react";
@@ -6,7 +7,7 @@ import Card from "../Card";
 import Grid from "../grid/Grid";
 import Typography, { H3, Small, Span } from "../Typography";
 
-export interface FashionCard3Props {}
+export interface FashionCard3Props { }
 
 const FashionCard3: React.FC<FashionCard3Props> = () => {
   return (
@@ -26,22 +27,23 @@ const FashionCard3: React.FC<FashionCard3Props> = () => {
               flexWrap="wrap-reverse"
               containerHeight="100%"
             >
-              <Grid item sm={6} xs={12}>
+              <Grid item lg={6} md={12} sm={12} xs={12}>
                 <Box p="1.5rem" height="100%">
                   <Box height="100%" minHeight="190px" position="relative">
-                    <LazyImage
-                      src="/assets/images/products/t-shirt-1.png"
-                      height={"100%"}
-                      width={"100%"}
-                      layout="responsive"
-                      objectFit="contain"
-                      alt="model"
-                    />
+                    <FlexBox justifyContent="center" width="100%" alignItems="100%" height="100%"  >
+                      <LazyImage
+                        src="/assets/images/products/t-shirt-1.png"
+                        width={250}
+                        height={200}
+                        objectFit="contain"
+                        alt="model"
+                      />
+                    </FlexBox>
                   </Box>
                 </Box>
               </Grid>
 
-              <Grid item sm={6} xs={12}>
+              <Grid item lg={6} md={12} sm={12} xs={12}>
                 <Box p="1.5rem">
                   <Typography color="text.muted" mb="0.5rem">
                     MEN’S SHOE
@@ -72,7 +74,7 @@ const FashionCard3: React.FC<FashionCard3Props> = () => {
           </Card>
         </a>
       </Link>
-    </Box>
+    </Box >
   );
 };
 

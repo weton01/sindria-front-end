@@ -84,7 +84,6 @@ const ProductCard10: React.FC<ProductCard10Props> = ({
 
   const handleCartAmountChange = useCallback(
     (amount) => () => {
-      console.log(amount);
 
       if (amount >= 0) setCartAmount(amount);
     },

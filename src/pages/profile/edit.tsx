@@ -16,7 +16,6 @@ import * as yup from "yup";
 
 const ProfileEditor = () => {
   const handleFormSubmit = async (values) => {
-    console.log(values);
   };
 
   return (

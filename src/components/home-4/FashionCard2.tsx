@@ -1,3 +1,4 @@
+import FlexBox from "@component/FlexBox";
 import LazyImage from "@component/LazyImage";
 import Link from "next/link";
 import React from "react";
@@ -6,7 +7,7 @@ import Card from "../Card";
 import Grid from "../grid/Grid";
 import Typography, { H3, Small, Span } from "../Typography";
 
-export interface FashionCard2Props {}
+export interface FashionCard2Props { }
 
 const FashionCard2: React.FC<FashionCard2Props> = () => {
   return (
@@ -21,7 +22,7 @@ const FashionCard2: React.FC<FashionCard2Props> = () => {
             hoverEffect
           >
             <Grid container spacing={0} flexWrap="wrap-reverse">
-              <Grid item sm={6} xs={12}>
+              <Grid item lg={6} md={12} sm={12} xs={12}>
                 <Box p="1.5rem">
                   <Typography color="text.muted" mb="0.5rem">
                     WOMEN'S HANDBAG
@@ -48,17 +49,18 @@ const FashionCard2: React.FC<FashionCard2Props> = () => {
                 </Box>
               </Grid>
 
-              <Grid item sm={6} xs={12}>
+              <Grid item lg={6} md={12} sm={12} xs={12}>
                 <Box p="1.5rem">
                   <Box height="100%" minHeight="190px" position="relative">
-                    <LazyImage
-                      src="/assets/images/products/jacket.png"
-                      layout="responsive"
-                      width={"100%"}
-                      height={"100%"}
-                      objectFit="contain"
-                      alt="model"
-                    />
+                    <FlexBox justifyContent="center" width="100%" height="100%" alignItems="center">
+                      <LazyImage
+                        src="/assets/images/products/jacket.png"
+                        width={250}
+                        height={200}
+                        objectFit="contain"
+                        alt="model"
+                      />
+                    </FlexBox>
                   </Box>
                 </Box>
               </Grid>

@@ -20,11 +20,11 @@ const Section1: React.FC = () => {
             showArrow={false}
             spacing="0px"
           >
-            <CarouselCard1 />
-            <CarouselCard1 />
-            <CarouselCard1 />
-            <CarouselCard1 />
-            <CarouselCard1 />
+            <CarouselCard1 imgUrl="/assets/images/banners/img-for-carousel.webp"/>
+            <CarouselCard1 imgUrl="/assets/images/banners/img-for-carousel2.webp"/>
+            <CarouselCard1 imgUrl="/assets/images/banners/img-for-carousel3.webp"/>
+            <CarouselCard1 imgUrl="/assets/images/banners/img-for-carousel4.webp"/>
+            <CarouselCard1 imgUrl="/assets/images/banners/img-for-carousel5.webp"/>
           </Carousel>
         </Container>
       </Box>

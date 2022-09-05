@@ -20,7 +20,6 @@ const Shipping: React.FC<ShippingProps> = ({
 }: ShippingProps) => {
   const dispatch = useAppDispatch();
   const [code, setCode] = useState("04014")
-  console.log('values', values)
   
   const onHandleChangeRadio = (it) => {
     setCode(it.Codigo)

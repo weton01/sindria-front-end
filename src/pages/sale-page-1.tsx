@@ -33,7 +33,6 @@ const SalePage1 = () => {
   }, []);
 
   const handlePageChange = (page) => {
-    console.log(page);
     setPage(page);
   };
 

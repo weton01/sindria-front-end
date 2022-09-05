@@ -14,7 +14,6 @@ const SalePage2 = () => {
   const [page, setPage] = useState(0);
 
   const handlePageChange = (page) => {
-    console.log(page);
     setPage(page);
   };
 

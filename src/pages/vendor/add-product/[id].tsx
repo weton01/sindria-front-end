@@ -21,10 +21,7 @@ const EditProduct = (props) => {
   const router = useRouter();
   const id = router?.query?.id;
   const { route } = router;
-
-  console.log('====================================');
-  console.log(props);
-  console.log('====================================');
+  
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:

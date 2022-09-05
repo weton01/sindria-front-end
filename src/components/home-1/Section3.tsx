@@ -35,8 +35,8 @@ const Section3: React.FC<Section3Props> = ({ data }: Section3Props) => {
               <Card p="1rem">
                 <ProductCard6
                   title={item.c_name}
-                  subtitle={`${item.salesQuantity} vendidos esta semana`}
-                  imgUrl={`/assets/images/icons/${item.c_image}.svg`}
+                  subtitle={`${parseInt(item.salesQuantity)} vendidos esta semana`}
+                  imgUrl={item?.c_images}
                 />
               </Card>
             </a>
@@ -46,44 +46,5 @@ const Section3: React.FC<Section3Props> = ({ data }: Section3Props) => {
     </CategorySectionCreator>
   );
 };
-
-const categoryList = [
-  {
-    title: "Fone de ouvido",
-    subtitle: "3 mil pedidos esta semana",
-    categoryUrl: "/",
-    imgUrl: "/assets/images/banners/category-1.png",
-  },
-  {
-    title: "Relógio",
-    subtitle: "3 mil pedidos esta semana",
-    categoryUrl: "/",
-    imgUrl: "/assets/images/banners/category-2.png",
-  },
-  {
-    title: "Oculos",
-    subtitle: "3 mil pedidos esta semana",
-    categoryUrl: "/",
-    imgUrl: "/assets/images/banners/category-3.png",
-  },
-  {
-    title: "Fone de ouvido",
-    subtitle: "3 mil pedidos esta semana",
-    categoryUrl: "/",
-    imgUrl: "/assets/images/banners/category-1.png",
-  },
-  {
-    title: "Relógio",
-    subtitle: "3 mil pedidos esta semana",
-    categoryUrl: "/",
-    imgUrl: "/assets/images/banners/category-2.png",
-  },
-  {
-    title: "Oculos",
-    subtitle: "3 mil pedidos esta semana",
-    categoryUrl: "/",
-    imgUrl: "/assets/images/banners/category-3.png",
-  },
-];
 
 export default Section3;

@@ -31,7 +31,6 @@ Router.events.on("routeChangeError", () => NProgress.done());
 NProgress.configure({ showSpinner: false });
 
 const App: NextPage = ({ Component, pageProps }: any) => {
-  console.log(pageProps);
 
   const store = useStore(pageProps?.initialReduxState);
 

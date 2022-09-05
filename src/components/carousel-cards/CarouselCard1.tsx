@@ -1,35 +1,21 @@
+import LazyImage from "@component/LazyImage";
 import React from "react";
 import Button from "../buttons/Button";
 import Typography from "../Typography";
 import { StyledCarouselCard1 } from "./CarouselCardStyle";
 
-export interface CarouselCard1Props {}
+export interface CarouselCard1Props {
+  imgUrl?: string
+}
 
-const CarouselCard1: React.FC<CarouselCard1Props> = () => {
+const CarouselCard1: React.FC<CarouselCard1Props> = ({ imgUrl }) => {
   return (
     <StyledCarouselCard1>
-      <div>
-        <h1 className="title">50% Off For Your First Shopping</h1>
-        <Typography color="secondary.main" mb="1.35rem">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis lobortis
-          consequat eu, quam etiam at quis ut convallis.
-        </Typography>
-        <Button
-          className="button-link"
-          variant="contained"
-          color="primary"
-          p="1rem 1.5rem"
-        >
-          Visitar coleções
-        </Button>
-      </div>
-
-      <div className="image-holder">
-        <img
-          src="/images/products/apple-watch-0.png"
-          alt="apple-watch-1"
-        />
-      </div>
+      <LazyImage
+        width={1224}
+        height={300}
+        src={imgUrl}
+      />
     </StyledCarouselCard1>
   );
 };

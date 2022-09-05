@@ -83,7 +83,6 @@ const ProductCard3: React.FC<ProductCard3Props> = ({ ...props }) => {
               outof={5}
               color="warn"
               onChange={(value) => {
-                console.log(value, "from rating");
               }}
             />
             <div className="price">

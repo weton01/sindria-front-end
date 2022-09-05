@@ -1,3 +1,4 @@
+import FlexBox from "@component/FlexBox";
 import LazyImage from "@component/LazyImage";
 import Link from "next/link";
 import React from "react";
@@ -6,7 +7,7 @@ import Card from "../Card";
 import Grid from "../grid/Grid";
 import Typography, { H3, Span } from "../Typography";
 
-export interface FashionCard4Props {}
+export interface FashionCard4Props { }
 
 const FashionCard4: React.FC<FashionCard4Props> = () => {
   return (
@@ -39,14 +40,15 @@ const FashionCard4: React.FC<FashionCard4Props> = () => {
             </Grid>
             <Grid item sm={6} xs={12}>
               <Box height="100%" minHeight="200px" position="relative">
-                <LazyImage
-                  src="/assets/images/products/paper-bag.png"
-                  height={"100%"}
-                  width={"100%"}
-                  layout="responsive"
-                  objectFit="contain"
-                  alt="model"
-                />
+                <FlexBox justifyContent="center" width="100%" height="100%" alignItems="center" flexDirection="column" >
+                  <LazyImage
+                    src="/assets/images/products/paper-bag.png"
+                    width={200}
+                    height={200}
+                    objectFit="contain"
+                    alt="model"
+                  />
+                </FlexBox>
               </Box>
             </Grid>
           </Grid>

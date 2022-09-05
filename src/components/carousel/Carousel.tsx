@@ -39,6 +39,7 @@ export interface CarouselProps {
   rightButtonClass?: string;
   leftButtonStyle?: CSSProperties;
   rightButtonStyle?: CSSProperties;
+  children?: any;
 }
 
 const Carousel: React.FC<CarouselProps> = ({

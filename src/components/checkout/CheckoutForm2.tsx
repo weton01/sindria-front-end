@@ -145,8 +145,6 @@ const CheckoutForm2 = () => {
     setLoading(false);
   };
 
-  console.log('hereee', cart?.creditCard?.type)
-
   return (
 
     <Formik

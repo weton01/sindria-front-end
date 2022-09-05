@@ -64,7 +64,6 @@ const ProductSearchResult = ({ query }) => {
               defaultValue={sortOptions[0]}
               options={sortOptions}
               onChange={(e: any) => {
-                console.log(e)
                 routerPush({
                   ...router.query,
                   take: 10,
