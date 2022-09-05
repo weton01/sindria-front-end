@@ -50,7 +50,6 @@ const Categories = (props) => {
     router.push(`categories/${id}`);
   };
 
-  console.log(data);
 
   return (
     <div>

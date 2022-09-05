@@ -13,11 +13,10 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import Popup from "reactjs-popup";
-import { api, PROD_URL, request } from "services/api";
+import { request } from "services/api";
 import { toast } from "react-nextjs-toast";
 import Result from "@component/result";
 import { authRoute } from "middlewares/authRoute";
-import axios from "axios";
 import { fail } from "@component/notification/notifcate";
 import { getStore } from "services/store";
 

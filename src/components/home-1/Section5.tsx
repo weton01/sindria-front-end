@@ -23,7 +23,6 @@ const Section5: React.FC<Section5Props> = ({ data }: Section5Props) => {
           {data?.items?.map((item) => (
             <Grid item lg={2} md={3} sm={4} xs={6} key={item.id}>
               <ProductCard2
-
                 imgUrl={item.images[0]}
                 price={item.netAmount}
                 productUrl={`/product/${item.id}`}

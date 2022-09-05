@@ -180,7 +180,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   }, [mutations]);
 
   useEffect(() => {
-    setSelectedType(defaultVariation);
+    // setSelectedType(defaultVariation);
     setSelectedSize(defaultSize);
     setSelectedColor(defaultColor);
   }, [defaultSize, defaultColor, defaultVariation]);
@@ -196,7 +196,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
       (v) => v?.type === "default"
     );
 
-    setSelectedType(type);
+    // setSelectedType(type);
     setSelectedSize(size);
     setSelectedColor(color);
   }, [selectedMutations]);
@@ -230,7 +230,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     });
   };
 
-  console.log(viewimage);
 
   return (
     <Card

@@ -15,7 +15,6 @@ import { PROD_URL } from "services/api";
 
 const ProductDetails = ({product, reviews, comments, bestSalersRelated, relatedProducts}) => {
   const [selectedOption, setSelectedOption] = useState("description");
-  console.log('update')
   const handleOptionClick = (opt) => () => {
     setSelectedOption(opt);
   };

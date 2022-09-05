@@ -9,7 +9,7 @@ import Grid from "../grid/Grid";
 import Typography from "../Typography";
 
 export interface Section10Props {
-  data: any []
+  data: any[]
 }
 
 const Section10: React.FC<Section10Props> = ({ data }: Section10Props) => {
@@ -35,16 +35,23 @@ const Section10: React.FC<Section10Props> = ({ data }: Section10Props) => {
                   hoverEffect
                 >
                   <LazyImage
-                    src={`/assets/images/icons/${item.image}.svg`}
+                    src={item.images}
                     alt="fashion"
-                    height={52} 
-                    width={20}
+                    height={75}
+                    width={75}
                     objectFit="contain"
                     borderRadius={8}
-                  />
-                  <Typography fontWeight="600" fontSize="14px" ml="10px">
-                    {item.name}
-                  </Typography>
+                  /> 
+                    <Typography
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+
+                      }}
+                      fontWeight="600" fontSize="14px" ml="10px">
+                      {item.name}
+                    </Typography> 
                 </Card>
               </a>
             </Link>
@@ -54,6 +61,6 @@ const Section10: React.FC<Section10Props> = ({ data }: Section10Props) => {
     </Container>
   );
 };
- 
+
 
 export default Section10;

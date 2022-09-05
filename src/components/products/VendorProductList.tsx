@@ -60,7 +60,6 @@ const VendorProductList: React.FC<VendorProductListProps> = () => {
         <Pagination
           pageCount={5}
           onChange={(data) => {
-            console.log(data.selected);
           }}
         />
       </FlexBox>

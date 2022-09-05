@@ -13,7 +13,6 @@ import React from "react";
 
 const PaymentMethodEditor = () => {
   const handleFormSubmit = async (values) => {
-    console.log(values);
   };
 
   return (

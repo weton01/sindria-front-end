@@ -12,7 +12,11 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import CategorySectionCreator from "../CategorySectionCreator";
 
-const Section13: React.FC = () => {
+export interface Section13Props {
+  data: any []
+}
+
+const Section13: React.FC<Section13Props> = ({ data }) => {
   const [visibleSlides, setVisibleSlides] = useState(6);
   const width = useWindowSize();
 
@@ -31,22 +35,22 @@ const Section13: React.FC = () => {
     >
       <Box my="-0.25rem">
         <Carousel totalSlides={9} visibleSlides={visibleSlides}>
-          {productDatabase.slice(60, 69).map((item, ind) => (
+          {data.map((item, ind) => (
             <Box py="0.25rem" key={item.id}>
               <Card p="1rem">
                 <Link href={`/product/${ind + 20}`}>
                   <a>
                     <HoverBox borderRadius={8} mb="0.5rem">
                       <LazyImage
-                        src={item.imgUrl}
+                        src={item.images}
                         width="100%"
                         height="100%"
                         layout="responsive"
-                        alt={item.title}
+                        alt={item.name}
                       />
                     </HoverBox>
                     <H4 fontWeight="600" fontSize="14px" mb="0.25rem">
-                      {item.title}
+                      {item.name}
                     </H4>
 
                     <FlexBox>
@@ -56,11 +60,11 @@ const Section13: React.FC = () => {
                         color="primary.main"
                         mr="0.5rem"
                       >
-                         {formatCurrency(Math.ceil(item.price))}
+                        {formatCurrency(Math.ceil(item.netAmount))}
                       </H4>
 
                       <H4 fontWeight="600" fontSize="14px" color="text.muted">
-                        <del>{formatCurrency(Math.ceil(item.price))}</del>
+                        <del>{formatCurrency(Math.ceil(item.netAmount))}</del>
                       </H4>
                     </FlexBox>
                   </a>
