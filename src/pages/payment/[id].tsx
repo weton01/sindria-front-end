@@ -6,14 +6,19 @@ import { authRoute } from "middlewares/authRoute";
 import { api, PROD_URL } from "services/api";
 import axios from "axios";
 import PixResult from "@component/payment/result/pix";
+import BoletoResult from "@component/payment/result/boleto";
+import CardResult from "@component/payment/result/card";
 
-const Shop = ({ payment }) => { 
+const Shop = ({ payment }) => {
   console.log(payment);
-   
+  const methodResult = {
+    PIX: <PixResult payment={payment} />,
+    BOLETO: <BoletoResult payment={payment} />,
+    CREDIT_CARD: <CardResult payment={payment} />,
+  };
+
   return (
-    <Container maxWidth={750}>
-      <PixResult payment={payment} />
-    </Container>
+    <Container maxWidth={750}>{methodResult[payment.billingType]}</Container>
   );
 };
 

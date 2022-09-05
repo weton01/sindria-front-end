@@ -5,7 +5,7 @@ import { Chip } from "../Chip";
 import FlexBox from "../FlexBox";
 
 type Step = {
-  title: string;
+  title: string | any;
   disabled?: boolean;
 };
 
@@ -18,13 +18,7 @@ type StepperProps = {
 
 const StepperVertical = (props) => {
   return (
-    <FlexBox
-      alignItems="center"
-      flexWrap="wrap"
-      justifyContent="center"
-      flexDirection={"column"}
-      my="-4px"
-    >
+    <>
       {props.stepperList.map((step, ind) => (
         <FlexBox gap={8}>
           <FlexBox
@@ -54,10 +48,12 @@ const StepperVertical = (props) => {
               />
             )}
           </FlexBox>
-          <Typography maxWidth={300} marginTop={"4px"}>{step.title}</Typography>
+          <Typography maxWidth={300} marginTop={"4px"} width="300px" >
+            {step.title}
+          </Typography>
         </FlexBox>
       ))}
-    </FlexBox>
+    </>
   );
 };
 
