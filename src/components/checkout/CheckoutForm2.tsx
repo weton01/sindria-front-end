@@ -55,7 +55,7 @@ const clearCart = (cart, user, values) => {
 
   delete newCart.fee
   newCart.orderStores = newCart.orderStores.map(ost => {
-    const newOst = {...ost};
+    const newOst = { ...ost };
     const { trackingEstimated } = newOst?.shippingPrice
 
     newOst.store = { id: newOst.storeId }
@@ -96,7 +96,7 @@ const clearCart = (cart, user, values) => {
 
 const CheckoutForm2 = () => {
   const [loading, setLoading] = useState(false)
-  const [cart, setCart]: [any, any]  = useState({})
+  const [cart, setCart]: [any, any] = useState({})
   const [user, setUser]: [any, any] = useState({})
 
   const dispatch = useAppDispatch();
@@ -113,7 +113,7 @@ const CheckoutForm2 = () => {
   useEffect(() => {
     setCart(tempCart)
   }, [tempCart, setCart])
- 
+
   useEffect(() => {
     setUser(tempUser)
   }, [tempUser, setUser])
@@ -125,13 +125,13 @@ const CheckoutForm2 = () => {
     const newCart = clearCart(cart, user, values)
 
     try {
-      await axios.post(`${PROD_URL}order/v1`, newCart, {
+      const { data } = await axios.post(`${PROD_URL}order/v1`, newCart, {
         headers: {
           'Authorization': `Bearer ${cookies['shop_token']}`
         }
       })
 
-      router.push("/");
+      router.push(`/payment/${data?.bill?.id}`);
 
       dispatch({
         type: "CLEAR_CART",
