@@ -30,10 +30,6 @@ const calculateTotal = (orderStores): number => {
   return subTotal
 }
 
-const calculateDiscount = (cartP, products) => {
-  return 0;
-}
-
 const calculateShippingPrice = (orderStores) => { 
   let total: number = 0;
 
@@ -46,8 +42,11 @@ const calculateShippingPrice = (orderStores) => {
 
 const CheckoutSummary2: React.FC = () => {
   const [products, setProducts] = useState([])
+  const [cart, setCart]: any = useState({
+    orderStores: []
+  })
 
-  const cart = useSelector((selec: any) =>
+  const myCart = useSelector((selec: any) =>
     selec.cart
   );
 
@@ -67,6 +66,11 @@ const CheckoutSummary2: React.FC = () => {
     setProducts(newProducts)
   }, [cart, setProducts])
 
+  useEffect(() => {
+    setCart(myCart)
+  }, [myCart])
+
+  console.log('here', cart.coupon)
 
   const renderSize = (size, index) => {
     return <Box
@@ -103,9 +107,9 @@ const CheckoutSummary2: React.FC = () => {
   }
 
   const subTotal = calculateCartSubTotal(cart.orderStores)
-  const discount = calculateDiscount(cart, products)
   const shippingPrice = calculateShippingPrice(cart.orderStores)
 
+  console.log(cart.orderStores)
   return (
     <Box>
       <Typography color="secondary.900" fontWeight="700" mb="1.5rem">
@@ -159,7 +163,7 @@ const CheckoutSummary2: React.FC = () => {
 
       <FlexBox justifyContent="space-between" alignItems="center" mb="1.5rem">
         <Typography color="text.hint">Desconto:</Typography>
-        <Typography fontWeight="700">{formatCurrency(discount)}</Typography>
+        <Typography fontWeight="700">{formatCurrency(cart?.coupon?.discount)}</Typography>
       </FlexBox>
 
       <Divider bg="gray.300" mb="0.5rem" />

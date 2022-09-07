@@ -7,13 +7,30 @@ const initialState = {
   address: { items: [], count: 0 },
   creditCard: {},
   orderStores: [],
-  installments: 1
+  installments: 1,
+  coupon: { discount: 0 }
 };
 
-const setFeeByStore = (orderStores, invoiceType) => {
-  const newOrderStores = [...orderStores]
+const setDiscount = (orderStores, discount) => {
+  let newOrderStores = [...orderStores]
 
-  newOrderStores.map(ost => {
+  console.log('before', newOrderStores)
+
+  newOrderStores = newOrderStores.map(ost => {
+    console.log('here', ost.netAmount - (discount / orderStores.length), discount)
+    ost.netAmount = ost.netAmount - (discount / orderStores.length)
+    return ost
+  })
+
+  console.log('subtract', newOrderStores)
+
+  return newOrderStores;
+}
+
+const setFeeByStore = (orderStores, invoiceType) => {
+  let newOrderStores = [...orderStores]
+
+  newOrderStores = newOrderStores.map(ost => {
 
     if (invoiceType === "CREDIT_CARD") {
       ost.feeAmount = ((ost.netAmount * 0.035) + 0.49)
@@ -29,31 +46,34 @@ const setFeeByStore = (orderStores, invoiceType) => {
       ost.feeAmount = (ost.netAmount * 0.01)
       ost.netAmount = ost.netAmount + ost.feeAmount
     }
-
+    return ost
   })
 
   return [...newOrderStores];
 };
 
 const setNetValue = (orderStores) => {
-  const newOrderStores = [...orderStores]
+  let newOrderStores = [...orderStores]
 
-  newOrderStores.map(ost => {
-    ost.netAmount = ost.totalAmount + ost?.shippingPrice?.Valor
-  })
+  newOrderStores = newOrderStores.map(ost => {
+    ost.netAmount = 0;
+    ost.netAmount = ost.totalAmount + ost.shippingPrice.Valor 
+    return {...ost}
+  }) 
 
   return newOrderStores;
 }
 
 const setTotalAmountByStore = (orderStores) => {
   let newStores = orderStores.map((ost) => {
-    ost.orderProducts.forEach((op) => {
-      ost.totalAmount += (
+    const newOst = {...ost}
+    newOst.orderProducts.forEach((op) => {
+      newOst.totalAmount = (
         (op?.otherProps?.netAmount + op?.otherProps?.mutation.feeTotal) *
         op.quantity
       );
     });
-    return ost;
+    return newOst;
   });
 
   return [...newStores];
@@ -239,60 +259,63 @@ const reducer = (state = initialState, action) => {
     case types.ADD_TO_CART:
       return {
         ...state,
-        orderStores: setFeeByStore(
-          setNetValue(
-            setTotalAmountByStore(
-              recalculateShippingValues(
-                newAddNewProduct(action.payload, state.orderStores)
+        orderStores: setDiscount(
+          setFeeByStore(
+            setNetValue(
+              setTotalAmountByStore(
+                recalculateShippingValues(
+                  newAddNewProduct(action.payload, state.orderStores)
+                )
               )
-            )
-          ), state.invoiceType),
+            ), state.invoiceType), state.coupon.discount),
       };
-
-    case types.SET_FEE:
-      return {
-        ...state,
-        fee: action.payload
-      }
 
     case types.DELETE_FROM_CART:
       return {
         ...state,
-        orderStores: setFeeByStore(
-          setNetValue(
-            setTotalAmountByStore(
-              recalculateShippingValues(
-                newDeleteProduct(action.payload, state.orderStores)
+        orderStores: setDiscount(
+          setFeeByStore(
+            setNetValue(
+              setTotalAmountByStore(
+                recalculateShippingValues(
+                  newDeleteProduct(action.payload, state.orderStores)
+                )
               )
-            )
-          ), state.invoiceType
-        ),
+            ), state.invoiceType), state.coupon.discount),
+
       };
 
     case types.REMOVE_PRODUCT_FROM_CART:
       return {
         ...state,
-        orderStores: setFeeByStore(
-          setNetValue(
-            setTotalAmountByStore(
-              recalculateShippingValues(
-                newRemoveProduct(action.payload, state.orderStores)
+        orderStores: setDiscount(
+          setFeeByStore(
+            setNetValue(
+              setTotalAmountByStore(
+                recalculateShippingValues(
+                  newRemoveProduct(action.payload, state.orderStores)
+                )
               )
-            )
-          ), state.invoiceType)
+            ), state.invoiceType), state.coupon.discount),
       };
 
     case types.SET_SHIPPING:
       return {
         ...state,
-        orderStores: setFeeByStore(
-          setNetValue(
-            setStoreShippingPrice(
-              action.payload.user,
-              action.payload.price,
-              state.orderStores
-            ),
-          ), state.invoiceType)
+        orderStores:
+          setDiscount(
+            setFeeByStore(
+              setNetValue(
+                setTotalAmountByStore(
+                  recalculateShippingValues(
+                    setStoreShippingPrice(
+                      action.payload.user,
+                      action.payload.price,
+                      state.orderStores
+                    ),
+                  )
+                )
+              ), state.invoiceType), state.coupon.discount),
       };
 
     case types.SELECT_ADDRESS:
@@ -320,7 +343,14 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         invoiceType: action.payload,
-        orderStores: setFeeByStore(setNetValue(state.orderStores), action.payload)
+        orderStores:
+          setDiscount(
+            setFeeByStore(
+              setNetValue(
+                setTotalAmountByStore(
+                  state.orderStores
+                )
+              ), state.invoiceType), state.coupon.discount),
       };
 
     case types.SELECT_CREDIT_CARD:
@@ -335,8 +365,25 @@ const reducer = (state = initialState, action) => {
         description: action.payload,
       };
 
+    case types.SET_COUPON:
+      return {
+        ...state,
+        coupon: action.payload,
+        orderStores:
+          setDiscount(
+            setFeeByStore(
+              setNetValue(
+                setTotalAmountByStore(
+                  recalculateShippingValues(
+                    state.orderStores
+                  )
+                )
+              ), state.invoiceType), state.coupon.discount),
+      }
+
     case types.CLEAR_CART:
       return initialState;
+
 
     default:
       return state;

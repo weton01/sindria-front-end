@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import Button from "../buttons/Button";
 import { Card1 } from "../Card1";
 import Grid from "../grid/Grid";
-import Typography, { H6, Paragraph } from "../Typography";
+import Typography, { H5, H6, Paragraph } from "../Typography";
 import { useSelector } from "react-redux";
 import Icon, { IconType } from "@component/icon/Icon";
 import { fail, success } from "@component/notification/notifcate";
@@ -24,9 +24,15 @@ import TextField from "@component/text-field/TextField";
 import MaskedInputCustom from "@component/masked-input/MaskedInput";
 
 const TranslatePaymentMethod = {
-  credit: "Crédito",
-  pix: "PIX",
-  boleto: "Boleto",
+  CREDIT_CARD: "Crédito",
+  PIX: "PIX",
+  BOLETO: "Boleto",
+}
+
+const TranslateIcon = {
+  CREDIT_CARD: "credit",
+  PIX: "pix",
+  BOLETO: "boleto",
 }
 
 function addDaysWRONG(date: Date, days: any): Date {
@@ -54,6 +60,7 @@ const clearCart = (cart, user, values) => {
   }
 
   delete newCart.fee
+  delete newCart.coupon
   newCart.orderStores = newCart.orderStores.map(ost => {
     const newOst = { ...ost };
     const { trackingEstimated } = newOst?.shippingPrice
@@ -94,10 +101,15 @@ const clearCart = (cart, user, values) => {
   return newCart
 }
 
-const CheckoutForm2 = () => {
+interface CheckoutForm2props {
+  data: any
+}
+
+const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
   const [loading, setLoading] = useState(false)
   const [cart, setCart]: [any, any] = useState({})
   const [user, setUser]: [any, any] = useState({})
+  const [selectedCoupon, setSelectedCoupon] = useState({ id: '', discount: 0 })
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -117,6 +129,19 @@ const CheckoutForm2 = () => {
   useEffect(() => {
     setUser(tempUser)
   }, [tempUser, setUser])
+
+  useEffect(() => {
+    setSelectedCoupon(data?.items[0])
+  }, [data])
+
+  useEffect(() => {
+
+    if (selectedCoupon.id !== '')
+      dispatch({
+        type: "SET_COUPON",
+        payload: selectedCoupon
+      })
+  }, [selectedCoupon])
 
   const cookies = parseCookies()
 
@@ -146,7 +171,6 @@ const CheckoutForm2 = () => {
   };
 
   return (
-
     <Formik
       initialValues={{
         name: '',
@@ -263,6 +287,53 @@ const CheckoutForm2 = () => {
                 >
                   3
                 </Avatar>
+                <Typography fontSize="20px">Cupom de Desconto</Typography>
+              </FlexBox>
+              <Grid container horizontal_spacing={6} vertical_spacing={4}>
+                {data?.items?.map(coupon => (
+                  <Grid item lg={4} md={6} xs={12}>
+                    <Card
+                      bg="gray.100"
+                      p="0rem 1rem 0rem 1rem"
+                      boxShadow="none"
+                      border="1px solid"
+                      mb="1rem"
+                      display="flex"
+                      height={75}
+                      borderColor={
+                        coupon.id === selectedCoupon?.id
+                          ? "primary.main"
+                          : "transparent"
+                      }
+                    >
+                      <FlexBox alignItems="center" gap={16} width="100%">
+                        <Icon color="secondary" size="30px">
+                          coupon
+                        </Icon>
+                        <FlexBox flexDirection="column" justifyContent="center" width="100%" >
+                          <Typography fontSize={13}>
+                            {coupon.description}
+                          </Typography>
+                          <H5  >
+                            {formatCurrency(coupon.discount)}
+                          </H5>
+                        </FlexBox>
+                      </FlexBox>
+                    </Card>
+                  </Grid>))}
+              </Grid>
+            </Card1>
+
+            <Card1 mb="1.5rem">
+              <FlexBox alignItems="center" mb="1.75rem">
+                <Avatar
+                  bg="primary.main"
+                  size={32}
+                  color="primary.text"
+                  mr="0.875rem"
+                >
+                  4
+                </Avatar>
                 <Typography fontSize="20px">Informações de Pagamento</Typography>
               </FlexBox>
 
@@ -279,7 +350,7 @@ const CheckoutForm2 = () => {
                 <FlexBox alignItems="center" gap={4}>
                   <Icon
                   >
-                    {cart?.invoiceType}
+                    {TranslateIcon[cart?.invoiceType]}
                   </Icon>
                   <H6 ml="4px">{TranslatePaymentMethod[cart?.invoiceType]}</H6>
                   {
