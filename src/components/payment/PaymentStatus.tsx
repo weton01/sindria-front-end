@@ -4,15 +4,12 @@ import Icon from "@component/icon/Icon";
 import Typography from "@component/Typography";
 import { formatCurrency } from "@utils/formatCurrency";
 import { colors } from "@utils/themeColors";
-import { IconSuccess } from "./result/style";
-
+import { IconSuccess } from "./result/style"; 
 import PixResult from "@component/payment/result/pix";
 import BoletoResult from "@component/payment/result/boleto";
 import CardResult from "@component/payment/result/card";
 
-export const paymentStatusResult = (payment) => {
-  console.log(payment);
-
+export const paymentStatusResult = (payment) => { 
   const methodResult = {
     PIX: <PixResult payment={payment} />,
     BOLETO: <BoletoResult payment={payment} />,

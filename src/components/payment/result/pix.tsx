@@ -2,7 +2,7 @@ import Card from "@component/Card";
 import Container from "@component/Container";
 import FlexBox from "@component/FlexBox";
 import Icon from "@component/icon/Icon";
-import Typography, { H3, H6, Paragraph } from "@component/Typography";
+import Typography, { H3, Paragraph } from "@component/Typography";
 import React from "react";
 import Stepper from "@component/stepper/Stepper";
 import Clipboard from "@component/clipboard/Clipboard";

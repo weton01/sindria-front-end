@@ -2,15 +2,12 @@ import React, { Fragment, useEffect, useState } from "react";
 import * as yup from "yup";
 import Typography, { H3, H6, Paragraph } from "../Typography";
 import Grid from "../grid/Grid";
-import TextField from "../text-field/TextField";
 import Button from "../buttons/Button";
 import { useRouter } from "next/router";
 import { Card1 } from "../Card1";
 import Radio from "../radio/Radio";
 import FlexBox from "../FlexBox";
 import Divider from "../Divider";
-import useWindowSize from "../../hooks/useWindowSize";
-import Avatar from "@component/avatar/Avatar";
 import Card from "@component/Card";
 import PaymentFormV2 from "@component/payment/Form";
 import { api } from "services/api";
@@ -23,13 +20,9 @@ import Box from "@component/Box";
 import Select from "@component/Select";
 
 
-const PaymentForm = ({ creditCards }) => {
-  const width = useWindowSize();
-  const isMobile = width < 769;
-
+const PaymentForm = ({ creditCards }) => { 
   const router = useRouter()
-  const dispatch = useAppDispatch();
-
+  const dispatch = useAppDispatch(); 
   const [selectedCreditCard, setSelectedCreditCard] = useState({ id: '' })
   const [paymentMethod, setPaymentMethod] = useState("CREDIT_CARD");
   const [loading, setLoading] = useState(false);
