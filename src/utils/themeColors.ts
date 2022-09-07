@@ -45,6 +45,7 @@ const secondaryColor = {
 
 const warningColor = {
   main: "#FFCD4E",
+  light: "#fff1cc",
   text: textColor.primary,
 };
 const errorColor = {

@@ -5,36 +5,29 @@ import { GetServerSideProps } from "next";
 import { authRoute } from "middlewares/authRoute";
 import { api, PROD_URL } from "services/api";
 import axios from "axios";
-import PixResult from "@component/payment/result/pix";
-import BoletoResult from "@component/payment/result/boleto";
-import CardResult from "@component/payment/result/card";
-import { getPaymentById } from "services/payment";
 import { useRouter } from "next/router";
+import { paymentStatusResult } from "@component/payment/PaymentStatus";
 
 const Shop = ({ payment }) => {
-  const [paymentActual, setPaymentActual] = useState(payment)
+  const [currentPayment, setCurrentPayment] = useState(payment);
   const router = useRouter();
-  const { id } = router.query; 
+  const { id } = router.query;
 
   useEffect(() => {
     const inteval = setInterval(async () => {
-      const result = await getPaymentById(id);
-      setPaymentActual(result)
+      // const result = await getPaymentById(id);
+      //setCurrentPayment(result)
     }, 5000);
 
     return () => {
       clearInterval(inteval);
     };
-  }, [setPaymentActual]);
-
-  const methodResult = {
-    PIX: <PixResult payment={paymentActual} />,
-    BOLETO: <BoletoResult payment={paymentActual} />,
-    CREDIT_CARD: <CardResult payment={paymentActual} />,
-  };
-
+  }, [setCurrentPayment]);
+  
   return (
-    <Container maxWidth={750}>{methodResult[payment.billingType]}</Container>
+    <Container maxWidth={750}>
+      {paymentStatusResult(currentPayment)}
+    </Container>
   );
 };
 
