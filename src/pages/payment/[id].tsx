@@ -1,6 +1,6 @@
 import Container from "@component/Container";
 import NavbarLayout from "@component/layout/NavbarLayout";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { authRoute } from "middlewares/authRoute";
 import { api, PROD_URL } from "services/api";
@@ -8,13 +8,29 @@ import axios from "axios";
 import PixResult from "@component/payment/result/pix";
 import BoletoResult from "@component/payment/result/boleto";
 import CardResult from "@component/payment/result/card";
+import { getPaymentById } from "services/payment";
+import { useRouter } from "next/router";
 
 const Shop = ({ payment }) => {
-  console.log(payment);
+  const [paymentActual, setPaymentActual] = useState(payment)
+  const router = useRouter();
+  const { id } = router.query; 
+
+  useEffect(() => {
+    const inteval = setInterval(async () => {
+      const result = await getPaymentById(id);
+      setPaymentActual(result)
+    }, 5000);
+
+    return () => {
+      clearInterval(inteval);
+    };
+  }, [setPaymentActual]);
+
   const methodResult = {
-    PIX: <PixResult payment={payment} />,
-    BOLETO: <BoletoResult payment={payment} />,
-    CREDIT_CARD: <CardResult payment={payment} />,
+    PIX: <PixResult payment={paymentActual} />,
+    BOLETO: <BoletoResult payment={paymentActual} />,
+    CREDIT_CARD: <CardResult payment={paymentActual} />,
   };
 
   return (

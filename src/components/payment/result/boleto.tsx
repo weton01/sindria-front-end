@@ -10,6 +10,7 @@ import useWindowSize from "@hook/useWindowSize";
 import { formatCurrency } from "@utils/formatCurrency";
 import { colors } from "utils/themeColors";
 import Clipboard from "@component/clipboard/Clipboard";
+import { IconSuccess } from "./style";
 
 const BoletoResult = ({ payment }) => {
   const width = useWindowSize();
@@ -33,18 +34,11 @@ const BoletoResult = ({ payment }) => {
       <FlexBox justifyContent="space-between" flexWrap={"wrap"}>
         <FlexBox alignItems={"center"} gap={8} marginBottom="12px">
           <H3 textAlign={"center"}>Compra realizada com sucesso</H3>
-          <Icon
-            style={{
-              color: colors.success.main,
-              background: "transparent",
-              border: `2px solid ${colors.success.main}`,
-              borderRadius: "50%",
-              padding: "2px",
-            }}
+          <IconSuccess 
             size={"16px"}
           >
             check
-          </Icon>
+          </IconSuccess>
         </FlexBox>
         <Typography fontSize={"16px"} fontWeight={300}>
           Total{" "}
@@ -55,17 +49,17 @@ const BoletoResult = ({ payment }) => {
       </FlexBox>
 
       <Card mt={12} p={32}>
-        <Typography fontSize={"16px"} fontWeight={600} marginBottom="8px">
-          Quase lá, Lucas! agora é so realizar o pagamento!
+        <Typography fontSize={"24px"} fontWeight={600} lineHeight={"150%"}>
+          Quase lá, Lucas! criamos seu pedido!
         </Typography>
 
-        <Typography fontSize={"14px"} fontWeight={300} marginBottom="16px">
-          Você tem 5 dias para pagar, após esse período cancelaremos seu
-          pedido.
+        <Typography fontSize={"14px"} fontWeight={300} marginBottom="24px">
+          Agora vamos passar por esses três procedimentos para notificar o
+          vendedor.
         </Typography>
 
         <FlexBox
-          gap={32}
+          gap={8}
           marginBottom={"8px"}
           marginTop={"24px"}
           flexDirection="column"
