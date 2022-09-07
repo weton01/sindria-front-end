@@ -48,7 +48,12 @@ const StepperVertical = (props) => {
               />
             )}
           </FlexBox>
-          <Typography maxWidth={300} marginTop={"4px"} width="300px" >
+          <Typography
+            maxWidth={300}
+            marginTop={"4px"}
+            width="300px"
+            opacity={step.disabled ? 0.4 : 1}
+          >
             {step.title}
           </Typography>
         </FlexBox>
