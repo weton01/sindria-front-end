@@ -4,12 +4,12 @@ import Icon from "@component/icon/Icon";
 import Typography from "@component/Typography";
 import { formatCurrency } from "@utils/formatCurrency";
 import { colors } from "@utils/themeColors";
-import { IconSuccess } from "./result/style"; 
+import { IconSuccess } from "./result/style";
 import PixResult from "@component/payment/result/pix";
 import BoletoResult from "@component/payment/result/boleto";
 import CardResult from "@component/payment/result/card";
 
-export const paymentStatusResult = (payment) => { 
+export const paymentStatusResult = (payment) => {
   const methodResult = {
     PIX: <PixResult payment={payment} />,
     BOLETO: <BoletoResult payment={payment} />,
@@ -124,6 +124,8 @@ export const PaymentReceived = ({ payment }) => {
             style={{
               background: colors.success.main,
               color: colors.body.paper,
+              width: "30px",
+              height: "30px",
             }}
           >
             check
@@ -186,6 +188,8 @@ export const PaymentError = ({ payment, description }) => {
               background: colors.error.main,
               color: colors.body.paper,
               borderColor: colors.error.main,
+              width: "30px",
+              height: "30px",
             }}
           >
             x
@@ -258,6 +262,8 @@ export const PaymentInfo = ({ payment, description }) => {
               borderRadius: "50%",
               textAlign: "center",
               justifyContent: "center",
+              width: "30px",
+              height: "30px",
             }}
           >
             !

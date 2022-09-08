@@ -8,7 +8,7 @@ background: transparent;
 border: 2px solid ${colors.success.main};
 border-radius: 50%;
 padding: 2px;
-height: 30px;
-width: 30px;
+height: 27px;
+width: 27px;
 `;
  

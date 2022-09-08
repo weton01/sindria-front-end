@@ -28,24 +28,20 @@ const PixResult = ({ payment }) => {
 
   return (
     <Container maxWidth={750}>
-     <FlexBox justifyContent="space-between" flexWrap={"wrap"}>
+      <FlexBox justifyContent="space-between" flexWrap={"wrap"}>
         <FlexBox alignItems={"center"} gap={8} marginBottom="12px">
           <H3 textAlign={"center"}>Compra realizada com sucesso</H3>
-          <IconSuccess 
-            size={"16px"}
-          >
-            check
-          </IconSuccess>
+          <IconSuccess size={"18px"}>check</IconSuccess>
         </FlexBox>
         <Typography fontSize={"16px"} fontWeight={300}>
           Total{" "}
-          <span style={{ fontWeight: "700", color: colors.success.main}}>
+          <span style={{ fontWeight: "700", color: colors.success.main }}>
             {formatCurrency(payment.value)}
           </span>
         </Typography>
       </FlexBox>
 
-      <Card mt={12} p={32}> 
+      <Card mt={12} p={32}>
         <Typography fontSize={"24px"} fontWeight={600} lineHeight={"150%"}>
           Quase lá, Lucas! criamos seu pedido!
         </Typography>
@@ -54,7 +50,6 @@ const PixResult = ({ payment }) => {
           Agora vamos passar por esses três procedimentos para notificar o
           vendedor.
         </Typography>
-
 
         <FlexBox
           alignItems={"center"}
@@ -72,7 +67,7 @@ const PixResult = ({ payment }) => {
             alignItems="center"
             flexWrap="wrap"
             justifyContent="center"
-            flexDirection={"column"} 
+            flexDirection={"column"}
           >
             <Stepper
               direction="vertical"

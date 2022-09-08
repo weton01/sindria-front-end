@@ -7,6 +7,7 @@ import { api, PROD_URL } from "services/api";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { paymentStatusResult } from "@component/payment/PaymentStatus";
+import { getPaymentById } from "services/payment";
 
 const Shop = ({ payment }) => {
   const [currentPayment, setCurrentPayment] = useState(payment);
@@ -15,19 +16,32 @@ const Shop = ({ payment }) => {
 
   useEffect(() => {
     const inteval = setInterval(async () => {
-      // const result = await getPaymentById(id);
-      //setCurrentPayment(result)
+      try {
+        const result = await getPaymentById(id);
+        const { status } = result;
+        const statusStoped = {
+          CONFIRMED: "",
+          PENDING: "",
+          AWAITING_RISK_ANALYSIS: "",
+          RECEIVED: "",
+          RECEIVED_IN_CASH: "",
+          AWAITING_CHARGEBACK_REVERSAL: "",
+          DUNNING_REQUESTED: "",
+        };
+        setCurrentPayment(result);
+        if (!(status in statusStoped)) {
+          clearInterval(inteval);
+        }
+      } catch (error) {}
     }, 5000);
 
     return () => {
       clearInterval(inteval);
     };
   }, [setCurrentPayment]);
-  
+
   return (
-    <Container maxWidth={750}>
-      {paymentStatusResult(currentPayment)}
-    </Container>
+    <Container maxWidth={750}>{paymentStatusResult(currentPayment)}</Container>
   );
 };
 
