@@ -12,11 +12,11 @@ import Icon from "../icon/Icon";
 import TextField from "../text-field/TextField";
 import { H3, H5, H6, SemiSpan, Small, Span } from "../Typography";
 import { StyledSessionCard } from "./SessionStyle";
-import { api } from "services/api";
-import { userSignIn } from "store/actions/user/actions";
+import { api } from "services/api"; 
 import { useAppDispatch } from "hooks/hooks";
 
 import { setCookie } from 'nookies'
+import { userSignin } from "store/userSlice";
 
 const Login: React.FC = () => {
   const [passwordVisibility, setPasswordVisibility] = useState(false);
@@ -47,7 +47,7 @@ const Login: React.FC = () => {
         maxAge: 60 * 60  * 7,
         path: '/'
       })
-      dispatch(userSignIn(data));
+      dispatch(userSignin(data));
       router.back();
     } catch (error) {
       if(error?.response?.data?.active === false){  

@@ -4,6 +4,7 @@ import { useAppDispatch } from "@hook/hooks";
 import { formatCurrency } from "@utils/formatCurrency";
 import Link from "next/link";
 import React, { useCallback } from "react";
+import { addToCart, deleteFromCart, removeFromCart } from "store/cartSlice";
 import { SpaceProps } from "styled-system";
 import Button from "../buttons/Button";
 import IconButton from "../buttons/IconButton";
@@ -35,33 +36,24 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
   const dispatch = useAppDispatch();
 
   const onClickRemove = () => {
-    dispatch({
-      type: "DELETE_FROM_CART",
-      payload: item
-    });
+    dispatch(deleteFromCart(item));
   }
 
   const onClickAddCart = () => {
-    dispatch({
-      type: "ADD_TO_CART",
-      payload: {
-        ...item,
-        quantity: 1,
-        netAmount: item?.otherProps?.netAmount,
-        grossAmount: item?.otherProps?.grossAmount
-      }
-    })
+    dispatch(addToCart({
+      ...item,
+      quantity: 1,
+      netAmount: item?.otherProps?.netAmount,
+      grossAmount: item?.otherProps?.grossAmount
+    }))
   }
 
   const onClickRemoveFromCart = () => {
-    dispatch({
-      type: "REMOVE_PRODUCT_FROM_CART",
-      payload: {
-        ...item,
-        netAmount: item?.otherProps?.netAmount,
-        grossAmount: item?.otherProps?.grossAmount
-      }
-    })
+    dispatch(removeFromCart({
+      ...item,
+      netAmount: item?.otherProps?.netAmount,
+      grossAmount: item?.otherProps?.grossAmount
+    }))
   }
 
   return (
@@ -79,7 +71,7 @@ const ProductCard7: React.FC<ProductCard7Props & SpaceProps> = ({
         minWidth="0px"
         width="100%"
       >
-        <Link href={`/product/${id? id: ''}`}>
+        <Link href={`/product/${id ? id : ''}`}>
           <a>
             <Typography
               className="title"

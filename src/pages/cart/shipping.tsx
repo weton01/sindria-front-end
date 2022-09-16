@@ -24,6 +24,8 @@ import Spin from "@component/spin/Spin";
 import Container from "@component/Container";
 import { formatFloat } from "@utils/formatFloat";
 import { authRoute } from "middlewares/authRoute";
+import { persistCart, selectAddress, setShipping } from "store/cartSlice";
+import { wrapper } from "store/store";
 
 const Checkout = ({ address }) => {
   const [selectedAddress, setSelectedAddress] = useState({ id: "" });
@@ -33,12 +35,12 @@ const Checkout = ({ address }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores); 
+  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores);
 
   const fetchShippings = useCallback(async () => {
-    setLoadingShippings(true); 
-   
-    if (orderStores?.length > 0 ) {
+    setLoadingShippings(true);
+
+    if (orderStores?.length > 0) {
       const promises = orderStores?.map((ost) => {
         const localPromises: any[] = [];
 
@@ -125,7 +127,7 @@ const Checkout = ({ address }) => {
               Valor: 0,
               PrazoEntrega: "",
             },
-          ]; 
+          ];
 
           items.forEach((l) => {
             l?.data?.forEach((l3) => {
@@ -147,7 +149,7 @@ const Checkout = ({ address }) => {
           };
         })
       );
- 
+
       setShippings(shippings);
     }
 
@@ -159,28 +161,22 @@ const Checkout = ({ address }) => {
     fetchShippings();
   }, [fetchShippings]);
 
-  useEffect(() => { 
-    if (address && address.items && address.items.length > 0){
+  useEffect(() => {
+    if (address && address.items && address.items.length > 0) {
       setSelectedAddress(address?.items[0]);
     }
   }, [address]);
 
   useEffect(() => {
-    dispatch({
-      type: "SELECT_ADDRESS",
-      payload: selectedAddress,
-    });
+    dispatch(selectAddress(selectedAddress));
   }, [selectedAddress]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (shippings[0] && shippings[0].data && shippings[0].data.length > 0) {
-      dispatch({
-        type: "SET_SHIPPING",
-        payload: {
-          user: shippings[0]?.user,
-          price: shippings[0].data[0],
-        },
-      });
+      dispatch(setShipping({
+        user: shippings[0]?.user,
+        price: shippings[0].data[0],
+      }))
     }
   }, [shippings]);
 
@@ -264,7 +260,7 @@ const Checkout = ({ address }) => {
             <Spin loading={loadingShippings} size="30px">
               <FlexBox flexDirection={"column"} gap={8}>
                 {shippings.map((item, index) => (
-                  <Shipping key={`shi-${index}`} values={item}/>
+                  <Shipping key={`shi-${index}`} values={item} />
                 ))}
               </FlexBox>
             </Spin>
@@ -305,12 +301,16 @@ const Checkout = ({ address }) => {
 
 Checkout.layout = CheckoutNavLayout;
 
-export const getServerSideProps: GetServerSideProps = async (c) => {
-  return authRoute(c, async (ctx: any) => {
-    return {
-      props: {}
-    } 
-  })
-}
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
+  (store) =>
+    async ({ params }) => {
+      console.log('getState', store.getState())
+      return {
+        props: {
+          authState: false,
+        },
+      };
+    }
+);
 
 export default Checkout;

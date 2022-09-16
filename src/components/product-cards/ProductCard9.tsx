@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { Fragment, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PROD_URL } from "services/api";
+import { matchProduct } from "store/matchSlice";
 import { CSSProperties } from "styled-components";
 import Box from "../Box";
 import Button from "../buttons/Button";
@@ -31,17 +32,6 @@ export interface ProductCard9Props {
   }>;
   id?: string;
   [key: string]: unknown;
-  // className?: string;
-  // style?: CSSProperties;
-  // imgUrl: string;
-  // title: string;
-  // price: number;
-  // off: number;
-  // rating?: number;
-  // subcategories?: Array<{
-  //   title: string;
-  //   url: string;
-  // }>;
 }
 
 const ProductCard9: React.FC<ProductCard9Props> = ({
@@ -75,11 +65,7 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
       }
     })
 
-    dispatch({
-      type: "MATCH_PRODUCT",
-      payload: id
-    });
-
+    dispatch(matchProduct(id));
   }
 
   const toggleDialog = useCallback(() => {

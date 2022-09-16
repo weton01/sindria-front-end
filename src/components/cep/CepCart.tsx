@@ -19,7 +19,7 @@ export interface CepCartProps {
 }
 
 const CepCart: React.FC<CepCartProps> = ({ address }) => {
-  const [currentCep, setCurrentCep] = useState({
+  const [currentCep, setCurrentCep]: any = useState({
     city: "",
     street: "",
     id: "",
@@ -29,7 +29,7 @@ const CepCart: React.FC<CepCartProps> = ({ address }) => {
   const user = useSelector((selec: any) => selec.user);
 
   useEffect(() => {
-    if (user.token === "")
+    if (user?.token === "")
       setCurrentCep({ city: "", street: "", id: "" }); 
   }, [user]); 
 
@@ -128,7 +128,7 @@ const CepCart: React.FC<CepCartProps> = ({ address }) => {
                       <MaskedInputCustom
                         name="cep"
                         label="digite seu CEP"
-                        fullwidth
+                        fullwidth="true"
                         mask="11111-111"
                         onBlur={(info) => {
                           handleBlur(info);

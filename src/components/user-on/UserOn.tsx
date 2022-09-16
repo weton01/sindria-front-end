@@ -9,7 +9,7 @@ export interface UserOnProps {
 const UserOn: React.FC<UserOnProps> = ({notConnect, children}) => {
   const user = useAppSelector((state) => state?.user); 
   
-  return user.isLogged? children : notConnect;
+  return user?.isLogged? children : notConnect;
 };
 
 export default UserOn;

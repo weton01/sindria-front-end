@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { Fragment, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PROD_URL } from "services/api";
+import { matchProduct } from "store/matchSlice";
 import { CSSProperties } from "styled-components";
 import Box from "../Box";
 import Button from "../buttons/Button";
@@ -71,11 +72,7 @@ const ProductCard10: React.FC<ProductCard10Props> = ({
       }
     })
 
-    dispatch({
-      type: "MATCH_PRODUCT",
-      payload: id
-    });
-
+    dispatch(matchProduct(id));
   }
 
   const toggleDialog = useCallback(() => {

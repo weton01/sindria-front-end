@@ -59,7 +59,7 @@ const FormPayment = ({
                     <MaskedInputCustom
                       name="number"
                       label="Número do cartão"
-                      fullwidth
+                      fullwidth="true"
                       mask="1111 1111 1111 1111"
                       onBlur={handleBlur}
                       onChange={handleChange}
@@ -72,7 +72,7 @@ const FormPayment = ({
                     <TextField
                       name="name"
                       label="Nome do titular do cartão"
-                      fullwidth
+                      fullwidth="true"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       onFocus={handleFocus}
@@ -84,7 +84,7 @@ const FormPayment = ({
                     <MaskedInputCustom
                       name="expiry"
                       label="Válido até"
-                      fullwidth
+                      fullwidth="true"
                       mask="11/1111"
                       onBlur={handleBlur}
                       onChange={handleChange}
@@ -98,7 +98,7 @@ const FormPayment = ({
                       name="cvc"
                       label="CVC"
                       mask="111"
-                      fullwidth
+                      fullwidth="true"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       onFocus={handleFocus}

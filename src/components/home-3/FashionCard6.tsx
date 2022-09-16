@@ -32,7 +32,7 @@ const FashionCard6: React.FC<FashionCard6Props> = ({
           width={588}
           height={272}
           layout="responsive"
-          borderRadius={4}
+          style={{borderRadius: 4}} 
         />
       </Box>
       <H3 fontWeight="600" mb="0.25rem">

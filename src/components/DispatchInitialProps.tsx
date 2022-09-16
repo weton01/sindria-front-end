@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+import { setCategory } from "store/categorySlice";
 
 type Categories = {
   clean: any[];
@@ -13,20 +14,20 @@ type Props = {
   children: any
 };
 
-const DispatchInitialProps: React.FC<Props> = ({ categories, children, matches, address }) => {
+const DispatchInitialProps: React.FC<Props> = ({ categories, children }) => {
   const dispatch = useDispatch();
- 
-  dispatch({
-    type: "SET_CATEGORY",
-    payload: categories
-      ? categories
-      : {
+
+  dispatch(
+    setCategory(
+      categories
+        ? categories
+        : {
           items: {
             formated: [],
             clean: [],
           },
         },
-  });
+    ));
 
   return <>{children}</>;
 };

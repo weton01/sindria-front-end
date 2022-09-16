@@ -72,7 +72,7 @@ const Topbar: React.FC = () => {
               <MenuItem key={item.title} onClick={handleLanguageClick(item)}>
                 <Image
                   src={item.imgUrl}
-                  borderRadius="2px"
+                  style={{borderRadius: 2}}
                   mr="0.5rem"
                   alt={item.title}
                 />
@@ -98,7 +98,7 @@ const Topbar: React.FC = () => {
               <MenuItem key={item.title} onClick={handleCurrencyClick(item)}>
                 <Image
                   src={item.imgUrl}
-                  borderRadius="2px"
+                  style={{borderRadius: 2}}
                   mr="0.5rem"
                   alt={item.title}
                 />

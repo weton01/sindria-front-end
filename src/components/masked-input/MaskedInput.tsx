@@ -10,7 +10,7 @@ export interface Props {
   label?: string;
   errorText?: any;
   id?: any;
-  fullwidth?: boolean;
+  fullwidth?: boolean | string;
   endAdornment?: any;
   onBlur?: any;
   onChange?: any;

@@ -16,6 +16,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { PROD_URL } from "services/api";
 import TextField from "@component/text-field/TextField";
+import { addToCart } from "store/cartSlice";
+import { matchProduct } from "store/matchSlice";
 
 export interface ProductIntroProps {
   title: string;
@@ -144,35 +146,34 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   };
 
   const addItemToCart = () => {
+
+    console.log('here')
     const mutation = findMutation();
 
-    dispatch({
-      type: "ADD_TO_CART",
-      payload: {
-        quantity: selectQuantity,
-        netAmount: getPrice(),
-        grossAmount: price,
-        product: {
-          id: id,
-        },
-        otherProps: {
-          ...otherProps,
-          title,
-          price,
-          brand,
-          id,
-          categories,
-          images,
-          tags,
-          mutation: mutation,
-          grossAmount: price,
-          netAmount: getPrice(),
-        },
-        mutation: {
-          id: mutation.id,
-        },
+    dispatch(addToCart({
+      quantity: selectQuantity,
+      netAmount: getPrice(),
+      grossAmount: price,
+      product: {
+        id: id,
       },
-    });
+      otherProps: {
+        ...otherProps,
+        title,
+        price,
+        brand,
+        id,
+        categories,
+        images,
+        tags,
+        mutation: mutation,
+        grossAmount: price,
+        netAmount: getPrice(),
+      },
+      mutation: {
+        id: mutation.id,
+      },
+    }));
   };
 
   useEffect(() => {
@@ -211,7 +212,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
   const favorites = useSelector((selec: any) => selec?.favorites?.matches);
 
-  const foundProduct = favorites.find((item) => item.id === id);
+  const foundProduct = favorites?.find((item) => item.id === id);
 
   const onMatch = () => {
     axios.post(
@@ -224,10 +225,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
       }
     );
 
-    dispatch({
-      type: "MATCH_PRODUCT",
-      payload: id,
-    });
+    dispatch(matchProduct(id));
   };
 
 

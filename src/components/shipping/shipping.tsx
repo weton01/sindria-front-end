@@ -5,6 +5,7 @@ import Typography, { H6 } from "@component/Typography";
 import { formatCurrency } from "@utils/formatCurrency";
 import React, { useState } from "react";
 import { useAppDispatch } from "@hook/hooks";
+import { setShipping } from "store/cartSlice";
 
 interface ShippingProps {
   values: any
@@ -20,18 +21,15 @@ const Shipping: React.FC<ShippingProps> = ({
 }: ShippingProps) => {
   const dispatch = useAppDispatch();
   const [code, setCode] = useState("04014")
-  
+
   const onHandleChangeRadio = (it) => {
     setCode(it.Codigo)
 
-   
-    dispatch({
-      type: "SET_SHIPPING",
-      payload: {
-        user: values.user,
-        price: it
-      }
-    })
+    dispatch(setShipping({
+      user: values.user,
+      price: it
+    }
+    ))
   }
 
   return (
@@ -58,10 +56,10 @@ const Shipping: React.FC<ShippingProps> = ({
             <Icon size="45px" color="secondary">
               {ShippingTypes[it.Codigo].icon}
             </Icon>
-            <FlexBox 
-              flexDirection="column" 
-              pl={10} 
-              width="150px" 
+            <FlexBox
+              flexDirection="column"
+              pl={10}
+              width="150px"
               justifyContent={"center"}
             >
               <Typography fontSize={13}>

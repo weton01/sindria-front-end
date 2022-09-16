@@ -20,8 +20,7 @@ import { parseCookies } from "nookies";
 import "reactjs-popup/dist/index.css";
 import "react-credit-cards/es/styles-compiled.css";
 import "./_app.css";
-import { getAddress } from "services/address";
-import { getMatches } from "services/matches";
+import { wrapper } from "store/store";
 
 //Binding events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -31,12 +30,6 @@ Router.events.on("routeChangeError", () => NProgress.done());
 NProgress.configure({ showSpinner: false });
 
 const App: NextPage = ({ Component, pageProps }: any) => {
-
-  const store = useStore(pageProps?.initialReduxState);
-
-  const persistor = persistStore(store, {}, function () {
-    persistor.persist();
-  });
 
   let Layout = Component.layout || Fragment;
 
@@ -60,58 +53,18 @@ const App: NextPage = ({ Component, pageProps }: any) => {
           content="/assets/images/landing/preview.png"
         />
       </Head>
+
       <GlobalStyles />
-      <Provider store={store}>
         <ErrorBoundary>
-          <DispatchInitialProps
-            categories={pageProps?.categories || []}
-            matches={pageProps?.matches || []}
-            address={pageProps?.address || []}
-          >
-            <Layout>
-              <div style={{ position: "absolute", zIndex: 99999 }}>
-                <ToastContainer align={"right"} position={"bottom"} />
-              </div>
-              <Component {...pageProps} />
-            </Layout>
-          </DispatchInitialProps>
+          <Layout>
+            <div style={{ position: "absolute", zIndex: 99999 }}>
+              <ToastContainer align={"right"} position={"bottom"} />
+            </div>
+            <Component {...pageProps} />
+          </Layout>
         </ErrorBoundary>
-      </Provider>
     </ThemeProvider>
   );
 };
 
-App.getInitialProps = async (appContext: any) => {
-  try {
-    const { ["shop_token"]: token } = parseCookies(appContext.ctx);
-
-    const appProps = await NextApp.getInitialProps(appContext);
-
-    const [categories, matches, address] = await Promise.all([
-      getCategory(),
-      getMatches({ token }),
-      getAddress({ token, skip: 0, take: 10000 })
-    ]);
-
-    return {
-      ...appProps,
-      pageProps: {
-        categories: {
-          formated: categories.formated,
-          clean: categories.clean,
-        },
-        matches: matches ? matches : [],
-        address: address ? address : []
-      },
-    };
-  } catch (err) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/404",
-      },
-    };
-  }
-};
-
-export default App;
+export default wrapper.withRedux(App);;

@@ -22,6 +22,7 @@ import { formatFloat } from "@utils/formatFloat";
 import { Formik } from "formik";
 import TextField from "@component/text-field/TextField";
 import MaskedInputCustom from "@component/masked-input/MaskedInput";
+import { clearCart } from "store/cartSlice";
 
 const TranslatePaymentMethod = {
   CREDIT_CARD: "Crédito",
@@ -41,7 +42,7 @@ function addDaysWRONG(date: Date, days: any): Date {
   return result;
 }
 
-const clearCart = (cart, user, values) => {
+const clearCartFormat = (cart, user, values) => {
   const newCart = { ...cart }
   newCart.orderStores = [...newCart.orderStores]
 
@@ -137,17 +138,14 @@ const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
   useEffect(() => {
 
     if (selectedCoupon.id !== '')
-      dispatch({
-        type: "SET_COUPON",
-        payload: selectedCoupon
-      })
+      dispatch(setSelectedCoupon(selectedCoupon))
   }, [selectedCoupon])
 
   const cookies = parseCookies()
 
   const handleFormSubmit = async (values) => {
     setLoading(true);
-    const newCart = clearCart(cart, user, values)
+    const newCart = clearCartFormat(cart, user, values)
 
     try {
       const { data } = await axios.post(`${PROD_URL}order/v1`, newCart, {
@@ -158,10 +156,7 @@ const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
 
       router.push(`/payment/${data?.bill?.id}`);
 
-      dispatch({
-        type: "CLEAR_CART",
-        payload: {}
-      })
+      dispatch(clearCart({}))
 
       success('success')
     } catch (err) {
@@ -395,7 +390,7 @@ const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
                         <TextField
                           name="name"
                           label="Nome"
-                          fullwidth
+                          fullwidth="true"
                           onBlur={handleBlur}
                           onChange={handleChange}
                           value={values.name || ""}
@@ -406,7 +401,7 @@ const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
                         <MaskedInputCustom
                           name="cpfCnpj"
                           label="CPF"
-                          fullwidth
+                          fullwidth="true"
                           mask="11111111111"
                           onChange={handleChange}
                           value={values.cpfCnpj || ""}
@@ -417,7 +412,7 @@ const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
                         <MaskedInputCustom
                           name="phone"
                           label="Telefone"
-                          fullwidth
+                          fullwidth="true"
                           mask="11 11111111"
                           onChange={handleChange}
                           value={values.phone || ""}
@@ -428,7 +423,7 @@ const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
                         <MaskedInputCustom
                           name="mobilePhone"
                           label="Celular"
-                          fullwidth
+                          fullwidth="true"
                           mask="11 111111111"
                           onChange={handleChange}
                           value={values.mobilePhone || ""}

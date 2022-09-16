@@ -1,20 +1,13 @@
-import types from "./types";
-import { HYDRATE } from "next-redux-wrapper"
+import { createSlice } from "@reduxjs/toolkit";
+import { HYDRATE } from "next-redux-wrapper";
 
-const initialState = {
-  invoiceType: "CREDIT_CARD",
-  description: "",
-  address: { items: [], count: 0 },
-  creditCard: {},
-  orderStores: [],
-  installments: 1,
-  coupon: { discount: 0 }
-};
+import { AppState } from "./store"; 
 
 const setDiscount = (orderStores, discount) => {
   let newOrderStores = [...orderStores]
-  
+
   newOrderStores = newOrderStores.map(ost => {
+    console.log('here', ost.netAmount - (discount / orderStores.length), discount)
     ost.netAmount = ost.netAmount - (discount / orderStores.length)
     return ost
   })
@@ -52,16 +45,16 @@ const setNetValue = (orderStores) => {
 
   newOrderStores = newOrderStores.map(ost => {
     ost.netAmount = 0;
-    ost.netAmount = ost.totalAmount + ost.shippingPrice.Valor 
-    return {...ost}
-  }) 
+    ost.netAmount = ost.totalAmount + ost.shippingPrice.Valor
+    return { ...ost }
+  })
 
   return newOrderStores;
 }
 
 const setTotalAmountByStore = (orderStores) => {
   let newStores = orderStores.map((ost) => {
-    const newOst = {...ost}
+    const newOst = { ...ost }
     newOst.orderProducts.forEach((op) => {
       newOst.totalAmount = (
         (op?.otherProps?.netAmount + op?.otherProps?.mutation.feeTotal) *
@@ -246,143 +239,159 @@ const deleteProduct = (item, orderProducts) => {
   return newOrderProducts.filter((_p, index) => index !== foundIndex);
 };
 
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case HYDRATE:
-      return action.payload;
+export interface CartState {
+  invoiceType: string,
+  description: string,
+  address: { items: any[], count: number },
+  creditCard: any,
+  orderStores: any[],
+  installments: number,
+  coupon: { discount: number }
+}
 
-    case types.ADD_TO_CART:
-      return {
-        ...state,
-        orderStores: setDiscount(
-          setFeeByStore(
-            setNetValue(
-              setTotalAmountByStore(
-                recalculateShippingValues(
-                  newAddNewProduct(action.payload, state.orderStores)
-                )
-              )
-            ), state.invoiceType), state.coupon.discount),
-      };
-
-    case types.DELETE_FROM_CART:
-      return {
-        ...state,
-        orderStores: setDiscount(
-          setFeeByStore(
-            setNetValue(
-              setTotalAmountByStore(
-                recalculateShippingValues(
-                  newDeleteProduct(action.payload, state.orderStores)
-                )
-              )
-            ), state.invoiceType), state.coupon.discount),
-
-      };
-
-    case types.REMOVE_PRODUCT_FROM_CART:
-      return {
-        ...state,
-        orderStores: setDiscount(
-          setFeeByStore(
-            setNetValue(
-              setTotalAmountByStore(
-                recalculateShippingValues(
-                  newRemoveProduct(action.payload, state.orderStores)
-                )
-              )
-            ), state.invoiceType), state.coupon.discount),
-      };
-
-    case types.SET_SHIPPING:
-      return {
-        ...state,
-        orderStores:
-          setDiscount(
-            setFeeByStore(
-              setNetValue(
-                setTotalAmountByStore(
-                  recalculateShippingValues(
-                    setStoreShippingPrice(
-                      action.payload.user,
-                      action.payload.price,
-                      state.orderStores
-                    ),
-                  )
-                )
-              ), state.invoiceType), state.coupon.discount),
-      };
-
-    case types.SELECT_ADDRESS:
-      return {
-        ...state,
-        address: action.payload,
-      };
-
-    case types.SET_INSTALLMENT:
-      return {
-        ...state,
-        installments: action.payload,
-      };
-
-    case types.DELETE_ADDRESS:
-      const address = state.address.items.filter(
-        (_, index) => index !== action.payload
-      );
-      return {
-        ...state,
-        address: { address, count: address.length }
-      };
-
-    case types.SELECT_PAYMENT_TYPE:
-      return {
-        ...state,
-        invoiceType: action.payload,
-        orderStores:
-          setDiscount(
-            setFeeByStore(
-              setNetValue(
-                setTotalAmountByStore(
-                  state.orderStores
-                )
-              ), state.invoiceType), state.coupon.discount),
-      };
-
-    case types.SELECT_CREDIT_CARD:
-      return {
-        ...state,
-        creditCard: action.payload,
-      };
-
-    case types.SET_DESCRIPTION:
-      return {
-        ...state,
-        description: action.payload,
-      };
-
-    case types.SET_COUPON:
-      return {
-        ...state,
-        coupon: action.payload,
-        orderStores:
-          setDiscount(
-            setFeeByStore(
-              setNetValue(
-                setTotalAmountByStore(
-                  recalculateShippingValues(
-                    state.orderStores
-                  )
-                )
-              ), state.invoiceType), state.coupon.discount),
-      }
-
-    case types.CLEAR_CART:
-      return initialState;
-
-
-    default:
-      return state;
-  }
+const initialState: CartState = {
+  invoiceType: "CREDIT_CARD",
+  description: "",
+  address: { items: [], count: 0 },
+  creditCard: {},
+  orderStores: [],
+  installments: 1,
+  coupon: { discount: 0 }
 };
 
-export default reducer;
+export const cartSlice = createSlice({
+  name: "cart",
+  initialState,
+  reducers: {
+    persistCart(state, action) {
+      Object.keys(state).forEach(key => {
+        state[key] = action.payload[key]
+      })
+    },
+
+    addToCart(state, action) {
+      state.orderStores = setDiscount(
+        setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                newAddNewProduct(action.payload, state.orderStores)
+              )
+            )
+          ), state.invoiceType),
+        state.coupon.discount)
+    },
+
+    deleteFromCart(state, action) {
+      state.orderStores = setDiscount(
+        setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                newDeleteProduct(action.payload, state.orderStores)
+              )
+            )
+          ), state.invoiceType), state.coupon.discount)
+    },
+
+    removeFromCart(state, action) {
+      state.orderStores = setDiscount(
+        setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                newRemoveProduct(action.payload, state.orderStores)
+              )
+            )
+          ), state.invoiceType), state.coupon.discount)
+    },
+
+    selectPaymentType(state, action) {
+      state.invoiceType = action.payload
+      state.orderStores = setDiscount(
+        setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              state.orderStores
+            )
+          ), state.invoiceType), state.coupon.discount)
+    },
+
+    selectAddress(state, action) {
+      state.address = action.payload
+    },
+
+    selectCreditCard(state, action) {
+      state.creditCard = action.payload
+    },
+
+    clearCart(state, action) {
+      state = initialState
+    },
+
+    setShipping(state, action) {
+      setDiscount(
+        setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                setStoreShippingPrice(
+                  action.payload.user,
+                  action.payload.price,
+                  state.orderStores
+                ),
+              )
+            )
+          ), state.invoiceType), state.coupon.discount)
+    },
+
+    setDescription(state, action) {
+      state.description = action.payload
+    },
+
+
+    setInstallment(state, action) {
+      state.installments = action.payload
+    },
+
+    setCoupon(state, action) {
+      state.coupon = action.payload
+      state.orderStores = setDiscount(
+        setFeeByStore(
+          setNetValue(
+            setTotalAmountByStore(
+              recalculateShippingValues(
+                state.orderStores
+              )
+            )
+          ), state.invoiceType), state.coupon.discount)
+    },
+  }, 
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      return {
+        ...state,
+        ...action.payload.auth,
+      };
+    },
+  }
+});
+
+export const {
+  addToCart,
+  clearCart,
+  deleteFromCart,
+  removeFromCart,
+  selectAddress,
+  selectCreditCard,
+  selectPaymentType,
+  setCoupon,
+  setDescription,
+  setInstallment,
+  setShipping,
+  persistCart
+} = cartSlice.actions;
+
+export const selectAuthState = (state: AppState) => state.cart;
+
+export default cartSlice.reducer;

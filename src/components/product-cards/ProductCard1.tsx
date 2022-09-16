@@ -15,6 +15,7 @@ import Rating from "../rating/Rating";
 import { H3, SemiSpan } from "../Typography";
 import { StyledProductCard1 } from "./ProductCardStyle";
 import { useDispatch, useSelector } from "react-redux";
+import { matchProduct } from "store/matchSlice";
 
 export interface ProductCard1Props extends CardProps {
   className?: string;
@@ -61,8 +62,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     selec?.favorites?.matches
   );
 
-  const foundProduct = favorites.find(item => item.id === id)
- 
+  const foundProduct = favorites?.find(item => item.id === id)
+
   const onMatch = () => {
     axios.post(`${PROD_URL}product/v1/${id}`, {}, {
       headers: {
@@ -70,11 +71,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
       }
     })
 
-    dispatch({
-      type: "MATCH_PRODUCT",
-      payload: id
-    });
-
+    dispatch(matchProduct(id));
   }
 
   return (
@@ -96,12 +93,12 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         )}
 
         {
-          user.isLogged ? (
+          user?.isLogged ? (
             <FlexBox className="extra-icons">
-              <Icon 
-                onClick={onMatch} 
-                color={foundProduct? 'primary': 'secondary'} 
-                className={`favorite-icon`} 
+              <Icon
+                onClick={onMatch}
+                color={foundProduct ? 'primary' : 'secondary'}
+                className={`favorite-icon`}
                 variant="small"
               >
                 {foundProduct ? 'heart-filled' : 'heart'}

@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
           <SearchBox />
         </FlexBox>
         <FlexBox className="header-right" alignItems="center" gap={16}>
-          {user.isLogged ? (
+          {user?.isLogged ? (
             <Menu
               className="category-dropdown"
               direction="right"

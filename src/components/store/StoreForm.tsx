@@ -234,7 +234,7 @@ const StoreForm = ({ address, edit, data }) => {
                           name={`meta.name`}
                           label="Nome da Conta Digital"
                           placeholder="Soluções Ltda..."
-                          fullwidth
+                          fullwidth="true"
                           onChange={handleChange}
                           value={values?.meta?.name || ""}
                           errorText={newErrors?.meta?.name}
@@ -247,7 +247,7 @@ const StoreForm = ({ address, edit, data }) => {
                           name={`meta.cpfCnpj`}
                           label="CNPJ"
                           mask="11.111.111/1111-11"
-                          fullwidth
+                          fullwidth="true"
                           onChange={handleChange}
                           value={values?.meta?.cpfCnpj || ""}
                           errorText={newErrors.meta?.cpfCnpj}
@@ -275,7 +275,7 @@ const StoreForm = ({ address, edit, data }) => {
                           id={"birthDate"}
                           name={`meta.birthDate`}
                           label="Data de Nascimento"
-                          fullwidth
+                          fullwidth="true"
                           onCustomChange={setFieldValue}
                           value={values?.meta?.birthDate || ""}
                           errorText={newErrors?.meta?.birthDate}
@@ -287,7 +287,7 @@ const StoreForm = ({ address, edit, data }) => {
                           disabled={edit}
                           name="meta.phone"
                           label="Telefone"
-                          fullwidth
+                          fullwidth="true"
                           mask="11 11111111"
                           onBlur={handleBlur}
                           onChange={handleChange}
@@ -301,7 +301,7 @@ const StoreForm = ({ address, edit, data }) => {
                           disabled={edit}
                           name="meta.mobilePhone"
                           label="Celular"
-                          fullwidth
+                          fullwidth="true"
                           mask="11 111111111"
                           onBlur={handleBlur}
                           onChange={handleChange}

@@ -21,11 +21,11 @@ import Accordion from "@component/accordion/Accordion";
 import AccordionHeader from "@component/accordion/AccordionHeader";
 import Box from "@component/Box";
 import Select from "@component/Select";
+import { selectCreditCard } from "store/cartSlice";
 
 
 const PaymentForm = ({ creditCards }) => {
   const width = useWindowSize();
-  const isMobile = width < 769;
 
   const router = useRouter()
   const dispatch = useAppDispatch();
@@ -40,24 +40,15 @@ const PaymentForm = ({ creditCards }) => {
   }, [creditCards])
 
   useEffect(() => {
-    dispatch({
-      type: "SET_INSTALLMENT",
-      payload: installment
-    })
+    dispatch(setInstallment(installment))
   }, [installment])
 
   useEffect(() => {
-    dispatch({
-      type: "SELECT_CREDIT_CARD",
-      payload: selectedCreditCard
-    })
+    dispatch(selectCreditCard(selectedCreditCard))
   }, [selectedCreditCard])
 
   useEffect(() => {
-    dispatch({
-      type: "SELECT_PAYMENT_TYPE",
-      payload: paymentMethod
-    })
+    dispatch(paymentMethod)
   }, [paymentMethod])
 
   const returnPage = () => {

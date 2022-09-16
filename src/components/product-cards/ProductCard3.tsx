@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PROD_URL } from "services/api";
+import { matchProduct } from "store/matchSlice";
 import { CSSProperties } from "styled-components";
 import Button from "../buttons/Button";
 import FlexBox from "../FlexBox";
@@ -35,11 +36,7 @@ const ProductCard3: React.FC<ProductCard3Props> = ({ ...props }) => {
       }
     })
 
-    dispatch({
-      type: "MATCH_PRODUCT",
-      payload: props.id
-    });
-
+    dispatch(matchProduct(props.id));
   }
 
   return (

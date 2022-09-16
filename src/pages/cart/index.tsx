@@ -39,10 +39,7 @@ const Cart = () => {
   }
 
   const onClickAddDescription = () => {
-    dispatch({
-      type: "SET_DESCRIPTION",
-      payload: description
-    })
+    dispatch(setDescription(description))
 
     setEditing(false)
   }

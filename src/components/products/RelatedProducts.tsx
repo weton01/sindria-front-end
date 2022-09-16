@@ -1,6 +1,7 @@
 import { useAppDispatch } from "@hook/hooks";
 import { PaymentFees } from "@utils/enums/paymentFees";
 import React from "react";
+import { addToCart } from "store/cartSlice";
 import Box from "../Box";
 import Grid from "../grid/Grid";
 import ProductCard1 from "../product-cards/ProductCard1";
@@ -18,9 +19,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ data }) => {
     const fee: number = item?.mutations[0]?.feeTotal
     const total = grossAmount + fee;
 
-    return dispatch({
-      type: "ADD_TO_CART",
-      payload: {
+    return dispatch(addToCart({ 
         quantity: 1,
         netAmount: total,
         grossAmount: grossAmount,
@@ -39,8 +38,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ data }) => {
         mutation: {
           id: item?.mutations[0]?.id
         }
-      },
-    });
+      }))
   }
 
   return (

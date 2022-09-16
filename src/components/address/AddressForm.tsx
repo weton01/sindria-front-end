@@ -95,7 +95,7 @@ const AdressForm = (props) => {
                 <MaskedInputCustom
                   name="cep"
                   label="CEP"
-                  fullwidth
+                  fullwidth="true"
                   mask="11111-111"
                   onBlur={(info) => {
                     handleBlur(info);

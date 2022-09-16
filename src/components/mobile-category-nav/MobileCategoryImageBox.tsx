@@ -20,7 +20,7 @@ const MobileCategoryImageBox: React.FC<MobileCategoryImageBoxProps> = ({
       {imgUrl ? (
         <LazyImage
           src={imgUrl}
-          borderRadius="5px"
+          style={{borderRadius: 4}}
           width="100%"
           height="100%"
           layout="responsive"

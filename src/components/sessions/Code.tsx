@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import ReactCodeInput from "react-verification-code-input";
 import { api } from "services/api";
 import { userSignIn } from "store/actions/user/actions";
+import { userSignin } from "store/userSlice";
 import Button from "../buttons/Button";
 import { StyledSessionCard } from "./SessionStyle";
 
@@ -29,7 +30,7 @@ const Signup: React.FC = () => {
           activationCode,
         }
       );
-      dispatch(userSignIn(data));
+      dispatch(userSignin(data));
       router.push("/");
     } catch (error) {
       setMessage(error?.response?.data?.message || "Erro inesperado!");

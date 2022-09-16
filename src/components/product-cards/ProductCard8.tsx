@@ -31,7 +31,7 @@ const ProductCard8: React.FC<ProductCard8Props> = ({
           <HoverBox mb="0.75rem" borderRadius={8}>
             <LazyImage
               src={imgUrl || "/assets/images/products/Rectangle 116.png"}
-              borderRadius={8}
+              style={{borderRadius: 8}}
               height={500}
               width={500}
               layout="responsive"

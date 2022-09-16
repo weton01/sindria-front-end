@@ -19,7 +19,7 @@ export interface TextFieldProps {
   label?: string;
   errorText?: any;
   id?: any;
-  fullwidth?: boolean;
+  fullwidth?: boolean | string;
   endAdornment?: any;
   mask?: MaskInput;
   value?: any;

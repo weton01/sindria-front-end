@@ -2,6 +2,7 @@ import { useAppDispatch } from "@hook/hooks";
 import { PaymentFees } from "@utils/enums/paymentFees";
 import { formatCurrency } from "@utils/formatCurrency";
 import React, { Fragment } from "react";
+import { addToCart } from "store/cartSlice";
 import Button from "../buttons/Button";
 import FlexBox from "../FlexBox";
 import ProductCard8 from "../product-cards/ProductCard8";
@@ -40,9 +41,8 @@ const FrequentlyBought: React.FC<FrequentlyBoughtProps> = ({ data }) => {
 
       total = grossAmount + fee;
 
-      return dispatch({
-        type: "ADD_TO_CART",
-        payload: {
+      return dispatch(addToCart({
+       
           quantity: 1,
           netAmount: (total),
           grossAmount: grossAmount,
@@ -60,11 +60,12 @@ const FrequentlyBought: React.FC<FrequentlyBoughtProps> = ({ data }) => {
           mutation: {
             id: item.mutation.id
           }
-        },
-      });
+    
+      }))
     })
-
   }
+
+
   return (
     <>
       {data?.length > 0 ?

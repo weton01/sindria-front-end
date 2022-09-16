@@ -9,7 +9,6 @@ import {
   space,
   SpaceProps,
 } from "styled-system";
-import Spin from "./spin/Spin";
 
 interface LazyImageProps {
   onLoad?: () => void;
