@@ -34,15 +34,7 @@ export const matchSlice = createSlice({
     setInitialMatch(state, action) {
       state.matches = action.payload
     },
-  },
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
-      return {
-        ...state,
-        ...action.payload.auth,
-      };
-    },
-  }
+  }, 
 });
 
 export const {

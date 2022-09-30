@@ -1,20 +1,13 @@
 import ErrorBoundary from "@component/ErrorBoundary";
-import DispatchInitialProps from "@component/DispatchInitialProps";
 import { NextPage } from "next";
-import NextApp from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
 import React, { Fragment } from "react";
 import { ToastContainer } from "react-nextjs-toast";
-import { Provider } from "react-redux";
-import { persistStore } from "redux-persist";
-import { getCategory } from "services/category";
 import { ThemeProvider } from "styled-components";
-import { useStore } from "../store";
 import { GlobalStyles } from "../utils/globalStyles";
 import { theme } from "../utils/theme";
-import { parseCookies } from "nookies";
 
 //Css
 import "reactjs-popup/dist/index.css";
@@ -29,7 +22,7 @@ Router.events.on("routeChangeError", () => NProgress.done());
 
 NProgress.configure({ showSpinner: false });
 
-const App: NextPage = ({ Component, pageProps }: any) => {
+function App ({ Component, pageProps }: any)  {
 
   let Layout = Component.layout || Fragment;
 

@@ -61,7 +61,7 @@ const ProductQuestion: React.FC<ProductQuestionProps> = ({productId, comments, u
 
   return (
     <Box>
-      {comments.map((item, ind) => (
+      {comments?.map((item, ind) => (
         <ProductComment
           name={item?.user?.username}
           isReview={false}

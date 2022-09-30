@@ -75,7 +75,7 @@ const SalePage1 = () => {
         </FlexBox>
         <Box mb="2rem" overflow="hidden">
           <FlexBox m="-0.75rem" flexWrap="wrap">
-            {saleCategoryList.map((item, ind) => (
+            {saleCategoryList?.map((item, ind) => (
               <FlexBox
                 borderRadius="8px"
                 border="1px solid"
@@ -123,7 +123,7 @@ const SalePage1 = () => {
       </Box>
 
       <Grid container spacing={6}>
-        {productList.map((item, ind) => (
+        {productList?.map((item, ind) => (
           <Grid item lg={3} md={4} sm={6} xs={12} key={ind}>
             <ProductCard1 {...item} />
           </Grid>

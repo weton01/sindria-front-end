@@ -32,7 +32,7 @@ const Section1: React.FC<Section1Props> = () => {
               right: 8,
             }}
           >
-            {[...new Array(5)].map((_item, ind) => (
+            {[...new Array(5)]?.map((_item, ind) => (
               <FashionCard1 key={ind} />
             ))}
           </Carousel>

@@ -32,7 +32,7 @@ const GrocerySection5: React.FC = () => {
           arrowButtonColor="inherit"
           showArrowOnHover={true}
         >
-          {productDatabase.slice(229, 241).map((item, ind) => (
+          {productDatabase.slice(229, 241)?.map((item, ind) => (
             <Box py="0.25rem">
               <ProductCard10 {...item} rating={3} off={25} key={ind} />
             </Box>

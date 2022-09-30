@@ -10,7 +10,7 @@ const Section12: React.FC = () => {
   return (
     <Container mb="70px">
       <Grid container spacing={6}>
-        {serviceList.map((item, ind) => (
+        {serviceList?.map((item, ind) => (
           <Grid item lg={3} md={6} xs={12} key={ind}>
             <FlexBox
               as={Card}

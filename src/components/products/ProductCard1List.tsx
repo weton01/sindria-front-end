@@ -36,7 +36,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({ items, count, skip,
   return (
     <>
       <Grid container spacing={6}>
-        {items.map((item, ind) => (
+        {items?.map((item, ind) => (
           <Grid item lg={4} sm={6} xs={12} key={ind}>
             <ProductCard1
               id={item.id}

@@ -89,7 +89,7 @@ const Carousel: React.FC<CarouselProps> = ({
       showArrowOnHover={showArrowOnHover}
     >
       <Slider className="custom-slider">
-        {React.Children.map(children, (child, ind) => (
+        {React.Children?.map(children, (child, ind) => (
           <Slide index={ind}>{child}</Slide>
         ))}
       </Slider>

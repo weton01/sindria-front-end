@@ -35,7 +35,7 @@ const Section13: React.FC<Section13Props> = ({ data }) => {
     >
       <Box my="-0.25rem">
         <Carousel totalSlides={9} visibleSlides={visibleSlides}>
-          {data.map((item, ind) => (
+          {data?.map((item, ind) => (
             <Box py="0.25rem" key={item.id}>
               <Card p="1rem">
                 <Link href={`/product/${ind + 20}`}>

@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (c) => {
         },
       }); 
 
-      const customData = data.items.map((item) => {
+      const customData = data.items?.map((item) => {
         return {
           ...item,
           paymentStatus: "pending",

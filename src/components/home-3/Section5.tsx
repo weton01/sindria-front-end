@@ -25,7 +25,7 @@ const Section5: React.FC<Section5Props> = () => {
         visibleSlides={visibleSlides}
         arrowButtonColor="inherit"
       >
-        {productDatabase.slice(255, 265).map((item, ind) => (
+        {productDatabase.slice(255, 265)?.map((item, ind) => (
           <ProductCard11 key={ind} {...item} />
         ))}
       </Carousel>

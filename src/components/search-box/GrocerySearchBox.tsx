@@ -67,7 +67,7 @@ const GrocerySearchBox: React.FC<GrocerySearchBoxProps> = () => {
           boxShadow="large"
           zIndex={99}
         >
-          {resultList.map((item) => (
+          {resultList?.map((item) => (
             <Link href={`/product/search/${item}`} key={item}>
               <MenuItem key={item}>
                 <Span fontSize="14px">{item}</Span>

@@ -24,7 +24,7 @@ const Section6: React.FC = () => {
       <FlexBox>
         <Hidden down={768} mr="1.75rem">
           <Box shadow={6} borderRadius={10} padding="1.25rem" bg="white">
-            {brandList.map((brand, ind) => (
+            {brandList?.map((brand, ind) => (
               <StyledProductCategory
                 key={brand}
                 id={brand}
@@ -62,7 +62,7 @@ const Section6: React.FC = () => {
         <Box flex="1 1 0" minWidth="0px">
           <CategorySectionHeader title="Carros" seeMoreLink="#" />
           <Grid container spacing={6}>
-            {productDatabase.slice(0, 6).map((item, ind) => (
+            {productDatabase.slice(0, 6)?.map((item, ind) => (
               <Grid item lg={4} sm={6} xs={12} key={ind}>
                 <ProductCard1 hoverEffect {...item} />
               </Grid>

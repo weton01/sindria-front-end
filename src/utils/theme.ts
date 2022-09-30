@@ -16,7 +16,7 @@ export interface ThemeProps {
   };
 }
 
-const breakpoints: any = Object.keys(deviceSize).map(
+const breakpoints: any = Object.keys(deviceSize)?.map(
   (key) => deviceSize[key] + "px"
 );
 

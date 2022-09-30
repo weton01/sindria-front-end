@@ -45,7 +45,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ data }) => {
     <Box mb="3.75rem">
       <H3 mb="1.5rem">Produtos Relacionados</H3>
       <Grid container spacing={8}>
-        {data.map((item, ind) => {
+        {data?.map((item, ind) => {
           const grossAmount: number = item?.netAmount;
           const fee: number = item?.mutations[0]?.feeTotal
           const total = grossAmount + fee;

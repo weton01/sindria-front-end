@@ -14,7 +14,7 @@ const AvailableShops: React.FC<AvailableShopsProps> = () => {
     <Box mb="3.75rem">
       <H3 mb="1.5rem">Also Available at</H3>
       <Grid container spacing={8}>
-        {shopList.map((item) => (
+        {shopList?.map((item) => (
           <Grid item lg={2} md={3} sm={4} xs={12} key={item.name}>
             <Link href="/shop/53324">
               <a>

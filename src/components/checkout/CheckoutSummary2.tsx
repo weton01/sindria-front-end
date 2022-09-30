@@ -133,7 +133,7 @@ const CheckoutSummary2: React.FC = () => {
             <Typography>{formatCurrency(item?.netAmount)}</Typography>
           </FlexBox>
           <FlexBox gap={6} alignItems="center">
-            {item?.otherProps?.mutation?.variations?.sort(sort).map(v => <>
+            {item?.otherProps?.mutation?.variations?.sort(sort)?.map(v => <>
               {v.type === "size" ? renderSize(v.size, index) : null}
               {v.type === "color" ? renderColor(v.color, index) : null}
               {v.type === "default" ? renderDefault(v.name, index) : null}

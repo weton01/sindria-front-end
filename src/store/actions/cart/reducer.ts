@@ -14,7 +14,7 @@ const initialState = {
 const setDiscount = (orderStores, discount) => {
   let newOrderStores = [...orderStores]
   
-  newOrderStores = newOrderStores.map(ost => {
+  newOrderStores = newOrderStores?.map(ost => {
     ost.netAmount = ost.netAmount - (discount / orderStores.length)
     return ost
   })
@@ -25,7 +25,7 @@ const setDiscount = (orderStores, discount) => {
 const setFeeByStore = (orderStores, invoiceType) => {
   let newOrderStores = [...orderStores]
 
-  newOrderStores = newOrderStores.map(ost => {
+  newOrderStores = newOrderStores?.map(ost => {
 
     if (invoiceType === "CREDIT_CARD") {
       ost.feeAmount = ((ost.netAmount * 0.035) + 0.49)
@@ -50,7 +50,7 @@ const setFeeByStore = (orderStores, invoiceType) => {
 const setNetValue = (orderStores) => {
   let newOrderStores = [...orderStores]
 
-  newOrderStores = newOrderStores.map(ost => {
+  newOrderStores = newOrderStores?.map(ost => {
     ost.netAmount = 0;
     ost.netAmount = ost.totalAmount + ost.shippingPrice.Valor 
     return {...ost}
@@ -60,7 +60,7 @@ const setNetValue = (orderStores) => {
 }
 
 const setTotalAmountByStore = (orderStores) => {
-  let newStores = orderStores.map((ost) => {
+  let newStores = orderStores?.map((ost) => {
     const newOst = {...ost}
     newOst.orderProducts.forEach((op) => {
       newOst.totalAmount = (
@@ -87,7 +87,7 @@ const setStoreShippingPrice = (userId, price, orderStores) => {
 };
 
 const recalculateShippingValues = (orderStores) => {
-  let newStores = orderStores.map((ost) => {
+  let newStores = orderStores?.map((ost) => {
     ost.nVlPeso = 0;
     ost.nVlComprimento = 0;
     ost.nVlAltura = 0;

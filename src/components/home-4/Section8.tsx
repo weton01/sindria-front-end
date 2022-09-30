@@ -14,7 +14,7 @@ const Section8: React.FC = () => {
       borderRadius={8}
       flexWrap="wrap"
     >
-      {serviceList.map((item) => (
+      {serviceList?.map((item) => (
         <FlexBox alignItems="center" p="1rem" mx="auto" key={item.title}>
           <Icon size="42px" mr="0.87rem">
             {item.iconName}

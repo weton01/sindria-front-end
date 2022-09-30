@@ -44,7 +44,7 @@ const OrderDetails = ({ order }) => {
           </Button>
         }
       />
-      {order.ordersStores.map((item, index) => {
+      {order.ordersStores?.map((item, index) => {
         const orderStatus: OrderStatus = item.trackingStatus;
         const statusIndex = orderStatusList.indexOf(orderStatus);
 
@@ -61,7 +61,7 @@ const OrderDetails = ({ order }) => {
                 flexWrap="wrap"
                 my="2rem"
               >
-                {stepIconList.map((item, ind) => (
+                {stepIconList?.map((item, ind) => (
                   <Fragment key={item}>
                     <Box position="relative">
                       <Avatar
@@ -143,7 +143,7 @@ const OrderDetails = ({ order }) => {
               </TableRow>
 
               <Box py="0.5rem">
-                {item.orderProducts.map((item: any, index) => {
+                {item.orderProducts?.map((item: any, index) => {
                   const { netAmount, quantity } = item;
                   const { mutation } = item.freezeProduct;
                   const { images, name } = item.freezeProduct.product; 

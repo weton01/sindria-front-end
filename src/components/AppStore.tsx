@@ -7,7 +7,7 @@ import Typography from "./Typography";
 const AppStore: React.FC = () => {
   return (
     <FlexBox flexWrap="wrap" m="-0.5rem">
-      {appList.map((item) => (
+      {appList?.map((item) => (
         <a href="/" key={item.title} target="_blank" rel="noreferrer noopener">
           <Box
             display="flex"

@@ -20,7 +20,7 @@ const GrocerySection9: React.FC = () => {
           arrowButtonColor="inherit"
           showArrowOnHover={true}
         >
-          {cardList.map((_item) => (
+          {cardList?.map((_item) => (
             <Box p="0.25rem">
               <Card className="carousel-card">
                 <FlexBox

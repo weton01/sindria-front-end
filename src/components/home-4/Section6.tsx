@@ -59,7 +59,7 @@ const Section6: React.FC = () => {
           dotClass="dot-group"
           currentSlide={currentSlide}
         >
-          {[...new Array(totalSlides)].map((_item, ind) => (
+          {[...new Array(totalSlides)]?.map((_item, ind) => (
             <Box py="0.25rem" key={ind}>
               <Card
                 p="1rem"

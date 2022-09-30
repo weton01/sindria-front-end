@@ -8,7 +8,7 @@ import { H4, SemiSpan } from "../Typography";
 const GrocerySection2: React.FC = () => {
   return (
     <Grid container spacing={6}>
-      {serviceList.map((item, ind) => (
+      {serviceList?.map((item, ind) => (
         <Grid item md={4} sm={6} xs={12} key={ind}>
           <FlexBox
             alignItems="center"

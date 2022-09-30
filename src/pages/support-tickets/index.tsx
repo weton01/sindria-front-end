@@ -17,7 +17,7 @@ const TicketList = () => {
     <div>
       <DashboardPageHeader title="Support Ticket" iconName="support" />
 
-      {[1, 2, 3].map((item) => (
+      {[1, 2, 3]?.map((item) => (
         <Link href="/support-tickets/xkssThds6h37sd" key={item}>
           <TableRow
             as="a"

@@ -34,7 +34,7 @@ const VendorOrderList: React.FC<VendorOrderListProps> = () => {
         </TableRow>
       </Hidden>
 
-      {orderList.map((item, ind) => (
+      {orderList?.map((item, ind) => (
         <OrderRow item={item} key={ind} />
       ))}
 

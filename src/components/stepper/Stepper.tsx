@@ -19,7 +19,7 @@ type StepperProps = {
 const StepperVertical = (props) => {
   return (
     <>
-      {props.stepperList.map((step, ind) => (
+      {props.stepperList?.map((step, ind) => (
         <FlexBox gap={8}>
           <FlexBox
             key={step.title}
@@ -70,7 +70,7 @@ const StepperHorizontal = (props) => {
       justifyContent="center"
       my="-4px"
     >
-      {props.stepperList.map((step, ind) => (
+      {props.stepperList?.map((step, ind) => (
         <Fragment key={step.title}>
           <Chip
             bg={ind <= props.selected ? "primary.main" : "primary.light"}

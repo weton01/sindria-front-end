@@ -64,7 +64,7 @@ const Section9: React.FC = () => {
               </Typography>
             </FlexBox>
 
-            {list.map((brand, ind) => (
+            {list?.map((brand, ind) => (
               <StyledProductCategory
                 key={brand}
                 mb="0.75rem"
@@ -100,7 +100,7 @@ const Section9: React.FC = () => {
           <CategorySectionHeader title="Óptica / relógio" seeMoreLink="#" />
 
           <Grid container spacing={6}>
-            {productDatabase.slice(95, 104).map((item, ind) => (
+            {productDatabase.slice(95, 104)?.map((item, ind) => (
               <Grid item lg={4} sm={6} xs={12} key={ind}>
                 <ProductCard1 price={23} off={25} hoverEffect {...item} />
               </Grid>

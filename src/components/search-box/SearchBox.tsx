@@ -104,7 +104,7 @@ const SearchBox: React.FC<SearchBoxProps> = () => {
           boxShadow="large"
           zIndex={99}
         >
-          {resultList.map((item) => (
+          {resultList?.map((item) => (
             <Link href={`/product/search/${item.name}`} key={`link-${item.id}`}>
               <MenuItem key={`menu-item-${item.id}`}>
                 <Span fontSize="14px">{item.name}</Span>

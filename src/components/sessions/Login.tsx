@@ -47,6 +47,7 @@ const Login: React.FC = () => {
         maxAge: 60 * 60  * 7,
         path: '/'
       })
+
       dispatch(userSignin(data));
       router.back();
     } catch (error) {

@@ -12,7 +12,7 @@ const ShopList = () => {
       <H2 mb="24px">All Shops</H2>
 
       <Grid container spacing={6}>
-        {shopList.map((item, ind) => (
+        {shopList?.map((item, ind) => (
           <Grid item lg={4} sm={6} xs={12} key={ind}>
             <ShopCard1 {...item} />
           </Grid>

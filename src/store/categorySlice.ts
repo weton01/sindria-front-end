@@ -22,14 +22,7 @@ export const categorySlice = createSlice({
       state.formated = action.payload.formated 
     },
   },
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
-      return {
-        ...state,
-        ...action.payload.auth,
-      };
-    },
-  }
+   
 });
 
 export const { 

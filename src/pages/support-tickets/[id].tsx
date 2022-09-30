@@ -29,7 +29,7 @@ const PaymentMethodEditor = () => {
         }
       />
 
-      {messageList.map((item, ind) => (
+      {messageList?.map((item, ind) => (
         <FlexBox mb="30px" key={ind}>
           <Avatar src={item.imgUrl} mr="1rem" />
           <Box>

@@ -85,10 +85,10 @@ const Section5: React.FC = () => {
           showArrow={false}
           currentSlide={currentSlide}
         >
-          {[...new Array(totalSlides)].map((_item, ind) => (
+          {[...new Array(totalSlides)]?.map((_item, ind) => (
             <Box py="0.25rem" key={ind}>
               <Grid container spacing={6}>
-                {productList.map((item, ind) => (
+                {productList?.map((item, ind) => (
                   <Grid item md={6} xs={12} key={ind}>
                     <Link href="/">
                       <a>

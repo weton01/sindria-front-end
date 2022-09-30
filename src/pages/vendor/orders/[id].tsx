@@ -68,7 +68,7 @@ const OrderDetails = () => {
         </Box>
 
         <Box py="0.5rem">
-          {[1, 2, 3, 4].map((item) => (
+          {[1, 2, 3, 4]?.map((item) => (
             <FlexBox
               px="1rem"
               py="0.5rem"

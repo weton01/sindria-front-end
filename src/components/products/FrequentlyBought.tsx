@@ -72,7 +72,7 @@ const FrequentlyBought: React.FC<FrequentlyBoughtProps> = ({ data }) => {
         <FrequentlyBoughtWrapper mb="3.75rem">
           <H3 mb="24px">Frequentemente Comprado Com</H3>
           <FlexBox className="card-holder" flexWrap="wrap" m="-0.5rem">
-            {data.map((item, ind) => {
+            {data?.map((item, ind) => {
               let fee: number = 0;
               let grossAmount: number = item?.product?.netAmount;
 

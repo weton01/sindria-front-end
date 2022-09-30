@@ -27,7 +27,7 @@ const Section4: React.FC = () => {
           totalSlides={productList?.length}
           visibleSlides={visibleSlides}
         >
-          {productList.map((item, ind) => (
+          {productList?.map((item, ind) => (
             <Box py="0.25rem" key={ind}>
               <ProductCard2 {...item} />
             </Box>

@@ -37,15 +37,7 @@ export const authSlice = createSlice({
     userRecoverPasswordCb(state, action) {
       state = action.payload;
     },
-  }, 
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
-      return {
-        ...state,
-        ...action.payload.auth,
-      };
-    },
-  }
+  },  
 });
 
 export const {

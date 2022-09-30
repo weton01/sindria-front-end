@@ -28,7 +28,7 @@ const Section2: React.FC<Section2Props> = () => {
           visibleSlides={visibleSlides}
           arrowButtonColor="inherit"
         >
-          {productDatabase.slice(99, 108).map((item, ind) => (
+          {productDatabase.slice(99, 108)?.map((item, ind) => (
             <ProductCard11 key={ind} {...item} />
           ))}
         </Carousel>

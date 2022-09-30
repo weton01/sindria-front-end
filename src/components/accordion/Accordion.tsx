@@ -38,7 +38,7 @@ const Accordion: React.FC<AccordionProps> = ({
     }
   }, [ref.current]);
 
-  const modifiedChildren = Children.map(children, (child, ind) => {
+  const modifiedChildren = Children?.map(children, (child, ind) => {
     if (ind === 0) return cloneElement(child, { open, onClick: toggle });
     else return child;
   });

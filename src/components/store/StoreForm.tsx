@@ -349,7 +349,7 @@ const StoreForm = ({ address, edit, data }) => {
                           Endereço da Empresa
                         </Typography>
                         <Grid container spacing={6}>
-                          {address?.items.map((item, ind) => (
+                          {address?.items?.map((item, ind) => (
                             <Grid
                               item
                               md={4}

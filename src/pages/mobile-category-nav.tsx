@@ -34,7 +34,7 @@ const MobileCategoryNav = () => {
     <MobileCategoryNavStyle>
       <Header className="header" />
       <div className="main-category-holder">
-        {navigations.map((item) => (
+        {navigations?.map((item) => (
           <Box
             className="main-category-box"
             borderLeft={`${category?.href === item.href ? "3" : "0"}px solid`}
@@ -61,7 +61,7 @@ const MobileCategoryNav = () => {
         </Typography>
         <Box mb="2rem">
           <Grid container spacing={3}>
-            {suggestedList.map((item, ind) => (
+            {suggestedList?.map((item, ind) => (
               <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>
                 <Link href="/product/search/423423">
                   <a>
@@ -74,7 +74,7 @@ const MobileCategoryNav = () => {
         </Box>
 
         {category?.menuComponent === "MegaMenu1" ? (
-          subCategoryList.map((item, ind) => (
+          subCategoryList?.map((item, ind) => (
             <Fragment key={ind}>
               <Divider />
               <Accordion>
@@ -102,7 +102,7 @@ const MobileCategoryNav = () => {
         ) : (
           <Box mb="2rem">
             <Grid container spacing={3}>
-              {subCategoryList.map((item, ind) => (
+              {subCategoryList?.map((item, ind) => (
                 <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>
                   <Link href="/product/search/423423">
                     <a>

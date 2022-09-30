@@ -33,7 +33,7 @@ const Section6: React.FC<Section6Props> = () => {
         <Grid item md={6} xs={12}>
           <Box height="100%">
             <Grid container spacing={6} containerHeight="100%">
-              {gridProductList.map((item) => (
+              {gridProductList?.map((item) => (
                 <Grid item sm={6} xs={12} key={item.title}>
                   <Link href={item.productUrl}>
                     <a>

@@ -13,7 +13,7 @@ const VendorDashboardNavigation = () => {
 
   return (
     <DashboardNavigationWrapper px="0px" py="1.5rem" color="gray.900">
-      {linkList.map((item) => (
+      {linkList?.map((item) => (
         <StyledDashboardNav
           isCurrentPath={pathname.includes(item.href)}
           href={item.href}

@@ -27,7 +27,7 @@ const SaleNavbar: React.FC<SaleNavbarProps> = ({
 
   return (
     <FlexBox bg="white" overflowX="auto" height="5rem">
-      {saleCategoryList.map((item, ind) => (
+      {saleCategoryList?.map((item, ind) => (
         <FlexBox
           flexDirection="column"
           justifyContent="center"

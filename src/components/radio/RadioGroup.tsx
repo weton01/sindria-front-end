@@ -19,7 +19,7 @@ const RadioGroup: React.FC<RadioGroupProps> = ({
 }: any) => {
   return (
     <StyledRadioGroup {...props}>
-      {Children.map(children, (child, index) => {
+      {Children?.map(children, (child, index) => {
         return cloneElement(child, {
           id: index,
           name,

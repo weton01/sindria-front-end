@@ -24,7 +24,7 @@ const Section7: React.FC<Section7Props> = () => {
         </Grid>
         <Grid item md={8} xs={12}>
           <Grid container spacing={6}>
-            {productDatabase.slice(169, 175).map((item, ind) => (
+            {productDatabase.slice(169, 175)?.map((item, ind) => (
               <Grid item lg={4} sm={6} xs={12} key={item.title}>
                 <ProductCard1
                   id={item.id}

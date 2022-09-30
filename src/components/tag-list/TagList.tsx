@@ -30,7 +30,7 @@ const TagList: React.FC<InputHTMLAttributes<HTMLInputElement> & TagListProps> =
 
     return (
       <StyledTagList>
-        {data.map((item) => {
+        {data?.map((item) => {
           return (
             <StyledTagListItem key={item.id}>
               {item.title}{" "}

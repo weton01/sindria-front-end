@@ -41,7 +41,7 @@ const Section3: React.FC = () => {
           </H2>
 
           <FlexBox justifyContent="center" flexWrap="wrap" m="-0.5rem">
-            {['Demos', 'Shop Pages', 'User Account', 'Vendor Account'].map(
+            {['Demos', 'Shop Pages', 'User Account', 'Vendor Account']?.map(
               (item, ind) => (
                 <Button
                   variant={selectedTab === ind ? 'contained' : 'outlined'}
@@ -58,7 +58,7 @@ const Section3: React.FC = () => {
         </Box>
 
         <Grid container spacing={8}>
-          {list.map((item) => (
+          {list?.map((item) => (
             <Grid item md={6} xs={12} key={item.previewUrl}>
               <PageCard {...item} />
             </Grid>

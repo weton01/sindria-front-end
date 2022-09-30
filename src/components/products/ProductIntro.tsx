@@ -347,7 +347,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       gap={8}
                     >
                       <Typography width="80px">Cores:</Typography>
-                      {colors.map((item, ind) => {
+                      {colors?.map((item, ind) => {
                         const foundVariation =
                           findShirtColorProductExists(item);
                         return (
@@ -397,7 +397,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                       gap={8}
                     >
                       <Typography width="80px">Tamanhos:</Typography>
-                      {sizes.map((item, ind) => {
+                      {sizes?.map((item, ind) => {
                         const foundVariation =
                           variations?.length === 0
                             ? findShirtSizeProductExists(item)

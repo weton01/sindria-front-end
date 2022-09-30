@@ -14,7 +14,7 @@ const VendorDashboard = () => {
       <DashboardPageHeader title="Dashboard" iconName="bag_filled" />
 
       <Grid container spacing={6}>
-        {cardList.map((item, ind) => (
+        {cardList?.map((item, ind) => (
           <Grid item lg={4} md={4} sm={6} xs={12} key={ind}>
             <Typography as={Card} textAlign="center" py="1.5rem" height="100%">
               <H5 color="text.muted" mb="8px">
@@ -38,7 +38,7 @@ const VendorDashboard = () => {
         <Grid item lg={4} xs={12}>
           <Card p="20px 30px">
             <H5>Top Countries</H5>
-            {topCountryList.map((item, ind) => (
+            {topCountryList?.map((item, ind) => (
               <FlexBox
                 alignItems="center"
                 justifyContent="space-between"

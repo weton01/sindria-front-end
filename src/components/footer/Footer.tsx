@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
                 </Typography>
 
                 <div>
-                  {aboutLinks.map((item, ind) => (
+                  {aboutLinks?.map((item, ind) => (
                     <Link href="/" key={ind}>
                       <StyledLink>{item}</StyledLink>
                     </Link>
@@ -80,7 +80,7 @@ const Footer: React.FC = () => {
                 </Typography>
 
                 <div>
-                  {customerCareLinks.map((item, ind) => (
+                  {customerCareLinks?.map((item, ind) => (
                     <Link href="/" key={ind}>
                       <StyledLink>{item}</StyledLink>
                     </Link>
@@ -108,7 +108,7 @@ const Footer: React.FC = () => {
                 </Typography>
 
                 <FlexBox className="flex" mx="-5px">
-                  {iconList.map((item) => (
+                  {iconList?.map((item) => (
                     <a
                       href={item.url}
                       target="_blank"

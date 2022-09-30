@@ -15,7 +15,7 @@ const GrocerySection3: React.FC = () => {
       </H3>
 
       <Grid container spacing={6}>
-        {serviceList.map((item, ind) => (
+        {serviceList?.map((item, ind) => (
           <Grid item md={4} sm={6} xs={12} key={ind}>
             <Link href={item.url}>
               <a>

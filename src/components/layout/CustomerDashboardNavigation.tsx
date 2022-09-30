@@ -14,12 +14,12 @@ const CustomerDashboardNavigation = () => {
 
   return (
     <DashboardNavigationWrapper px="0px" pb="1.5rem" color="gray.900">
-      {linkList.map((item) => (
+      {linkList?.map((item) => (
         <Fragment key={item.title}>
           <Typography p="26px 30px 1rem" color="text.muted" fontSize="12px">
             {item.title}
           </Typography>
-          {item.list.map((item) => (
+          {item.list?.map((item) => (
             <StyledDashboardNav
               isCurrentPath={pathname.includes(item.href)}
               href={item.href}

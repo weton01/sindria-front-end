@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
         </FlexBox>
 
         <FlexBox className="flex">
-          {iconList.map((item) => (
+          {iconList?.map((item) => (
             <a
               href={item.url}
               target="_blank"

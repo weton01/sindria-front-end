@@ -129,7 +129,7 @@ const ProductFilterCard: React.FC<FilterProps> = ({ filter }) => {
     <Card p="18px 27px" elevation={5}>
       <H6 mb="10px">Categorias</H6>
       {
-        filter.categories.map((item, index) => {
+        filter.categories?.map((item, index) => {
           return index === 0 ? (
             <Accordion key={foundCategory.name} expanded>
               <AccordionHeader
@@ -142,7 +142,7 @@ const ProductFilterCard: React.FC<FilterProps> = ({ filter }) => {
                   {foundCategory.name}
                 </SemiSpan>
               </AccordionHeader>
-              {foundCategory.subCategories.map((item2) => (
+              {foundCategory.subCategories?.map((item2) => (
                 <Paragraph
                   className="cursor-pointer"
                   fontSize="14px"
@@ -230,7 +230,7 @@ const ProductFilterCard: React.FC<FilterProps> = ({ filter }) => {
       {
         brands.length > 0 ? <>
           <H6 mb="12px">Marcas</H6>
-          {brands.map(fncAddChecked).map(fncRenderBrands)}
+          {brands?.map(fncAddChecked)?.map(fncRenderBrands)}
           <Divider my="24px" />
         </> : null
       }
@@ -238,7 +238,7 @@ const ProductFilterCard: React.FC<FilterProps> = ({ filter }) => {
       {
         sizes?.length > 0 ? <>
           <H6 mb="12px">Tamanhos</H6>
-          {sizes.map(fncAddChecked).map(fncRenderSizes)}
+          {sizes?.map(fncAddChecked)?.map(fncRenderSizes)}
           <Divider my="24px" />
         </> : null
       }
@@ -246,7 +246,7 @@ const ProductFilterCard: React.FC<FilterProps> = ({ filter }) => {
       {
         tags ? <>
           <H6 mb="12px">Etiquetas</H6>
-          {tags.map(fncAddChecked).map(fncRenderTags)}
+          {tags?.map(fncAddChecked)?.map(fncRenderTags)}
         </> : null
       }
     </Card>

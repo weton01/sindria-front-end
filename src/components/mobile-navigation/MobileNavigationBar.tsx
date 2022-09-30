@@ -13,7 +13,7 @@ const MobileNavigationBar: React.FC = () => {
   return (
     width <= 900 && (
       <StyledMobileNavigationBar>
-        {list.map((item) => (
+        {list?.map((item) => (
           <NavLink className="link" href={item.href} key={item.title}>
             <Icon className="icon" variant="small">
               {item.icon}

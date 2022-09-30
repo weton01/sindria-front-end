@@ -27,7 +27,7 @@ const Section8: React.FC<Section8Props> = () => {
           visibleSlides={visibleSlides}
           arrowButtonColor="inherit"
         >
-          {productDatabase.slice(281, 291).map((item) => (
+          {productDatabase.slice(281, 291)?.map((item) => (
             <Box py="0.25rem" key={item.id}>
               <ProductCard1 {...item} />
             </Box>

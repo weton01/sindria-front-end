@@ -12,7 +12,7 @@ export interface ProductReviewProps {
 const ProductReview: React.FC<ProductReviewProps> = ({reviews, user }: ProductReviewProps) => {
   return (
     <Box>
-      {reviews.map((item, ind) => ( 
+      {reviews?.map((item, ind) => ( 
         <ProductComment 
           name={item?.user?.username}
           id={item.id}

@@ -12,8 +12,8 @@ import AppLayout from "../components/layout/AppLayout";
 import Section15 from "@component/home-4/Section2";
 import Container from "../components/Container";
 
-import { GetServerSideProps } from "next";
 import { getProduct, getProductSuperStore } from "services/product";
+import { wrapper } from "store/store";
 
 const IndexPage = ({
   section2,
@@ -23,7 +23,6 @@ const IndexPage = ({
   section13,
   section10
 }) => {
-
   return (
     <main>
       <Section1 />
@@ -44,33 +43,37 @@ const IndexPage = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const [section5, rest] = await Promise.all([
-    getProduct({
-      params: {
-        skip: 0,
-        take: 6,
-        orderBy: `created_at=DESC`,
-        select: `name,netAmount,grossAmount,id,images`,
-      },
-    }),
-    getProductSuperStore(),
-  ]);
+export const getStaticProps= wrapper.getStaticProps(
+  (store) =>
+    async ({ params }) => {
+      const [section5, rest] = await Promise.all([
+        getProduct({
+          params: {
+            skip: 0,
+            take: 6,
+            orderBy: `created_at=DESC`,
+            select: `name,netAmount,grossAmount,id,images`,
+          },
+        }),
+        getProductSuperStore(),
+      ]);
+    
+      return {
+        props: {
+          section2: rest.bestSalers,
+          section3: rest.bestCategories,
+          section5,
+          section13: rest.rdmProducts,
+          section10: rest.rdmCategories,
+          section4: {
+            reviews: rest.bestReviews,
+            brands: rest.bestBrands
+          },
+        },
+      };
+    }
+);
 
-  return {
-    props: {
-      section2: rest.bestSalers,
-      section3: rest.bestCategories,
-      section5,
-      section13: rest.rdmProducts,
-      section10: rest.rdmCategories,
-      section4: {
-        reviews: rest.bestReviews,
-        brands: rest.bestBrands
-      },
-    },
-  };
-};
 
 IndexPage.layout = AppLayout;
 

@@ -69,7 +69,7 @@ const Cart = () => {
     <Fragment>
       <Grid container spacing={6}>
         <Grid item lg={8} md={8} xs={12}>
-          {products.map((item, index) => (
+          {products?.map((item, index) => (
             <ProductCard7
               {...item?.otherProps}
               key={index}

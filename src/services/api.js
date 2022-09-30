@@ -1,5 +1,4 @@
 import axios from "axios";
-import { store } from "store";
 import { toast } from "react-nextjs-toast";
 
 export const request = {};

@@ -31,7 +31,7 @@ export const handleOnChangeImage = (
   values: any,
   multiple: boolean = false
 ) => {
-  files.map(async (file: File, index) => {
+  files?.map(async (file: File, index) => {
     const { url } = await getUrlAssign();
     let fd = new FormData();
     const blob: any = await processFile(file);
@@ -135,11 +135,11 @@ const DropZone: React.FC<DropZoneProps> = ({
       disabled,
     });
 
-  const fileRejectionItems = fileRejections.map(({ file, errors }: any) => (
+  const fileRejectionItems = fileRejections?.map(({ file, errors }: any) => (
     <li key={file.path}>
       {file.path}
       <ul>
-        {errors.map((e) => (
+        {errors?.map((e) => (
           <li key={e.code}>{e.message}</li>
         ))}
       </ul>
@@ -210,7 +210,7 @@ const DropZone: React.FC<DropZoneProps> = ({
       </Box>
       <FlexBox display="flex" gap={16} flexWrap={"wrap"}>
         {imgs?.length > 0
-          ? imgs.map((item, index) => {
+          ? imgs?.map((item, index) => {
             return (
               <Box
                 display={"flex"}

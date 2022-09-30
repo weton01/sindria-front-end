@@ -86,7 +86,7 @@ const VariationForm = (props) => {
     <div>
       {product.variations
         .filter((i) => i.type === "default")
-        .map((item, index) => {
+        ?.map((item, index) => {
           return (
             <div style={{ marginTop: 16 }}>
               <Formik

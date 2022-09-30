@@ -36,7 +36,7 @@ const VendorProductList: React.FC<VendorProductListProps> = () => {
         </TableRow>
       </Hidden>
 
-      {productList.map((item) => (
+      {productList?.map((item) => (
         <Link href={item.href}>
           <TableRow as="a" href={item.href} my="1rem" padding="6px 18px">
             <H5 m="6px" textAlign="left">

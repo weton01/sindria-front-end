@@ -100,12 +100,12 @@ const Checkout = ({ address }) => {
       });
 
       const shippings = await Promise.all(
-        promises.map(async (p) => {
+        promises?.map(async (p) => {
           let user;
           let storeName;
 
           const items = await Promise.all(
-            p.map((i) => {
+            p?.map((i) => {
               user = i.user;
               storeName = i.storeName;
 
@@ -220,7 +220,7 @@ const Checkout = ({ address }) => {
 
             <Typography mb="0.75rem">Endereço de Entrega</Typography>
             <Grid container spacing={6}>
-              {address?.items.map((item, ind) => (
+              {address?.items?.map((item, ind) => (
                 <Grid item md={4} sm={6} xs={12} key={`addr-${ind}`}>
                   <Card
                     bg="gray.100"
@@ -259,7 +259,7 @@ const Checkout = ({ address }) => {
             </FlexBox>
             <Spin loading={loadingShippings} size="30px">
               <FlexBox flexDirection={"column"} gap={8}>
-                {shippings.map((item, index) => (
+                {shippings?.map((item, index) => (
                   <Shipping key={`shi-${index}`} values={item} />
                 ))}
               </FlexBox>
@@ -301,10 +301,9 @@ const Checkout = ({ address }) => {
 
 Checkout.layout = CheckoutNavLayout;
 
-export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
+export const getStaticProps= wrapper.getStaticProps(
   (store) =>
     async ({ params }) => {
-      console.log('getState', store.getState())
       return {
         props: {
           authState: false,

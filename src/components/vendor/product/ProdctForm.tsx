@@ -51,10 +51,10 @@ const ProductForm = (props) => {
       weight: Number(weight),
       length: Number(length),
       netAmount: Number(netAmount),
-      categories: categories.map((item) => ({
+      categories: categories?.map((item) => ({
         id: item.value,
       })),
-      tags: tags.map((item) => ({
+      tags: tags?.map((item) => ({
         id: item.value,
       })),
     };

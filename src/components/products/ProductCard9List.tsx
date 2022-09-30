@@ -33,7 +33,7 @@ const ProductCard9List: React.FC<ProductCard9ListProps> = ({ items, count, skip,
   }
   return (
     <div>
-      {items.map((item, ind) => (
+      {items?.map((item, ind) => (
         <ProductCard9 mb="1.25rem" key={ind}
           id={item.id}
           imgUrl={item.images[0]}

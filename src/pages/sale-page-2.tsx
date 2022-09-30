@@ -38,7 +38,7 @@ const SalePage2 = () => {
   return (
     <Container mt="2rem">
       <Grid container spacing={6}>
-        {productList.map((item, ind) => (
+        {productList?.map((item, ind) => (
           <Grid item lg={3} md={4} sm={6} xs={12} key={ind}>
             <ProductCard1 {...item} />
           </Grid>

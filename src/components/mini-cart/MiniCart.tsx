@@ -69,7 +69,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav }) => {
             </Paragraph>
           </FlexBox>
         )}
-        {cartList.map((item: CartItem) => (
+        {cartList?.map((item: CartItem) => (
           <Fragment key={item.id}>
             <div className="cart-item">
               <FlexBox alignItems="center" flexDirection="column">

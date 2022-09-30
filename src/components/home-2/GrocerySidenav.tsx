@@ -16,7 +16,7 @@ export interface GrocerySidenavProps {
 const GrocerySidenav: React.FC<GrocerySidenavProps> = ({ isFixed }) => {
   const renderChild = (childList: any[], type = "parent") => {
     if (type === "parent")
-      return childList.map((item) => (
+      return childList?.map((item) => (
         <Fragment key={item.title}>
           <NavLink href={item.href} color="gray.700">
             <FlexBox>
@@ -30,7 +30,7 @@ const GrocerySidenav: React.FC<GrocerySidenavProps> = ({ isFixed }) => {
         </Fragment>
       ));
     else
-      return childList.map((item) => (
+      return childList?.map((item) => (
         <NavLink href={item.href} color="gray.700">
           <FlexBox key={item.title}>
             <SemiSpan ml="3rem" py="6px" color="inherit" flex="1 1 0">
@@ -50,7 +50,7 @@ const GrocerySidenav: React.FC<GrocerySidenavProps> = ({ isFixed }) => {
       borderRadius={0}
       overflow={isFixed ? "auto" : "unset"}
     >
-      {groceryNavigations.map((item) => (
+      {groceryNavigations?.map((item) => (
         <Box mb="0.5rem" key={item.title} color="gray.700">
           {item.child ? (
             <Accordion expanded>

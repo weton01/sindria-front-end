@@ -21,7 +21,7 @@ const GrocerySection1: React.FC = () => {
         dotColor="white"
         spacing="0px"
       >
-        {[...new Array(3)].map((_item) => (
+        {[...new Array(3)]?.map((_item) => (
           <Card
             bg="primary.main"
             color="white"

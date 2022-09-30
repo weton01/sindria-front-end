@@ -68,7 +68,7 @@ const Topbar: React.FC = () => {
               </FlexBox>
             }
           >
-            {languageList.map((item) => (
+            {languageList?.map((item) => (
               <MenuItem key={item.title} onClick={handleLanguageClick(item)}>
                 <Image
                   src={item.imgUrl}
@@ -94,7 +94,7 @@ const Topbar: React.FC = () => {
               </FlexBox>
             }
           >
-            {currencyList.map((item) => (
+            {currencyList?.map((item) => (
               <MenuItem key={item.title} onClick={handleCurrencyClick(item)}>
                 <Image
                   src={item.imgUrl}

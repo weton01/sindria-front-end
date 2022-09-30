@@ -32,7 +32,7 @@ const Section4: React.FC<Section4Props> = ({ data }: Section4Props) => {
               />
               <Card p="1rem">
                 <Grid container spacing={4}>
-                  {data.reviews.map((item) => (
+                  {data?.reviews?.map((item) => (
                     <Grid item md={3} sm={6} xs={6} key={item.title}>
                       <Link href={item.p_images}>
                         <a>
@@ -59,7 +59,7 @@ const Section4: React.FC<Section4Props> = ({ data }: Section4Props) => {
               />
               <Card p="1rem">
                 <Grid container spacing={4}>
-                  {data.brands.map((item) => (
+                  {data?.brands?.map((item) => (
                     <Grid item sm={6} xs={12} key={item.title}>
                       <Link href={imageUrlMock}>
                         <a>

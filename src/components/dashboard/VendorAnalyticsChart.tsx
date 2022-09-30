@@ -61,7 +61,7 @@ const VendorAnalyticsChart = () => {
 
   useEffect(() => {
     // create label for 30 days (dummy date)
-    let labelList = new Array(30).fill("").map((_item, ind) => {
+    let labelList = new Array(30).fill("")?.map((_item, ind) => {
       let date = new Date();
       date.setDate(ind + 1);
       return format(date, "MMM dd");

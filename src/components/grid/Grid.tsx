@@ -24,7 +24,7 @@ const Grid: React.FC<GridProps & FlexboxProps> = ({ children, ...props }) => {
   let childList = children;
 
   if (props.container) {
-    childList = Children.map(children, (child) => {
+    childList = Children?.map(children, (child) => {
       return cloneElement(child, {
         spacing: props.spacing,
         horizontal_spacing: props.horizontal_spacing,

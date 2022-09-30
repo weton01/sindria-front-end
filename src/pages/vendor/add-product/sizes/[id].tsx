@@ -62,10 +62,10 @@ const ProductSize = (props) => {
   const handleFormSubmit = async (values) => {
     const payload = {
       ...values,
-      categories: values.categories.map((item) => ({
+      categories: values.categories?.map((item) => ({
         id: item.value,
       })),
-      tags: values.tags.map((item) => ({
+      tags: values.tags?.map((item) => ({
         id: item.value,
       })),
     }; 

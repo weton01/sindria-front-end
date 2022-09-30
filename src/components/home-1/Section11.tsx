@@ -10,7 +10,7 @@ const Section11: React.FC = () => {
     <Container mb="70px">
       <CategorySectionHeader title="Mais para você" seeMoreLink="#" />
       <Grid container spacing={6}>
-        {productDatabase.slice(48, 60).map((item, ind) => (
+        {productDatabase.slice(48, 60)?.map((item, ind) => (
           <Grid item lg={3} md={4} sm={6} xs={12} key={ind}>
             <ProductCard1 price={23} off={25} hoverEffect {...item} />
           </Grid>

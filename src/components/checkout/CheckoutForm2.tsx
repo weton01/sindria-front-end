@@ -62,7 +62,7 @@ const clearCartFormat = (cart, user, values) => {
 
   delete newCart.fee
   delete newCart.coupon
-  newCart.orderStores = newCart.orderStores.map(ost => {
+  newCart.orderStores = newCart.orderStores?.map(ost => {
     const newOst = { ...ost };
     const { trackingEstimated } = newOst?.shippingPrice
 
@@ -70,7 +70,7 @@ const clearCartFormat = (cart, user, values) => {
     newOst.description = newOst.description || " "
     newOst.shippingAmount = newOst?.shippingPrice?.Valor
     newOst.totalAmount = newOst?.netAmount
-    newOst.orderProducts = newOst.orderProducts.map(item => {
+    newOst.orderProducts = newOst.orderProducts?.map(item => {
       delete item.otherProps
       return item
     })
