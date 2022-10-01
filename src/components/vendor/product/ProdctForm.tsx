@@ -34,7 +34,7 @@ const ProductForm = (props) => {
       weight,
       length,
       store,
-    } = values; 
+    } = values;
 
     const payload = {
       ...values,
@@ -58,38 +58,39 @@ const ProductForm = (props) => {
         id: item.value,
       })),
     };
-    
+
     setLoading(true);
-    if (edit){
-      const id = payload.id; 
+    if (edit) {
+      const id = payload.id;
       delete payload.id;
       delete payload.name;
       delete payload.rating;
-      delete payload.reviewsQuantity; 
-      delete payload.salesQuantity; 
+      delete payload.reviewsQuantity;
+      delete payload.salesQuantity;
       delete payload.created_at;
       delete payload.updated_at;
-      delete payload.variations; 
-      delete payload.user; 
-      delete payload.mutations; 
+      delete payload.variations;
+      delete payload.user;
+      delete payload.mutations;
 
       await request.patch({
         route: `product/v1/${id}`,
         payload,
         message: `Produto alterado`,
-        actionSuccess: (product) =>
-          router.push(`/vendor/add-product/colors/${product.id}`),
-      })
-    }
-    else
-      await request.post({
-        route: `product/v1/`,
-        payload,
-        message: `Produto adicionado`,
-        actionSuccess: (product) =>
-          router.push(`/vendor/add-product/colors/${product.id}`),
+        actionSuccess: (productEdited) => {
+          router.push({
+            pathname: `/vendor/add-product/colors/${productEdited.id}`,
+          });
+        },
+        actionError: () =>{ 
+           setLoading(false);
+        }
       });
-    setLoading(false);
+    } else 
+      router.push({
+        pathname: `/vendor/add-product/colors/`,
+        query: { product: JSON.stringify(payload) },
+      })
   };
 
   return (
@@ -108,8 +109,7 @@ const ProductForm = (props) => {
         setFieldTouched,
         setFieldValue,
         setFieldError,
-      }) => { 
-
+      }) => {
         return (
           <form onSubmit={handleSubmit}>
             <Grid container spacing={6}>

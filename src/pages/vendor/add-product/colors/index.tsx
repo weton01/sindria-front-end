@@ -11,29 +11,30 @@ import Box from "@component/Box";
 import ColorsForm from "@component/vendor/colors/ColorsForm";
 import { getColorById } from "services/inventory/variations/color";
 import Typography from "@component/Typography";
+import { isJson } from "@utils/utils";
 
 const ProductColor = (props) => {
   const [selectedStep, setSelectedStep] = useState(0);
   const router = useRouter();
   const id = router?.query?.id;
   const { route } = router;
-
+ 
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
-        router.push(`/vendor/add-product/${id}`);
+        router.push(`/vendor/add-product/`);
         break;
       case 1:
-        router.push(`/vendor/add-product/colors/${id}`);
+        router.push(`/vendor/add-product/colors/`);
         break;
       case 2:
-        router.push(`/vendor/add-product/sizes/${id}`);
+        router.push(`/vendor/add-product/sizes/`);
         break;
       case 3:
-        router.push(`/vendor/add-product/inventory/${id}`);
+        router.push(`/vendor/add-product/inventory/`);
         break;
       case 4:
-        router.push(`/vendor/add-product/variations/${id}`);
+        router.push(`/vendor/add-product/variations/`);
         break;
       default:
         break;
@@ -41,20 +42,22 @@ const ProductColor = (props) => {
   };
 
   useEffect(() => {
+    console.log(route);
+    
     switch (route) {
-      case `/vendor/add-product/[id]`:
+      case `/vendor/add-product`:
         setSelectedStep(1);
         break;
-      case `/vendor/add-product/colors/[id]`:
+      case `/vendor/add-product/colors`:
         setSelectedStep(2);
         break;
-      case `/vendor/add-product/sizes/[id]`:
+      case `/vendor/add-product/sizes`:
         setSelectedStep(3);
-        break; 
-      case `/vendor/add-product/inventory/[id]`:
+        break;
+      case `/vendor/add-product/inventory`:
         setSelectedStep(4);
         break;
-      case `/vendor/add-product/variations/[id]`:
+      case `/vendor/add-product/variations`:
         setSelectedStep(5);
         break;
       default:
@@ -65,7 +68,7 @@ const ProductColor = (props) => {
   return (
     <div>
       <DashboardPageHeader
-        title={`Produto ${props.product.name}`}
+        title={`Produto / Cores`}
         iconName="delivery-box"
         button={
           <Button
@@ -120,32 +123,33 @@ const stepperList = [
   },
   {
     title: "Tamanhos",
-    disabled: false,
+    disabled: true,
   },
   {
     title: "Estoque",
-    disabled: false,
+    disabled: true,
   },
 ];
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
   const { id } = ctx.query; 
-
-  console.log("query ->>>", ctx.query);
   
+  if (!isJson(ctx.query.product))
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/vendor/add-product/",
+      },
+    };
+
   try {
     const [product] = await Promise.all([getColorById({ id, token })]);
 
-    if ("name" in product) {
-      product.colors.push(initialValues);
+    product.colors.push(initialValues);
 
-      return {
-        props: { product },
-      };
-    }
     return {
-      notFound: true,
+      props: { product },
     };
   } catch (err) {
     return {

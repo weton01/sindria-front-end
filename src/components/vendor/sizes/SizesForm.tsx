@@ -11,35 +11,54 @@ import Icon from "@component/icon/Icon";
 import FlexBox from "@component/FlexBox";
 import Avatar from "@component/avatar/Avatar";
 import Typography from "@component/Typography";
-import Select, { colourOptions } from "@component/Select";
+import Select, { colourOptions, sizeOptions } from "@component/Select";
 import { withRouter } from "next/router";
+import { createProduct } from "services/product";
+import { fail } from "@component/notification/notifcate";
 
-const ColorsForm = (props) => { 
-  const router = useRouter(); 
+const SizesForm = (props) => {
+  const router = useRouter();
 
-  const handleFormSubmit = async (values) => {  
+  const handleFormSubmit = async (values) => {
     const productParse = JSON.parse(props?.router?.query?.product);
     const payload = {
       ...productParse,
-      ...values,
+      ...values
     };
 
-    router.push({
-      pathname: `/vendor/add-product/sizes/`,
-      query: { product: JSON.stringify(payload) },
-    })
+    console.log("payload ->", payload);
+
+    await createProduct({
+      payload,
+      message: "Produto criado com sucesso!",
+      actionSuccess: () => {
+        router.push({
+          pathname: `/vendor/add-product/stock/`,
+          query: { product: JSON.stringify(payload) },
+        });
+      },
+      actionError: (err) => {
+        if (err?.response?.data?.errors)
+          return fail(
+            err?.response?.data?.errors
+              ?.map((error) => error.description)
+              .join("\n")
+          );
+        else return fail(err?.response?.data?.message);
+      },
+    });
   };
 
   return (
     <div>
       <Formik
-        initialValues={{ colors: [] }}
+        initialValues={{ sizes: [] }}
         validationSchema={checkoutSchema}
         onSubmit={handleFormSubmit}
       >
         {({
           values,
-          errors, 
+          errors,
           handleChange,
           handleBlur,
           handleSubmit,
@@ -48,17 +67,17 @@ const ColorsForm = (props) => {
           return (
             <form onSubmit={handleSubmit}>
               <Select
-                placeholder="Quais cores seu produto vai ter?"
+                placeholder="Quais tamanhos seu produto vai ter?"
                 closeMenuOnSelect={false}
                 isMulti
-                options={colourOptions}
+                options={sizeOptions}
                 marginTop="16px"
                 onChange={(e: any) => {
-                  setFieldValue("colors", e || []);
-                  console.log(values.colors);
+                  setFieldValue("sizes", e || []);
+                  console.log(values.sizes);
                 }}
               />
-              {values.colors.length === 0 ? (
+              {values.sizes.length === 0 ? (
                 <Typography
                   fontSize={"24px"}
                   fontWeight="600"
@@ -66,15 +85,15 @@ const ColorsForm = (props) => {
                   marginTop="54px"
                   marginBottom="24px"
                 >
-                  Nenhuma cor selecionada!
+                  Nenhum tamanho selecionado!
                 </Typography>
               ) : (
                 <>
-                  <FieldArray name="colors">
+                  <FieldArray name="sizes">
                     {() =>
-                      values?.colors?.map((color, index) => {
+                      values?.sizes?.map((color, index) => {
                         const ticketErrors =
-                          (errors.colors?.length && errors.colors[index]) || {}; 
+                          (errors.sizes?.length && errors.sizes[index]) || {};
 
                         return (
                           <FlexBox marginTop={16}>
@@ -109,7 +128,7 @@ const ColorsForm = (props) => {
                               <Grid container spacing={4}>
                                 <Grid item sm={4} xs={12}>
                                   <TextField
-                                    name={`colors.${index}.netAmount`}
+                                    name={`sizes.${index}.netAmount`}
                                     label="Valor liquido"
                                     placeholder="Valor liquido"
                                     mask={MaskInput.money}
@@ -118,14 +137,12 @@ const ColorsForm = (props) => {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values?.netAmount || ""}
-                                    errorText={
-                                      ticketErrors.netAmount
-                                    }
+                                    errorText={ticketErrors.netAmount}
                                   />
                                 </Grid>
                                 <Grid item sm={2} xs={12}>
                                   <TextField
-                                    name={`colors.${index}.weight`}
+                                    name={`sizes.${index}.weight`}
                                     label="Peso"
                                     placeholder="0.5kg"
                                     type="number"
@@ -134,14 +151,12 @@ const ColorsForm = (props) => {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values?.weight || ""}
-                                    errorText={
-                                      ticketErrors.weight 
-                                    }
+                                    errorText={ticketErrors.weight}
                                   />
                                 </Grid>
                                 <Grid item sm={2} xs={12}>
                                   <TextField
-                                    name={`colors.${index}.height`}
+                                    name={`sizes.${index}.height`}
                                     label="Altura"
                                     placeholder="14cm"
                                     type="number"
@@ -150,14 +165,12 @@ const ColorsForm = (props) => {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values?.height || ""}
-                                    errorText={
-                                      ticketErrors.height  
-                                    }
+                                    errorText={ticketErrors.height}
                                   />
                                 </Grid>
                                 <Grid item sm={2} xs={12}>
                                   <TextField
-                                    name={`colors.${index}.width`}
+                                    name={`sizes.${index}.width`}
                                     label="Largura"
                                     placeholder="12cm"
                                     type="number"
@@ -166,14 +179,12 @@ const ColorsForm = (props) => {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values?.width || ""}
-                                    errorText={
-                                      ticketErrors.width 
-                                    }
+                                    errorText={ticketErrors.width}
                                   />
                                 </Grid>
                                 <Grid item sm={2} xs={12}>
                                   <TextField
-                                    name={`colors.${index}.length`}
+                                    name={`sizes.${index}.length`}
                                     label="Comprimento"
                                     placeholder="22cm"
                                     type="number"
@@ -182,9 +193,7 @@ const ColorsForm = (props) => {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values?.length || ""}
-                                    errorText={
-                                      ticketErrors.length 
-                                    }
+                                    errorText={ticketErrors.length}
                                   />
                                 </Grid>
                               </Grid>
@@ -198,7 +207,7 @@ const ColorsForm = (props) => {
               )}
               <FlexBox justifyContent={"space-between"}>
                 <Button
-                  disabled={values.colors.length === 0}
+                  disabled={values.sizes.length === 0}
                   mt="25px"
                   variant="contained"
                   color="primary"
@@ -210,7 +219,7 @@ const ColorsForm = (props) => {
                   mt="25px"
                   type="button"
                   color="secondary"
-                  route={`/vendor/add-product/sizes`}
+                  route={`/vendor/add-product/inventory`}
                 >
                   Próximo
                   <Icon size="18px" defaultcolor="auto">
@@ -227,7 +236,7 @@ const ColorsForm = (props) => {
 };
 
 const checkoutSchema = yup.object().shape({
-  colors: yup.array(
+  sizes: yup.array(
     yup.object({
       netAmount: yup.number().required("campo requerido!"),
       weight: yup.number().required("campo requerido!"),
@@ -238,4 +247,4 @@ const checkoutSchema = yup.object().shape({
   ),
 });
 
-export default withRouter(ColorsForm);
+export default withRouter(SizesForm);

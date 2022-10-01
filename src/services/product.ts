@@ -15,3 +15,8 @@ export const getProduct = async ({ params }) => {
 export const getProductSuperStore = async () => {
   return request.get({ route: "product/v1/home/superstore" });
 };
+
+export const createProduct = async ({ payload , message, actionSuccess, actionError }) => {
+  return request.post({ route: "product/v1", payload, message, actionSuccess, actionError });
+};
+ 

@@ -8,53 +8,53 @@ import { parseCookies } from "nookies";
 import Stepper from "@component/stepper/Stepper";
 import { useRouter } from "next/router";
 import Box from "@component/Box";
-import ColorsForm from "@component/vendor/colors/ColorsForm";
+import SizesForm from "@component/vendor/sizes/SizesForm";
 import { getColorById } from "services/inventory/variations/color";
 import Typography from "@component/Typography";
+import { isJson } from "@utils/utils";
 
-const ProductColor = (props) => {
+const ProductSize = (props) => {
   const [selectedStep, setSelectedStep] = useState(0);
-  const router = useRouter();
-  const id = router?.query?.id;
+  const router = useRouter(); 
   const { route } = router;
 
   const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
-        router.push(`/vendor/add-product/${id}`);
+        router.push(`/vendor/add-product/`);
         break;
       case 1:
-        router.push(`/vendor/add-product/colors/${id}`);
+        router.push(`/vendor/add-product/colors/`);
         break;
       case 2:
-        router.push(`/vendor/add-product/sizes/${id}`);
+        router.push(`/vendor/add-product/sizes/`);
         break;
       case 3:
-        router.push(`/vendor/add-product/inventory/${id}`);
+        router.push(`/vendor/add-product/stock/`);
         break;
       case 4:
-        router.push(`/vendor/add-product/variations/${id}`);
+        router.push(`/vendor/add-product/variations/`);
         break;
       default:
         break;
     }
   };
 
-  useEffect(() => {
+  useEffect(() => {  
     switch (route) {
-      case `/vendor/add-product/[id]`:
+      case `/vendor/add-product`:
         setSelectedStep(1);
         break;
-      case `/vendor/add-product/colors/[id]`:
+      case `/vendor/add-product/colors`:
         setSelectedStep(2);
         break;
-      case `/vendor/add-product/sizes/[id]`:
+      case `/vendor/add-product/sizes`:
         setSelectedStep(3);
-        break; 
-      case `/vendor/add-product/inventory/[id]`:
+        break;
+      case `/vendor/add-product/stock`:
         setSelectedStep(4);
         break;
-      case `/vendor/add-product/variations/[id]`:
+      case `/vendor/add-product/variations`:
         setSelectedStep(5);
         break;
       default:
@@ -65,7 +65,7 @@ const ProductColor = (props) => {
   return (
     <div>
       <DashboardPageHeader
-        title={`Produto ${props.product.name}`}
+        title={`Produto / Tamanhos`}
         iconName="delivery-box"
         button={
           <Button
@@ -87,9 +87,9 @@ const ProductColor = (props) => {
       </Box>
       <Card p="30px">
         <Typography fontSize={"24px"} fontWeight={600}>
-          Cores do Produto
+          Estoque do Produto
         </Typography>
-        <ColorsForm {...props} />
+        <SizesForm {...props} />
       </Card>
     </div>
   );
@@ -107,7 +107,7 @@ const initialValues = {
   loading: { create: false, delete: false },
 };
 
-ProductColor.layout = VendorDashboardLayout;
+ProductSize.layout = VendorDashboardLayout;
 
 const stepperList = [
   {
@@ -130,22 +130,23 @@ const stepperList = [
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { ["shop_token"]: token } = parseCookies(ctx);
-  const { id } = ctx.query; 
+  const { id } = ctx.query;
 
-  console.log("query ->>>", ctx.query);
-  
+  if (!isJson(ctx.query.product))
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/vendor/add-product/",
+      },
+    };
+
   try {
     const [product] = await Promise.all([getColorById({ id, token })]);
 
-    if ("name" in product) {
-      product.colors.push(initialValues);
+    product.colors.push(initialValues);
 
-      return {
-        props: { product },
-      };
-    }
     return {
-      notFound: true,
+      props: { product },
     };
   } catch (err) {
     return {
@@ -154,4 +155,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 };
 
-export default ProductColor;
+export default ProductSize;

@@ -68,7 +68,7 @@ if (typeof window !== "undefined") {
   }) => {
     try {
       const { data } = await api.patch(route, payload);
-
+      console.log("produto ->>>", data);
       toast.notify(message, {
         title: "Sucesso!",
         duration: 5,

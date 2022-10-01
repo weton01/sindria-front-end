@@ -24,13 +24,16 @@ const AddProduct = (props) => {
         router.push(`/vendor/add-product/`);
         break;
       case 1:
-        router.push(`/vendor/add-product/variations`);
+        router.push(`/vendor/add-product/colors/`);
         break;
       case 2:
-        router.push(`/vendor/add-product/colors`);
+        router.push(`/vendor/add-product/sizes/`);
         break;
       case 3:
-        router.push(`/vendor/add-product/sizes`);
+        router.push(`/vendor/add-product/inventory/`);
+        break;
+      case 4:
+        router.push(`/vendor/add-product/variations/`);
         break;
       default:
         break;
@@ -42,16 +45,18 @@ const AddProduct = (props) => {
       case `/vendor/add-product`:
         setSelectedStep(1);
         break;
-      case `/vendor/add-product/variations/[id]`:
-        setSelectedStep(2);
-        break;
-      case `/vendor/add-product/colors/[id]`:
+      case `/vendor/add-product/colors`:
         setSelectedStep(3);
         break;
-      case `/vendor/add-product/sizes/[id]`:
+      case `/vendor/add-product/sizes`:
         setSelectedStep(4);
         break;
-
+      case `/vendor/add-product/inventory`:
+        setSelectedStep(3);
+        break;
+      case `/vendor/add-product/variations`:
+        setSelectedStep(2);
+        break;
       default:
         break;
     }
@@ -93,15 +98,15 @@ const stepperList = [
     disabled: false,
   },
   {
-    title: "Variações",
-    disabled: true,
-  },
-  {
     title: "Cores",
     disabled: true,
   },
   {
     title: "Tamanhos",
+    disabled: true,
+  },
+  {
+    title: "Estoque",
     disabled: true,
   },
 ];

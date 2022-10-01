@@ -21,10 +21,7 @@ const EditProduct = (props) => {
   const router = useRouter();
   const id = router?.query?.id;
   const { route } = router;
-
-  console.log('====================================');
-  console.log(props);
-  console.log('====================================');
+ 
  const handleStepChange = (_step, ind) => {
     switch (ind) {
       case 0:
@@ -53,16 +50,16 @@ const EditProduct = (props) => {
         setSelectedStep(1);
         break;
       case `/vendor/add-product/colors/[id]`:
-        setSelectedStep(3);
+        setSelectedStep(2);
         break;
       case `/vendor/add-product/sizes/[id]`:
-        setSelectedStep(4);
+        setSelectedStep(3);
         break; 
       case `/vendor/add-product/inventory/[id]`:
-        setSelectedStep(3);
+        setSelectedStep(4);
         break;
       case `/vendor/add-product/variations/[id]`:
-        setSelectedStep(2);
+        setSelectedStep(5);
         break;
       default:
         break;
@@ -111,12 +108,13 @@ const stepperList = [
   {
     title: "Tamanhos",
     disabled: false,
-  }, 
+  },
   {
     title: "Estoque",
     disabled: false,
-  }, 
+  },
 ];
+
  
 export const getServerSideProps: GetServerSideProps = async (c) => {
   return authRoute(c, async ({ token, ...ctx }: any) => {
