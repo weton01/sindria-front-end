@@ -40,7 +40,7 @@ const Icon: React.FC<
 > = ({ children, typer = IconType.icons, ...props }: IconProps) => {
   return (
     <StyledIcon
-      src={`/assets/images/${typer}/${children}.svg`}
+      src={`/assets/images/${typer? typer: "icons"}/${children}.svg`}
       fallback={() => <span>{children?.trim()}</span>}
       {...props}
     />

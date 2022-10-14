@@ -22,6 +22,7 @@ import Divider from "@component/Divider";
 import { useSelector } from "react-redux";
 import Spin from "@component/spin/Spin";
 import Container from "@component/Container";
+import { fail } from "@component/notification/notifcate"
 import { formatFloat } from "@utils/formatFloat";
 import { authRoute } from "middlewares/authRoute";
 
@@ -29,126 +30,136 @@ const Checkout = ({ address }) => {
   const [selectedAddress, setSelectedAddress] = useState({ id: "" });
   const [loadingShippings, setLoadingShippings] = useState(false);
   const [shippings, setShippings] = useState([]);
-
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores); 
+  const orderStores = useSelector((selec: any) => selec?.cart?.orderStores);
 
   const fetchShippings = useCallback(async () => {
-    setLoadingShippings(true); 
-   
-    if (orderStores?.length > 0 ) {
-      const promises = orderStores?.map((ost) => {
-        const localPromises: any[] = [];
+    setLoadingShippings(true);
+    try{
+      console.log(`chegou quasen o fim`)
 
-        const totalValue = ost?.nVlAltura + ost?.nVlLargura + ost?.nVlDiametro;
-        if (totalValue < 200) {
-          localPromises.push({
-            sCepOrigem: "13844-257",
-            sCepDestino: "01032-000 ",
-            nVlPeso: ost?.nVlPeso?.toString(),
-            nCdFormato: "1",
-            nVlComprimento:
-              ost?.nVlComprimento > 15 ? ost?.nVlComprimento.toString() : "15",
-            nVlAltura: ost?.nVlAltura > 15 ? ost?.nVlAltura.toString() : "15",
-            nVlLargura:
-              ost?.nVlLargura > 15 ? ost?.nVlLargura?.toString() : "15",
-            nVlDiametro:
-              ost?.nVlDiametro > 15 ? ost?.nVlDiametro?.toString() : "15",
-            nCdServico: ["04014", "04510"],
-            user: ost?.userId,
-            storeName: ost?.storeName
-          });
-        } else {
-          const rest = totalValue % 200;
+      if (orderStores?.length > 0) {
+        const promises = orderStores?.map((ost) => {
+          const localPromises: any[] = [];
+          console.log(`chegou quasen o fim`)
 
-          for (let i = 0; i < totalValue / 200; i++) {
+          const totalValue = ost?.nVlAltura + ost?.nVlLargura + ost?.nVlDiametro;
+          if (totalValue < 200) {
+            localPromises.push({
+              sCepOrigem: "13844-257",
+              sCepDestino: "01032-000 ",
+              nVlPeso: ost?.nVlPeso?.toString(),
+              nCdFormato: "1",
+              nVlComprimento:
+                ost?.nVlComprimento > 15 ? ost?.nVlComprimento.toString() : "15",
+              nVlAltura: ost?.nVlAltura > 15 ? ost?.nVlAltura.toString() : "15",
+              nVlLargura:
+                ost?.nVlLargura > 15 ? ost?.nVlLargura?.toString() : "15",
+              nVlDiametro:
+                ost?.nVlDiametro > 15 ? ost?.nVlDiametro?.toString() : "15",
+              nCdServico: ["04014", "04510"],
+              user: ost?.userId,
+              storeName: ost?.storeName
+            });
+            console.log(`chegou quasen o fim`)
+
+          } else {
+            const rest = totalValue % 200;
+  
+            for (let i = 0; i < totalValue / 200; i++) {
+              localPromises.push({
+                sCepOrigem: "13844-257",
+                sCepDestino: "01032-000 ",
+                nVlPeso: ost?.nVlPeso.toString(),
+                nCdFormato: "1",
+                nVlComprimento: "66.66",
+                nVlAltura: "66.66",
+                nVlLargura: "66.66",
+                nVlDiametro: "33.33",
+                nCdServico: ["04014", "04510"],
+                user: ost?.userId,
+                storeName: ost?.storeName
+              });
+            }
+            console.log(`chegou quasen o fim`)
+
             localPromises.push({
               sCepOrigem: "13844-257",
               sCepDestino: "01032-000 ",
               nVlPeso: ost?.nVlPeso.toString(),
               nCdFormato: "1",
-              nVlComprimento: "66.66",
-              nVlAltura: "66.66",
-              nVlLargura: "66.66",
-              nVlDiametro: "33.33",
+              nVlComprimento: (rest / 3).toString(),
+              nVlAltura: (rest / 3).toString(),
+              nVlLargura: (rest / 3).toString(),
+              nVlDiametro: (rest / 2).toString(),
               nCdServico: ["04014", "04510"],
               user: ost?.userId,
               storeName: ost?.storeName
             });
           }
-
-          localPromises.push({
-            sCepOrigem: "13844-257",
-            sCepDestino: "01032-000 ",
-            nVlPeso: ost?.nVlPeso.toString(),
-            nCdFormato: "1",
-            nVlComprimento: (rest / 3).toString(),
-            nVlAltura: (rest / 3).toString(),
-            nVlLargura: (rest / 3).toString(),
-            nVlDiametro: (rest / 2).toString(),
-            nCdServico: ["04014", "04510"],
-            user: ost?.userId,
-            storeName: ost?.storeName
-          });
-        }
-
-        return localPromises;
-      });
-
-      const shippings = await Promise.all(
-        promises.map(async (p) => {
-          let user;
-          let storeName;
-
-          const items = await Promise.all(
-            p.map((i) => {
-              user = i.user;
-              storeName = i.storeName;
-
-              delete i.user;
-              delete i.storeName;
-
-              return axios.post(`${PROD_URL}shipping/v1`, i);
-            })
-          );
-
-          const newItem = [
-            {
-              Codigo: "04014",
-              Valor: 0,
-              PrazoEntrega: "",
-            },
-            {
-              Codigo: "04510",
-              Valor: 0,
-              PrazoEntrega: "",
-            },
-          ]; 
-
-          items.forEach((l) => {
-            l?.data?.forEach((l3) => {
-              const index = newItem.findIndex(
-                (l2) => l2.Codigo === l3.Codigo
-              );
-              if (index < 0) {
-                return;
-              }
-              newItem[index].Valor += formatFloat(l3.Valor)
-              newItem[index].PrazoEntrega = l3.PrazoEntrega;
+  
+          return localPromises;
+        });
+        console.log(`chegou quasen o fim`)
+        const shippings = await Promise.all(
+          promises.map(async (p) => {
+            let user;
+            let storeName;
+  
+            const items = await Promise.all(
+              p.map((i) => {
+                user = i.user;
+                storeName = i.storeName;
+  
+                delete i.user;
+                delete i.storeName;
+  
+                return axios.post(`${PROD_URL}shipping/v1`, i);
+              })
+            );
+  
+            const newItem = [
+              {
+                Codigo: "04014",
+                Valor: 0,
+                PrazoEntrega: "",
+              },
+              {
+                Codigo: "04510",
+                Valor: 0,
+                PrazoEntrega: "",
+              },
+            ];
+  
+            items.forEach((l) => {
+              l?.data?.forEach((l3) => {
+                const index = newItem.findIndex(
+                  (l2) => l2.Codigo === l3.Codigo
+                );
+                if (index < 0) {
+                  return;
+                }
+                newItem[index].Valor += formatFloat(l3.Valor)
+                newItem[index].PrazoEntrega = l3.PrazoEntrega;
+              });
             });
-          });
-
-          return {
-            data: newItem,
-            user,
-            storeName
-          };
-        })
-      );
- 
-      setShippings(shippings);
+  
+            return {
+              data: newItem,
+              user,
+              storeName
+            };
+          })
+        );
+  
+        setShippings(shippings);
+      }
+    } catch (err) {
+      console.log(`deu erro`, err)
+      fail(JSON.stringify(err))
+      setShippings([])
     }
 
     setLoadingShippings(false);
@@ -159,8 +170,8 @@ const Checkout = ({ address }) => {
     fetchShippings();
   }, [fetchShippings]);
 
-  useEffect(() => { 
-    if (address && address.items && address.items.length > 0){
+  useEffect(() => {
+    if (address && address.items && address.items.length > 0) {
       setSelectedAddress(address?.items[0]);
     }
   }, [address]);
@@ -172,7 +183,7 @@ const Checkout = ({ address }) => {
     });
   }, [selectedAddress]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (shippings[0] && shippings[0].data && shippings[0].data.length > 0) {
       dispatch({
         type: "SET_SHIPPING",
@@ -249,25 +260,30 @@ const Checkout = ({ address }) => {
                 </Grid>
               ))}
             </Grid>
+            {address?.count > 0 ? <Spin loading={loadingShippings} size="30px" >
+              {loadingShippings ? <Box height={50} width={50}/> : (
+                <>
+                  <FlexBox mt="1.5rem" alignItems="center" mb="1.75rem">
+                    <Avatar
+                      bg="primary.main"
+                      size={32}
+                      color="primary.text"
+                      mr="0.875rem"
+                    >
+                      2
+                    </Avatar>
+                    <Typography fontSize="20px">Valores do Frete</Typography>
+                  </FlexBox>
+                  <FlexBox flexDirection={"column"} gap={8}>
+                    {shippings?.map((item, index) => (
+                      <Shipping key={`shi-${index}`} values={item} />
+                    ))}
+                  </FlexBox>
+                </>
+              )}
+            </Spin>: null}
+            
 
-            <FlexBox mt="1.5rem" alignItems="center" mb="1.75rem">
-              <Avatar
-                bg="primary.main"
-                size={32}
-                color="primary.text"
-                mr="0.875rem"
-              >
-                2
-              </Avatar>
-              <Typography fontSize="20px">Valores do Frete</Typography>
-            </FlexBox>
-            <Spin loading={loadingShippings} size="30px">
-              <FlexBox flexDirection={"column"} gap={8}>
-                {shippings.map((item, index) => (
-                  <Shipping key={`shi-${index}`} values={item}/>
-                ))}
-              </FlexBox>
-            </Spin>
           </Card1>
           <Grid container spacing={7}>
             <Grid item sm={6} xs={12}>
@@ -309,7 +325,7 @@ export const getServerSideProps: GetServerSideProps = async (c) => {
   return authRoute(c, async (ctx: any) => {
     return {
       props: {}
-    } 
+    }
   })
 }
 

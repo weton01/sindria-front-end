@@ -11,7 +11,6 @@ import Typography, { H5 } from "@component/Typography";
 import { ITEMS_PER_PAGE } from "@utils/enums";
 import { formatCurrency } from "@utils/formatCurrency";
 import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
 import React from "react";
 import Popup from "reactjs-popup";
 import { api } from "services/api";
@@ -26,8 +25,6 @@ const Products = (props) => {
   const { products } = props;
   const router = useRouter();
   const skip: number = parseInt(router?.query?.skip?.toString()) || 0;
-
-  console.log(products);
   
   const deleteProduct = async (id) => {
     toast.notify("Removendo produto", {

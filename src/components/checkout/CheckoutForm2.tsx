@@ -136,7 +136,7 @@ const CheckoutForm2: React.FC<CheckoutForm2props> = ({ data }) => {
 
   useEffect(() => {
 
-    if (selectedCoupon.id !== '')
+    if (selectedCoupon?.id !== '')
       dispatch({
         type: "SET_COUPON",
         payload: selectedCoupon

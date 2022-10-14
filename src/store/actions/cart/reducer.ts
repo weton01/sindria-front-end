@@ -14,15 +14,10 @@ const initialState = {
 const setDiscount = (orderStores, discount) => {
   let newOrderStores = [...orderStores]
 
-  console.log('before', newOrderStores)
-
   newOrderStores = newOrderStores.map(ost => {
-    console.log('here', ost.netAmount - (discount / orderStores.length), discount)
     ost.netAmount = ost.netAmount - (discount / orderStores.length)
     return ost
   })
-
-  console.log('subtract', newOrderStores)
 
   return newOrderStores;
 }
@@ -264,10 +259,10 @@ const reducer = (state = initialState, action) => {
             setNetValue(
               setTotalAmountByStore(
                 recalculateShippingValues(
-                  newAddNewProduct(action.payload, state.orderStores)
+                  newAddNewProduct(action.payload, state?.orderStores)
                 )
               )
-            ), state.invoiceType), state.coupon.discount),
+            ), state?.invoiceType), state?.coupon?.discount),
       };
 
     case types.DELETE_FROM_CART:
@@ -278,10 +273,10 @@ const reducer = (state = initialState, action) => {
             setNetValue(
               setTotalAmountByStore(
                 recalculateShippingValues(
-                  newDeleteProduct(action.payload, state.orderStores)
+                  newDeleteProduct(action.payload, state?.orderStores)
                 )
               )
-            ), state.invoiceType), state.coupon.discount),
+            ), state?.invoiceType), state?.coupon?.discount),
 
       };
 
@@ -293,10 +288,10 @@ const reducer = (state = initialState, action) => {
             setNetValue(
               setTotalAmountByStore(
                 recalculateShippingValues(
-                  newRemoveProduct(action.payload, state.orderStores)
+                  newRemoveProduct(action.payload, state?.orderStores)
                 )
               )
-            ), state.invoiceType), state.coupon.discount),
+            ), state?.invoiceType), state?.coupon?.discount),
       };
 
     case types.SET_SHIPPING:
@@ -311,11 +306,11 @@ const reducer = (state = initialState, action) => {
                     setStoreShippingPrice(
                       action.payload.user,
                       action.payload.price,
-                      state.orderStores
+                      state?.orderStores
                     ),
                   )
                 )
-              ), state.invoiceType), state.coupon.discount),
+              ), state?.invoiceType), state?.coupon?.discount),
       };
 
     case types.SELECT_ADDRESS:
@@ -331,7 +326,7 @@ const reducer = (state = initialState, action) => {
       };
 
     case types.DELETE_ADDRESS:
-      const address = state.address.items.filter(
+      const address = state?.address.items.filter(
         (_, index) => index !== action.payload
       );
       return {
@@ -348,9 +343,9 @@ const reducer = (state = initialState, action) => {
             setFeeByStore(
               setNetValue(
                 setTotalAmountByStore(
-                  state.orderStores
+                  state?.orderStores
                 )
-              ), state.invoiceType), state.coupon.discount),
+              ), state?.invoiceType), state?.coupon?.discount),
       };
 
     case types.SELECT_CREDIT_CARD:
@@ -375,10 +370,10 @@ const reducer = (state = initialState, action) => {
               setNetValue(
                 setTotalAmountByStore(
                   recalculateShippingValues(
-                    state.orderStores
+                    state?.orderStores
                   )
                 )
-              ), state.invoiceType), state.coupon.discount),
+              ), state?.invoiceType), state?.coupon?.discount),
       }
 
     case types.CLEAR_CART:
