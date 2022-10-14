@@ -16,7 +16,6 @@ import countryList from "../../../data/countryList";
 
 const AccountSettings = () => {
   const handleFormSubmit = async (values) => {
-    console.log(values);
   };
 
   return (
@@ -67,7 +66,6 @@ const AccountSettings = () => {
             <Hidden>
               <input
                 className="hidden"
-                onChange={(e) => console.log(e.target.files)}
                 id="profile-image"
                 accept="image/*"
                 type="file"

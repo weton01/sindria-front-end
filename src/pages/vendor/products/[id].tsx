@@ -18,7 +18,6 @@ const OrderDetails = () => {
   const { id } = router.query;
 
   const handleFormSubmit = async (values) => {
-    console.log(values);
   };
 
   return (
@@ -80,7 +79,6 @@ const OrderDetails = () => {
                   <DropZone
                     setFieldValue={setFieldValue}
                     onChange={(files) => {
-                      console.log(files);
                     }}
                   />
                 </Grid>

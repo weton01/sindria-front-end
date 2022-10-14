@@ -54,7 +54,7 @@ const ProfileEditor = () => {
           <Hidden>
             <input
               className="hidden"
-              onChange={(e) => console.log(e.target.files)}
+              onChange={(e) => {}}
               id="profile-image"
               accept="image/*"
               type="file"

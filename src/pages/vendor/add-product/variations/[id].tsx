@@ -15,10 +15,7 @@ const ProductVariation = (props) => {
   const [selectedStep, setSelectedStep] = useState(0);
   const router = useRouter();
   const id = router?.query?.id;
-  const { route } = router;
-  console.log('====================================');
-  console.log(props);
-  console.log('====================================');
+  const { route } = router; 
 
   const handleStepChange = (_step, ind) => {
     switch (ind) {

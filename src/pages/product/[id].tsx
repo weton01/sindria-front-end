@@ -110,6 +110,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       axios.get(`${PROD_URL}comment/v1/${id}?skip=0&take=3`),
       axios.get(`${PROD_URL}review/v1/${id}?skip=0&take=3`),
     ])
+
+    console.log(`deu problema aqui`, single.data.product)
      
     return {
       props: {
@@ -121,7 +123,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       }
     }
 
-  } catch {
+  } catch (err) {
+    console.log(`deu erro aqui`, err)
     return {
       redirect: {
         permanent: false,

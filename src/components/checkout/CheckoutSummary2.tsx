@@ -70,7 +70,6 @@ const CheckoutSummary2: React.FC = () => {
     setCart(myCart)
   }, [myCart])
 
-  console.log('here', cart.coupon)
 
   const renderSize = (size, index) => {
     return <Box
@@ -109,7 +108,6 @@ const CheckoutSummary2: React.FC = () => {
   const subTotal = calculateCartSubTotal(cart.orderStores)
   const shippingPrice = calculateShippingPrice(cart.orderStores)
 
-  console.log(cart.orderStores)
   return (
     <Box>
       <Typography color="secondary.900" fontWeight="700" mb="1.5rem">
